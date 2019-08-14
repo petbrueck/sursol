@@ -1,2 +1,8 @@
-# sursol-package
-Stata commands designed for working with the Survey Solutions platform for data collection
+# sursol - Useful Stata commands when working with Survey Solutions 
+
+
+The sursol package is a set of Stata commands that standardizes and
+                       simplifies repetitive tasks within the realm of
+                        data collection using the Survey Solutions
+                       software package.
+

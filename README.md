@@ -3,7 +3,7 @@
 **sursol** is a set of user-written Stata commands that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
 
 ### **Content**
-The list of sub-commands of **sursol**  is work in progres and improved continuously.  While `export`,  `append`,  `para` and  `transcheck` have been tested in numerous cases, all other commands might not be bug free. No responsibility or liability for the correct functionality of the commands is taken!
+The list of sub-commands of **sursol**  is work in progres and improved continuously.  While `export`,  `append`,  `para` and  `transcheck` have been tested in numerous cases, all other commands might be buggy. No responsibility or liability for the correct functionality of the commands is taken!
 
 - `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software is required.
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 

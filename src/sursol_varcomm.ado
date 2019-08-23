@@ -1,6 +1,6 @@
 program sursol_varcomm
 
-syntax varlist [if],  SERver(string) USER(string) PASSword(string) [Rpath(string)]  [COMMent(string)] [ID(varlist str min=1 max =1)]
+syntax varlist [if],  SERver(string) USER(string) PASSword(string) COMMent(string) [Rpath(string)]   [ID(varlist str min=1 max =1)]
 
 
 qui {

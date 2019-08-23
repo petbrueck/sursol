@@ -25,7 +25,7 @@
 
 
 
-{marker C4ED_append_options}{...}
+{marker sursol_append_options}{...}
 {synoptset 21 tabbed}{...}
 {synopthdr:sursol append options }
 {synoptline}
@@ -35,6 +35,7 @@
 {synopt:{opt noac:tions}}no descriptive variables found in {it:interview__actions.dta} and {it:interview__comments.dta} will be merged to the questionnaire level file{p_end}
 {synopt:{opt nodiag:nostics}}no descriptive variables found in {it:interview__diagnostics.dta} will be merged to the questionnaire level file{p_end}
 {synopt:{opt qxvar(string)}}questionnaire variable specified in Survey Solutions Questionnaire Designer{p_end}  
+{synopt:{opt noskip}}also saves empty datafile in the folder specified in {opt ex:port(string)}{p_end}  
 {synoptline}
 
 
@@ -61,18 +62,18 @@ Previously existing files in the path in which data is exported are overwritten.
 Usually either the name of the questionnaire as found on the server or the questionnaire variable as defined in the Questionnaire Designer. Do not include any of the following: "VERSION #_STATA_ALL".  
 
 {phang}
-{marker C4ED_append_directory}{...}
+{marker sursol_append_directory}{...}
 {opt dir:ectory(string)} specifies the path in which the exported data files have been unzipped to. It is required that each questionnaire version has its own unique folder. 
 
 
 {marker optiona}{...}
 {dlgtab:Optional}
 
-{marker C4ED_append_export}{...}
+{marker sursol_append_export}{...}
 {phang}
 {opt ex:port(string)} by default, {cmd: sursol append} saves master files in {opt dir:ectory(string)}. {opt ex:port(string)} can be used to specify other folder paths.
 
-{marker c4ed_append_qxvar}{...}
+{marker sursol_append_qxvar}{...}
 {phang}
 {opt qxvar(string)} can be used to specify the {browse "https://support.mysurvey.solutions/questionnaire-designer/components/questionnaire-variable/":Questionnaire Variable} which reflects the name of the main questionnaire level file. 
 To be used if the Questionnaire Variable does not match {it:folder_uniqueid} and option {opt copy(varlist)} is used or {opt noactions} and/or {opt nodiagnostics} is NOT specified.
@@ -93,6 +94,11 @@ interview files. Useful for variables that are used in future data processing su
 {opt nodiag:nostics} By default, {cmd: sursol append} makes use of information in {it: interview__diagnostics.dta} and merges all variables to the questionnaire level
  data file. Useful for data quality purposes and future documentation of the data generation process. This will be surpressed if {opt nodiag:nostics} is specified. 
 
+{phang}
+{opt noskip} By default, {cmd: sursol append} ignores empty files of each version and does not attempt to append or save this file in the specified export folder. 
+Especially in the beginning of data collections, rosters and their related data files can be empty. If {opt noskip} is specified, those empty files will still be saved which guarantees that the full data structure is available. 
+
+by default, data files of each version with no observations are skipped. 
 
 {title:Examples}
 
@@ -102,3 +108,21 @@ interview files. Useful for variables that are used in future data processing su
 {phang2}{cmd:. copy (village treatment)  ///}{p_end}
 {phang2}{cmd:. qxvar("PROJECTX")  ///}{p_end}
 {phang2}{cmd:. server("projectX")}{p_end}
+
+
+{title:Author}
+
+This command builds upon work by:
+
+{pstd}Andreas Kutka, andreas.kutka@gmail.com
+
+Revised and extended by:
+
+{pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+Please report any bugs!!
+
+No responsibility or liability for the correct functionality of the do-file taken!
+
+{cmd:sursol append} was last updated using Survey Solutions 19.07
+

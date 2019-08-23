@@ -31,6 +31,7 @@
 durations. By default 30 minutes{p_end}
 {synopt:{opt pausetime(integer)}} ignores breaks longer than {it: integer} minutes while building {it: length_pause}. By default, 60 minutes{p_end}
 {synopt:{opt dur1-10(var1 var2)}} calculates time spent between {it: var1} and {it:var2}. dur1({it:var1} {it:var2}) - dur10({it:var1} {it:var2}) can be specified {p_end}
+{synopt:{opt size}} displays the size of each paradata.tab to be appended and analyzed{p_end}
 {synoptline}
 
 {title:Description}
@@ -91,8 +92,26 @@ The assumption is that the time between two question should not be longer than X
 If var1 or var2 can not be found in questionnaire OR {it:var1} is answered after {it:var2}, variable {it:durX} will be set to missing.
  Possible applications: Time spent at key/filter questions or duration of specific sections. 
 
+{phang}
+{opt size} paradata files can be large in size which prolongs the execution of this command. If {opt size} is specified, the size of file in KB is obtained and the estimated time for executing the command is displayed. {p_end}
 {title:Examples}
 
 {pstd}All Interview Versions have been exported and unzipped into ${downloads} and I would like to ignore actions that lasted longer than 40 minutes:{p_end}
 
 {phang2}{cmd:.  sursol para, dir(${downloads}) time(40) }{p_end}
+
+{title:Author}
+
+This command builds upon work by:
+
+{pstd}Andreas Kutka, andreas.kutka@gmail.com
+
+Revised and extended by:
+
+{pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+Please report any bugs!!
+
+No responsibility or liability for the correct functionality of the do-file taken!
+
+{cmd:sursol para} was last updated using Survey Solutions 19.07

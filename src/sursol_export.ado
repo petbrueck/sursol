@@ -19,7 +19,7 @@ else if length("`versions'")==0 loc newversions ""all""
 
 if length("`zipdir'")>0 & length("`nozip'")>0 {
 noi disp as error _n "Attention. Zip directory was specified but option ""NOZIP"" enforced. Please check." 
-ex
+ex 601
 }
 
 
@@ -28,7 +28,7 @@ mata : st_numscalar("OK", direxists("`directory'"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. Directory: ""`directory'"" not found."
 noi dis as error  "Please correctly specify {help sursol_export##sursol_export_directory:directory(string)}"
-ex
+ex 601
 }
 
 
@@ -60,7 +60,7 @@ loc newformat ""
 foreach x of loc format {
 if !inlist(lower("`x'"),"spss","stata","tabular") {
 display as error _n "Option ""format(`format')"" incorrectly specified. Can be only one or combination of the following: ""spss"", ""stata"" or ""tabular"". "
-ex
+ex 198
 } 
 local newformat `"`newformat' "," "`x'" "'
 }
@@ -85,7 +85,7 @@ if length("`rpath'")==0 {
 if strpos(lower("`c(os)'"),"window")==0 {
 noi dis as error _n "Attention.  You are not using Windows as an operating system."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 198
 }
 
 
@@ -96,7 +96,7 @@ mata : st_numscalar("OK", direxists("C:\Program Files\R"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No R folder in ""C:\Program Files\"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 
 
@@ -130,27 +130,27 @@ capt mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\"))
 if _rc==3000 {
 noi dis as error _n "The command has problems identifying your R version."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No bin folder in ""C:\Program Files\R\\`version'\"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 
 mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\\`bit'\"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No `bit' folder in ""C:\Program Files\R\\`version'\bin"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 
 capt confirm file "C:\Program Files\R\\`version'\bin\\`bit'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""C:\Program Files\R\\`version'\bin\\`bit'\"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 loc rpath="C:\Program Files\R\\`version'\bin\\`bit'\"
 
@@ -171,7 +171,7 @@ capt confirm file "`rpath'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
 noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex
+ex 601
 }
 }
 

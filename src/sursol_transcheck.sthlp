@@ -34,7 +34,7 @@ If translation file not loaded to the dataset, use {cmd:using} {it:{help filenam
 {synopt:{opt sheet(string)}}if {cmd:using} {it:{help filename}} is specified, {opt sheet(string)} can be used to indicate the excel sheet in which {it:Original} and {it:Translation} can be found{p_end}
 {synopt:{opt clear}}if {cmd:using} {it:{help filename}} is specified, clear indicates that it is okay to replace the data in memory, even though the current data have not been saved to disk.{p_end}
 {synopt:{opt sub:stitution(string)}}in Survey Solutions, software substitutions are defined by %-signs, e.g. %rostertitle%. If another character is used, specify it in {opt sub:stitution(string)}{p_end}
-{synopt:{opt miss:ing}} includes empty cells in the check syntax and returns a variable indicating missing translations.{p_end}
+{synopt:{opt miss:ing}} includes empty cells of translation in the check syntax and returns a variable indicating missing translations.{p_end}
 {synoptline}
 
 
@@ -62,3 +62,12 @@ b) The number of text substitutions differs between the {it:Original} and the {i
 
 {phang2}{cmd:. sursol transcheck Originaltext Translation using "C:\Users\translation.xlsx", clear missing}{p_end}
 
+{title:Author}
+
+{pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+Please report any bugs!!
+
+No responsibility or liability for the correct functionality of the do-file taken!
+
+{cmd:sursol transcheck} was last updated using Survey Solutions 19.07

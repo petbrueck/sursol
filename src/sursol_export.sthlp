@@ -148,5 +148,12 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {phang2}{cmd:. paradata ///}{p_end}
 {phang2}{cmd:. versions(1 2 5)}{p_end}
 
-{cmd:sursol export} was last updated using Survey Solutions 19.02
+{title:Author}
 
+{pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+Please report any bugs!!
+
+No responsibility or liability for the correct functionality of the do-file taken!
+
+{cmd:sursol export} was last updated using Survey Solutions 19.07

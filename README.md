@@ -14,7 +14,7 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.
 
 ### **Installation**
-For now, you can just simply download all .ado & .sthlp files from the 'src' folder. Copy them into any folder on your harddrive. Within Stata write 
+For now, you can just simply download all .ado & .sthlp files from the 'src' folder. Copy them into any folder on your drive. Within Stata write 
 `sysdir set PERSONAL  "FOLDER PATH IN WHICH YOU COPIED ALL FILES"`  
 
 Type
@@ -30,5 +30,5 @@ to retrieve more information about each command
 
 *As noted above, no responsibility or liability for the correct functionality of the commands is taken!*
 
-*Please report any bug or provide feature requests*
+*Please report any bug or provide feature requests!*
 

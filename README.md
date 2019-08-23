@@ -15,7 +15,13 @@ The list of sub-commands of **sursol**  is work in progres and improved continuo
 
 
 
-===  
-*Disclaimer: The commands are not affiliated, associated, endorsed by or in any way officially connected with the  [Data group of The World Bank](https://mysurvey.solutions/) that developes the Survey Solutions software.
 
+
+
+===  
+*Disclaimer: The commands are not affiliated, associated, endorsed by or in any way officially connected with the [Data group of The World Bank](https://mysurvey.solutions/) that developes the Survey Solutions software*
+
+*As noted above, no responsibility or liability for the correct functionality of the commands is taken!*
+
+*Please report any bug or provide feature requests*
 

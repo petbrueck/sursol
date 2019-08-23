@@ -2,11 +2,12 @@
 capture program drop sursol_para
 
 program sursol_para 
-syntax anything,  DIRectory(string) [EXport(string)] [TIME(real 30)] [PAUSETIME(real 60)] [DUR1(string)] [DUR2(string)] [DUR3(string)] [DUR4(string)] [DUR5(string)] [DUR6(string)] [DUR7(string)] [DUR8(string)] [DUR9(string)] [DUR10(string)] 
+syntax anything,  DIRectory(string) [size] [EXport(string)] [TIME(real 30)] [PAUSETIME(real 60)] [DUR1(string)] [DUR2(string)] [DUR3(string)] [DUR4(string)] [DUR5(string)] [DUR6(string)] [DUR7(string)] [DUR8(string)] [DUR9(string)] [DUR10(string)] 
 
 local currdir `c(pwd)'
 local time_sec=`time'*60
 local pausetime_sec=`pausetime'*60
+
 
 
 
@@ -86,18 +87,15 @@ qui{
 		
 		
 	else {
-	
-	
-	
-      noi di as text _n "`version' will be appended..."
+ 	noi di as text _n "`version' will be appended..."
+	if length("`size'")>0 {	
       qui checksum "`directory'\\`folder'\paradata.tab"
       loc kb= round(`r(filelen)'/1024, 0.1)
       if `kb'>100000 noi dis as text "The file is `kb' KB large. That'll take a while..."
- 	
-
+      else if `kb'>1000000 noi dis as text "The file is `kb' KB large. That'll take super long..."
+	}
 	insheet using "`directory'\\`folder'\paradata.tab", tab case names clear
 
-	
 
 	if  `c(N)'==0  {
 		noi di as error  "ATTENTION! No data in paradata.tab file found for `folder' "
@@ -136,6 +134,7 @@ qui{
 	replace cleandur=. if inlist(event,"Resumed")
 	replace help=cleandur if !missing(help)
 	bys interview__id: egen cleandur_fstcompl=total(help),m
+
 
 
 
@@ -217,7 +216,6 @@ sort interview__id order
 
 collapse (firstnm) n_invalidq n_answer n_removed  rawdur_fstcompl cleandur_fstcompl length_pause  rawdurint  (sum) `durlist'  cleandur , by(interview__id)
 rename cleandur clean_durint
-
 
 g cleandur_min=clean_durint/60
 g rawdur_min=rawdurint/60

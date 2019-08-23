@@ -13,8 +13,15 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 - `sursol import` imports tabular data exported by Survey Solutions.
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.
 
+### **Installation**
+For now, you can just simply download all .ado & .sthlp files from the 'src' folder. Copy them into any folder on your harddrive. Within Stata write 
+`sysdir set PERSONAL  "FOLDER PATH IN WHICH YOU COPIED ALL FILES"`  
 
-
+Type
+`help sursol`
+or 
+`help sursol append`
+to retrieve more information about each command
 
 
 

@@ -1,4 +1,4 @@
-# sursol - Stata codes for working with the Survey Solutions data collection software
+# sursol - Stata codes for Survey Solutions 
 
 **sursol** is a set of user-written Stata commands that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
 

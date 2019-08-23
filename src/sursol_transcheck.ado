@@ -1,7 +1,7 @@
 capture program drop sursol_transcheck
 
 program sursol_transcheck 
-syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear]
+capt syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear]
 
 
 qui {
@@ -31,6 +31,16 @@ if "`sheet'"=="" loc sheet "Translations"
 local currdir `c(pwd)'
 
 if "`using'"!="" import excel "`using'", sheet("`sheet'") firstrow allstring `clear'
+
+if "`using'"==""	 {
+  	foreach x in problem missing_trans missing_orig nsubstitution {
+	capt confirm var `x' 
+	if !_rc {
+	noi dis as error "Variable '`x'' must not exist when using {help sursol_transcheck:transcheck}."
+	ex 110
+	}
+		}
+}
 
 gen problem=0
 if length("`missing'")>0 {
@@ -131,6 +141,7 @@ loc `x'_count=`r(N)'
 if `r(N)'==0 drop `x'
 }
 }
+
 capt confirm n `missing_trans_count'
 if !_rc {
 if `missing_trans_count'>0 noi dis as result "`missing_trans_count' row(s) contain substitutions in `1' but not in `2'"
@@ -139,13 +150,18 @@ capt confirm n `missing_orig_count'
 if !_rc {
 if `missing_orig_count'>0 noi dis as result "`missing_orig_count' row(s) contain substitutions in `2' but not in `1'"
 }
+capt confirm var nsubstitution
+if !_rc {
+qui tab nsubstitution
+noi dis as result "`r(N)' row(s) have different number of substitutions between `1' and `2'"
+}
 noi dis as res "`missingtext'"
 
 capt gsort -problem 
 capt order no_translation, last
 capt lab var problem "1 if translation item needs to be checked, 0 if no problem identified"
-capt lab var missing_orig_count "Indicates if a substitution has been identified in `2' that could not been found in `1'"
-capt lab var missing_trans_count "Indicates if a substitution has been identified in `1' that could not been found in `2'"
+capt lab var missing_orig "Indicates if a substitution has been identified in `2' that could not been found in `1'"
+capt lab var missing_trans "Indicates if a substitution has been identified in `1' that could not been found in `2'"
 capt lab var nsubstitution "Indicates if the number of substitutions used in `1' and `2' differs"
 
 }

@@ -343,6 +343,8 @@ quietly: file write rcode
                 `"  "'    _newline
                 `"if (questionnaire_name_up %in% qnrList_all\$Title) {  "'    _newline
                 `"  qxid<-(unique(qnrList_all\$QuestionnaireId[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
+		`"  qxvar<-(unique(qnrList_all$Variable[qnrList_all$Title == questionnaire_name_up]))  "'    _newline
+
                 `"} else if (questionnaire_name_up == "") {  "'    _newline
                 `"  message("Error: Please provide the name of the questionnaire.")  "'    _newline
                 `"  Sys.sleep(5)  "'    _newline
@@ -464,7 +466,7 @@ quietly: file write rcode
                 `"        "'    _newline
                 `"      if (content\$ExportStatus == "Queued") {  "'    _newline
                 `"        message("Waiting for export files to be generated...")  "'    _newline
-                `"        Sys.sleep(5)     "'    _newline
+                `"        Sys.sleep(3)     "'    _newline
                 `"      }  "'    _newline
                 `"        "'    _newline
                 `"      if (identical(Status,"FinishedWithErrors")) {  "'    _newline
@@ -486,7 +488,7 @@ quietly: file write rcode
                 `"      if (content\$ExportStatus == "Running") {  "'    _newline
                 `"        message(paste0("Data is currently being generated. Percent: ",  "'    _newline
                 `"                       content\$RunningProcess['ProgressInPercents'], '%'))  "'    _newline
-                `"        Sys.sleep(8)  "'    _newline
+                `"        Sys.sleep(4)  "'    _newline
                 `"      }  "'    _newline
                 `"        "'    _newline
                 `"        "'    _newline
@@ -496,12 +498,12 @@ quietly: file write rcode
                 `"          "'    _newline
                 `"        download_data <- GET(download_query, authenticate(user, password))  "'    _newline
                 `"        redirectURL <- download_data\$url   "'    _newline
-                `"        RawData <- GET(redirectURL) #Sucess!!  "'    _newline
+                `"        RawData <- GET(redirectURL) "'    _newline
                 `"  "'    _newline
                 `"        filecon <- file(file.path(directory, Filename), "wb")   "'    _newline
                 `"          "'    _newline
                 `"        writeBin(RawData\$content, filecon)   "'    _newline
-                `"        Sys.sleep(10)     "'    _newline
+                `"        Sys.sleep(8)     "'    _newline
                 `"          "'    _newline
                 `"        close(filecon)  "'    _newline
                 `"          "'    _newline
@@ -541,7 +543,7 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode  
-
+ex 198 
                 shell "`rpath'\R" --vanilla <"`directory'\export.R"
 
                 qui capt rm "`directory'\export.R"

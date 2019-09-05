@@ -2,12 +2,18 @@ capture program drop sursol_export
 
 program sursol_export 
 
-syntax anything, DIRectory(string) SERver(string) USER(string) PASSword(string) [Rpath(string)]  [VERSIONS(string)] [FORMAT(string)] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)]
+syntax anything, DIRectory(string) SERver(string) USER(string) PASSword(string) [Rpath(string)]  [LASTVersion] [VERSIONS(string)] [FORMAT(string)] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)]
 
 
 local currdir `c(pwd)'		
 
 
+if length("`versions'")>0 & length("`lastversion'")>0 {
+
+noi dis as error _n "Attention. You specified {help sursol_export##sursol_export_version:versions(string)} and {help sursol_export##sursol_export_lastversion:lastversion}.
+noi dis as error "These two options exclude each other. Please check."
+ex 601
+}
 
 if length("`versions'")>0 {
   loc versions=subinstr("`versions'",","," ",.)
@@ -15,7 +21,9 @@ if length("`versions'")>0 {
   loc versions=subinstr("`versions'"," ",",",.)
   loc newversions `versions'
 }
-else if length("`versions'")==0 loc newversions ""all""
+else if length("`versions'")==0 & length("`lastversion'")==0 loc newversions ""all""
+else if length("`versions'")==0 & length("`lastversion'")>0 loc newversions ""last""
+
 
 if length("`zipdir'")>0 & length("`nozip'")>0 {
 noi disp as error _n "Attention. Zip directory was specified but option ""NOZIP"" enforced. Please check." 
@@ -338,13 +346,12 @@ quietly: file write rcode
                 `"  "'    _newline
                 `"  "'    _newline
                 `"  "'    _newline
-                `"  questionnaire_name_up <- str_to_upper(str_trim(questionnaire_name))  "'    _newline
-                `"  qnrList_all\$Title <- str_to_upper(str_trim(qnrList_all\$Title))  "'    _newline
+                `"  questionnaire_name_up <- str_to_upper(gsub("\\s", "", questionnaire_name)) "'    _newline
+                `"  qnrList_all\$Title <- str_to_upper(gsub("\\s", "", qnrList_all\$Title))  "'    _newline
                 `"  "'    _newline
                 `"if (questionnaire_name_up %in% qnrList_all\$Title) {  "'    _newline
                 `"  qxid<-(unique(qnrList_all\$QuestionnaireId[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
-		`"  qxvar<-(unique(qnrList_all$Variable[qnrList_all$Title == questionnaire_name_up]))  "'    _newline
-
+		`"  qxvar<-(unique(qnrList_all\$Variable[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
                 `"} else if (questionnaire_name_up == "") {  "'    _newline
                 `"  message("Error: Please provide the name of the questionnaire.")  "'    _newline
                 `"  Sys.sleep(5)  "'    _newline
@@ -394,19 +401,21 @@ quietly: file write rcode
                 `"  end_code=paste("to=", end_date, sep = "")  "'    _newline
                 `"}  "'    _newline
                 `"  "'    _newline
-                `"  "'    _newline
+                `" versions_server<-(unique(qnrList_all\$Version[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
                 `"if ("all" %in% str_to_lower(versions)) {  "'    _newline
-                `"versions_download<-(unique(qnrList_all\$Version[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
-                `"} else {  "'    _newline
-                `"versions_download <- versions  "'    _newline
+                `"versions_download<-versions_server    "'    _newline
+                `"} else if ("last" %in% str_to_lower(versions)) {  "'    _newline
+                `"versions_download <- max(versions_server)  "'    _newline
+		`" }  else {  "' _newline
+		`" versions_download <- versions  "' _newline
                 `"}  "'    _newline
                 `"i <- 1  "'    _newline
                 `"for (datatype in datasets) {  "'    _newline
                 `"  for (val in versions_download) {  "'    _newline
                 `"      "'    _newline
                 `"    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")  "'    _newline
-                `"    dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="")  "'    _newline
-                `"    Filename <-paste(c(questionnaire_name," ","VERSION ", val, dataname, "_All.zip"), collapse = "")  "'    _newline
+                `"    if (datatype=="stata") dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="") else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")   "'    _newline
+                `"     Filename <-paste(c(qxvar,"_", val, dataname, "_All.zip"), collapse = "")  "'    _newline
                 `"      "'    _newline
                 `"    fn<- paste(c(directory, "\\", Filename), collapse = "")  "'    _newline
                 `"    if (file.exists(fn)) file.remove(fn)  "'    _newline
@@ -510,8 +519,7 @@ quietly: file write rcode
                 `"        if ("yes" %in% str_to_lower(unzip)) {  "' _newline
                 `"        if (zip_directory=="") {  "'    _newline
                 `"         zip_path<- paste0(directory,"\\",  "'    _newline
-                `"                            questionnaire_name, "_VERSION ",  "'    _newline
-                `"                            val)  "'    _newline
+                `"                              qxvar,"_",val)    "'    _newline
                 `"          if (datatype=="binary") zip_path<- paste0(directory, questionnaire_name, "_VERSION ",  val,"\\Binary")  "'    _newline
                 `"        } else  {  "'    _newline
                 `"        zip_path<- paste0(zip_directory,"\\",  "'    _newline
@@ -543,8 +551,8 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode  
-ex 198 
-                shell "`rpath'\R" --vanilla <"`directory'\export.R"
+	
+               shell "`rpath'\R" --vanilla <"`directory'\export.R"
 
                 qui capt rm "`directory'\export.R"
                 qui capt rm "`directory'\.Rhistory" 

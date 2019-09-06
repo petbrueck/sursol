@@ -10,7 +10,7 @@ local currdir `c(pwd)'
 
 if length("`versions'")>0 & length("`lastversion'")>0 {
 
-noi dis as error _n "Attention. You specified {help sursol_export##sursol_export_version:versions(string)} and {help sursol_export##sursol_export_lastversion:lastversion}.
+noi dis as error _n "Attention. You specified {help sursol_export##versions:versions(string)} and {help sursol_export##lastversion:lastversion}.
 noi dis as error "These two options exclude each other. Please check."
 ex 601
 }
@@ -365,24 +365,19 @@ quietly: file write rcode
                 `"}  "'    _newline
                 `"  "'    _newline
                 `"questionnaire_identity <-gsub("-", "", qxid)  "'    _newline
-                `"paradata <- as.list(tolower(paradata))  "'    _newline
-                `"binary <- as.list(tolower(binary))  "'    _newline
                 `"datasets=export_type  "'    _newline
                 `"  "'    _newline
-                `"if ("yes" %in%  paradata) {  "'    _newline
+                `"if ("yes" %in%  as.list(tolower(paradata))) {  "'    _newline
                 `"  datasets <- append(datasets,"paradata")  "'    _newline
                 `"}   "'    _newline
                 `"  "'    _newline
-                `"if ("yes" %in%  binary) {  "'    _newline
+                `"if ("yes" %in%  as.list(tolower(binary))) {  "'    _newline
                 `"  datasets <- append(datasets,"binary")  "'    _newline
                 `"}   "'    _newline
              
 		`"if ("yes" %in%  as.list(tolower(ddi))) { "' _newline
-		`"datasets <- append(datasets,"ddi") "' _newline
+		`"datasets <- append(datasets,"DDI") "' _newline
 		`"} "' _newline
-
-
-
                 `"if (interview_status=="") {  "'    _newline
                 `"  int_status=""  "'    _newline
                 `"}else{  "'    _newline
@@ -412,9 +407,14 @@ quietly: file write rcode
                 `"i <- 1  "'    _newline
                 `"for (datatype in datasets) {  "'    _newline
                 `"  for (val in versions_download) {  "'    _newline
-                `"      "'    _newline
+                 `" if (val %in% versions_server ==FALSE) {  "' _newline
+      		 `"  message("Error: Version ", val," of ",questionnaire_name," was not found on the server.")  "' _newline
+		 `"  message("Check your versions specified in versions(string)")  "' _newline      		 
+		`"  Sys.sleep(5)  "' _newline
+    		 `"  stop()  "' _newline
+   		 `"  } "'  _newline
                 `"    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")  "'    _newline
-                `"    if (datatype=="stata") dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="") else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")   "'    _newline
+                `"    if (datatype %in% c("stata", "DDI")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="") else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")   "'    _newline
                 `"     Filename <-paste(c(qxvar,"_", val, dataname, "_All.zip"), collapse = "")  "'    _newline
                 `"      "'    _newline
                 `"    fn<- paste(c(directory, "\\", Filename), collapse = "")  "'    _newline
@@ -520,12 +520,13 @@ quietly: file write rcode
                 `"        if (zip_directory=="") {  "'    _newline
                 `"         zip_path<- paste0(directory,"\\",  "'    _newline
                 `"                              qxvar,"_",val)    "'    _newline
-                `"          if (datatype=="binary") zip_path<- paste0(directory, questionnaire_name, "_VERSION ",  val,"\\Binary")  "'    _newline
+                `"          if (datatype=="binary") zip_path<- paste0(directory, qxvar, "_",  val,"\\Binary")    "'    _newline
+ 		`"          if (datatype=="ddi") zip_path<- paste0(directory, qxvar, "_",  val,"\\DDI")    "'    _newline
                 `"        } else  {  "'    _newline
                 `"        zip_path<- paste0(zip_directory,"\\",  "'    _newline
-                `"                          questionnaire_name, "_VERSION ",  "'    _newline
-                `"                          val)  "'    _newline
-		`"	if (datatype=="binary") zip_path<- paste0(zip_directory,"\\", questionnaire_name, "_VERSION ", val,"\\Binary") "'    _newline
+                `"                           qxvar,"_",val)    "'    _newline
+           	`"	if (datatype=="binary") zip_path<- paste0(zip_directory,"\\", qxvar, "_",  val,"\\Binary")  "'    _newline
+		`"	if (datatype=="ddi") zip_path<- paste0(zip_directory,"\\", qxvar, "_",  val,"\\DDI")  "'    _newline
                 `"        }  "'    _newline
           	`"	if (datatype=="binary") {  "'    _newline
          	`"	   unlink(zip_path, recursive = TRUE)  "'    _newline
@@ -551,8 +552,8 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode  
-	
-               shell "`rpath'\R" --vanilla <"`directory'\export.R"
+
+                shell "`rpath'\R" --vanilla <"`directory'\export.R" /q
 
                 qui capt rm "`directory'\export.R"
                 qui capt rm "`directory'\.Rhistory" 

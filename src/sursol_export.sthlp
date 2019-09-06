@@ -33,16 +33,17 @@
 {synoptset 21 tabbed}{...}
 {synopthdr:sursol export options }
 {synoptline}
+{synopt:{opt format(string)}}format in which main survey data will be exported{p_end}
+{synopt:{opt versions(numlist)}}export only specified versions{p_end}
+{synopt:{opt lastv:ersion}}exports only the last version{p_end}
 {synopt:{opt para:data}}export paradata{p_end}
 {synopt:{opt bin:ary}}export binary data{p_end}
-{synopt:{opt versions(numlist)}}export only specified versions{p_end}
 {synopt:{opt status(string)}}status of exported interviews{p_end}
 {synopt:{opt nozip}}exported data will not be unzipped{p_end}
 {synopt:{opt zipdir(string)}}path in which exported data will be unzipped to{p_end}
 {synopt:{opt start:date(string)}}starting date for time frame of exported interviews. 
 Must be in {it: YYYY-MM-DD} date format{p_end}
 {synopt:{opt end:date(string)}}end date for time frame of exported interviews. Must be in {it: YYYY-MM-DD} date format{p_end}
-{synopt:{opt format(string)}}format in which main survey data will be exported{p_end}
 {synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
 {synoptline}
 
@@ -67,6 +68,7 @@ An installed version of R Statistical Software is required. Each Survey Solution
 {phang}
 {it: questionnaire_name} requests a list of all questionnaire versions available on the server corresponding to {it: questionnaire_name}. Case insensitive. Error message is displayed if no questionnaire is found. 
 
+{marker directory}{...}
 {phang}
 {opt dir:ectory(string)} specifies the path in which the exported ZIP files will be saved. By default all exported ZIP files will be unzipped into this path unless {opt nozip} or {opt zipdir(string)} is specified.
 
@@ -84,16 +86,24 @@ An installed version of R Statistical Software is required. Each Survey Solution
 {dlgtab:Optional}
 
 {phang}
-{opt para:data} requests to export corresponding paradata which contains metadata on the interview process (events and timing).
+{opt format(string)} can be used to specify the format of the main survey data to be exported. Can be one or combination of any of the following: "stata", "spss" or "tabular". By default, only stata format (.dta files) will be exported.
 
-{phang}
-{opt bin:ary} can be used to export corresponding binary data which contains for example contains pictures or recored audio sequences. 
-
+{marker versions}{...}
 {phang}
 {opt versions(numlist)} by default, {opt sursol export} requests all versions that are found on the server to be exported.
 If {opt versions(numlist)} is specified, only respective versions of {it:questionnaire_name} are exported. 
 Versions can be specified in any order and using either "," or " " as a delimiter. 
 For example, {opt versions(1 3 4)} or {opt versions(4,3,1)} both request to download Version 1,3 and 4 of the specified questionnaire. 
+
+{marker lastversion}{...}
+{phang}
+{opt lastv:ersion} if specified, only the most recent version that can be found on the server of {it:questionnaire_name} will be exported. Can not be used in conjunction with {opt versions(numlist)}.
+
+{phang}
+{opt para:data} requests to export corresponding paradata which contains metadata on the interview process (events and timing).
+
+{phang}
+{opt bin:ary} can be used to export corresponding binary data which contains for example contains pictures or recored audio sequences. 
 
 {phang}
 {opt status(string)} only requests to export data with a specific status. By default, all interviews of {it:questionnaire_name} are exported. {it:status(string)} 
@@ -129,9 +139,6 @@ If this is not convenient for the user {opt zipdir(string)} specifies the path i
 {phang}
 {opt end:date(string)} similar to {opt start:date(string)}, one can determine to export only interviews for which changes have been made until date specified in {opt end:date(string)}. Must also be specified in UTC date ({it:YYYY-MM-DD}).
 
-{phang}
-{opt format(string)} can be used to specify the format of the main survey data to be exported. Can be one or combination of any of the following: "stata", "spss" or "tabular". By default, only stata format (.dta files) will be exported.
-
 {marker sursol_export_rpath}{...}
 {phang}
 {opt rpath(string)} specifies the path to the R.exe through which the data export request tothe server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol export} assumes that the executable  
@@ -156,4 +163,4 @@ Please report any bugs!!
 
 No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol export} was last updated using Survey Solutions 19.07
+{cmd:sursol export} was last updated using Survey Solutions 19.08

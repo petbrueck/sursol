@@ -76,6 +76,7 @@ Case sensitive!
 {marker optiona}{...}
 {dlgtab:Optional}
 
+{marker export}{...}
 {phang}
 {opt export(string)} by default, {opt sursol para} appends all paradata.tab files of all questionnaire version's identified in all folders in {opt directory(string)} and saves the master file in {opt directory(string)}. 
 {opt export(string)} can be used to save the master files in a different path. 

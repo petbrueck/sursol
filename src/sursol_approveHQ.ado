@@ -129,6 +129,12 @@ levelsof interview__id, loc(levels) clean sep(,)
 restore
 
 
+if length(`"`levels'"')==0 {
+noi dis as result _n "No interview fulfills the {help if:if} expression."
+noi dis as result "0 interviews will be approved by Headquarter."
+}
+else if length(`"`levels'"')>0  {
+
 qui capt rm "`c(pwd)'\approve.R"
 qui capt rm "`c(pwd)'\.Rhistory" 
  quietly: file open rcode using  "`c(pwd)'\approve.R", write replace 							
@@ -202,6 +208,6 @@ qui capt rm "`c(pwd)'\.Rhistory"
 shell "`rpath'\R" --vanilla <"`c(pwd)'\approve.R"
 qui capt rm "`c(pwd)'\approve.R"
 qui capt rm "`c(pwd)'\.Rhistory" 
-
+}
 }
  end

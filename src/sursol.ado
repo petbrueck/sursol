@@ -37,6 +37,12 @@ gettoken proc 0: 0
 	else if "`proc'"=="varcomm" {
 	sursol_varcomm `0'
 	}
+	else if "`proc'"=="import" {
+	sursol_import `0'
+	}
+	else if "`proc'"=="getcomm" {
+	sursol_getcomm `0'
+	}
 	else {
 	di as error "unrecognized command. check subcommand. see help on {help sursol##|_new:sursol}"
 	qui ex 199

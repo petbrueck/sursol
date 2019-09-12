@@ -10,7 +10,7 @@ local currdir `c(pwd)'
 
 if length("`versions'")>0 & length("`lastversion'")>0 {
 
-noi dis as error _n "Attention. You specified {help sursol_export##versions:versions(string)} and {help sursol_export##lastversion:lastversion}.
+noi dis as error _n "Attention. You specified both {help sursol_export##versions:versions(numlist)} and {help sursol_export##lastversion:lastversion}.
 noi dis as error "These two options exclude each other. Please check."
 ex 601
 }
@@ -409,7 +409,7 @@ quietly: file write rcode
                 `"  for (val in versions_download) {  "'    _newline
                  `" if (val %in% versions_server ==FALSE) {  "' _newline
       		 `"  message("Error: Version ", val," of ",questionnaire_name," was not found on the server.")  "' _newline
-		 `"  message("Check your versions specified in versions(string)")  "' _newline      		 
+		 `"  message("Check your versions specified in versions(numlist)")  "' _newline      		 
 		`"  Sys.sleep(5)  "' _newline
     		 `"  stop()  "' _newline
    		 `"  } "'  _newline
@@ -552,8 +552,8 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode  
-
-                shell "`rpath'\R" --vanilla <"`directory'\export.R" /q
+ 
+                shell "`rpath'\R" --vanilla <"`directory'\export.R" 
 
                 qui capt rm "`directory'\export.R"
                 qui capt rm "`directory'\.Rhistory" 

@@ -22,7 +22,7 @@ ex 601
 if length("`export'")>0{
 	mata : st_numscalar("OK", direxists("`export'"))
 	if scalar(OK)==0 {
-	noi display as error "Attention, folder specified in EXPORT does not exist."
+	noi display as error "Attention, folder specified in {help sursol_para##export:export(string)} does not exist."
 	ex 601
 	}
 }
@@ -87,7 +87,7 @@ qui{
 		
 		
 	else {
- 	noi di as text _n "`version' will be appended..."
+ 	noi di as text _n "Version`version' will be appended..."
 	if length("`size'")>0 {	
       qui checksum "`directory'\\`folder'\paradata.tab"
       loc kb= round(`r(filelen)'/1024, 0.1)
@@ -137,7 +137,6 @@ qui{
 
 
 
-
 						forvalues x = 1(1)10 {
 						if length("`dur`x''") > 0 {
 							g dur`x' = 1 if  variable==word("`dur`x' '",1)
@@ -164,7 +163,6 @@ qui{
 	replace rawdur=. if rawdur>(`pausetime_sec')
 	bys interview__id: egen length_pause=total(rawdur)
 	
-	
 
 	drop time1 time timestamp1 help 
 
@@ -179,6 +177,8 @@ qui{
 					save `finalversion'
 					sleep 150
 					import delimited using "`export'\\paradata_all.tab", clear
+					capt confirm str var variable
+					if _rc!=0 tostring variable, replace 
 					append using `finalversion'
 					capture sort interview__id order
 					export delimited using  "`export'\\paradata_all.tab", replace delimiter(tab)
@@ -227,8 +227,8 @@ lab var rawdurint "Raw duration of interview in seconds between first and last a
 lab var rawdur_fstcompl "Raw duration of interview in seconds between first action and first completion"
 lab var n_answer "Number of answers sets" 
 lab var n_removed "Number of answers removed"
-lab var clean_durint "Active time working on interview. Actions>`time' minutes & breaks are filtered out"
-lab var cleandur_fstcompl"Active time betw. first act and first completion. Actions>`time' minutes & breaks filtered"
+lab var clean_durint "Active time working in seconds. Actions>`time' minutes & breaks are filtered out"
+lab var cleandur_fstcompl "Active time betw. 1. act and 1. complete in seconds. Actions>`time' minutes & breaks filtered"
 lab var length_pause  "Length in seconds interview was paused. Breaks>`pausetime' minutes are filtered out"
 lab var cleandur_min "clean_durint in minutes"
 lab var rawdur_min "rawdurint in minutes"
@@ -237,7 +237,7 @@ if length("`durlist'") > 0 {
 foreach x of var `durlist' {
 loc var1=word("``x''",1)
 loc var2=word("``x''",-1)
-lab var `x' "Time betw. `var1'-`var2'. Miss if var1 answ. after var2 or var1/2 no answer."
+lab var `x' "Seconds betw. `var1'-`var2'. Miss if var1 answ. after var2 or var1/2 no answer."
 replace `x'=. if `x'==0
 }
 }

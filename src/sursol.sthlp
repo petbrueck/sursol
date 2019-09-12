@@ -19,12 +19,12 @@
 {synopthdr:subcommand}
 {synoptline}
 {synopt :{helpb sursol_export:export}}downloads survey data of a questionnaire from a Survey Solutions Server. R software is required{p_end}
-{synopt :{helpb sursol_append:append}}detects all Survey Solutions folders as specified in {it:folder_uniqueid} and appends all survey data versions{p_end}
-{synopt :{helpb sursol_para:para}}detects all Survey Solutions export folders in the specified working directory, appends all para data versions and builds variables for each interview. {p_end}
-{synopt :{helpb sursol_approveHQ:[un]approve}}(un)approves interviews as Headquarter based on specified rule. R software is required{p_end}
+{synopt :{helpb sursol_append:append}}detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files.{p_end}
+{synopt :{helpb sursol_para:para}}detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.{p_end}
+{synopt :{helpb sursol_approveHQ:[un]approveHQ}}(un)approves interviews as Headquarter based on specified rule. R software is required{p_end}
+{synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required{p_end}
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_transcheck:transcheck}}compares translation against original text to identify software-related misalignments. {p_end}
-{synopt :{helpb sursol_varcomm:varcomm}}compares translation against original text to identify software-related misalignments. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -32,10 +32,7 @@
 {title:Description}
 
 {pstd}
-{cmd:sursol} DESSCRIPTON!DESCRIPTION DESCRIPTION DESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTIONDESCRIPTION DESCRIPTION
-SOME MORE DESCRIPTION
-{pstd}
-MORE DESCRIPTION
+{cmd:sursol} DESCRIPTION TO BE ADDED
 
 {pstd}
 {p_end}

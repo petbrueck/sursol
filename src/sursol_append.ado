@@ -2,7 +2,7 @@
 capture program drop sursol_append
 
 program sursol_append 
-syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SErver(string)]
+syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SErver(string)] [NOSkip]
 
 local currdir `c(pwd)'
 
@@ -17,7 +17,7 @@ mata : st_numscalar("OK", direxists("`directory'"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. Directory: ""`directory'"" not found."
 noi dis as error  "Please correctly specify {help sursol_append##sursol_append_directory:directory(string)}"
-ex
+ex 601
 }
 
 
@@ -25,7 +25,7 @@ if length("`export'")>0{
 	mata : st_numscalar("OK", direxists("`export'"))
 	if scalar(OK)==0 {
 	noi di as error "Attention, directory specified in {help sursol_append##sursol_append_export:export(string)} does not exist."
-	ex
+	ex 601
 	}
 }
 
@@ -44,8 +44,6 @@ loc server=subinstr("`server'","`x'","",.)
 }
 
 loc server="https://" + "`server'"+".mysurvey.solutions"
-
-
 if length("`export'")==0 loc export="`directory'"
 
 if length("`qxvar'")==0 loc master="`1'"
@@ -54,15 +52,29 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
-		
+
+loc sortstructure `"`folderstructure'"'
+
+
+//To get them sorted the other way (starting with higher versions).
+/*
+loc cnthelp=`length'+1
+loc sortstructure ""
+forvalue folder=`cnthelp'(-1)2 {
+loc ver: word `folder' of ""`folderstructure'""
+loc sortstructure `"`sortstructure' "`ver'" "'		
+}
+*/
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
 	noi di as error "Check questionnaire name specified or directory!" 
 	ex 601
 	}
 
+
 	if length("`nodiagnostics'")==0 | length("`noaction'")==0 | length("`copy'")>0 {
-	foreach folder of loc folderstructure  {
+	foreach folder of loc sortstructure  {
+		
 		capt confirm file "`directory'/`folder'/`master'.dta"
 			if _rc!=0 {
 			
@@ -79,7 +91,7 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	} 
 	} 
 
-	foreach folder of loc folderstructure {
+	foreach folder of loc sortstructure {
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure 
 		foreach file of loc filestructure {
@@ -89,7 +101,7 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 
 
 	loc i=0
-	foreach folder of loc folderstructure {
+	foreach folder of loc sortstructure {
 	loc version= subinstr("`folder'", "`1'_","",.) 
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure 
@@ -98,15 +110,15 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	local notworked `" `notworked'  "`folder'" " " "'
 	continue
 	}
-	noi di as text _n "`version' found. Will be appended..."
+	noi di as text _n "Version `version' of `1' found. Will be appended..."
 
 	foreach file of loc filestructure {
 	sleep 50
 	use "`directory'/`folder'/`file'", clear
 	loc filepure=subinstr("`file'",".dta","",.)
 
-	if  `c(N)'==0  {
-	noi di as result "`file' from `version' contains no observation, will be skipped"
+	if  `c(N)'==0 & length("`noskip'")==0 {
+	noi di as result "`file' from Version `version' contains no observation, will be skipped"
 	continue
 	}
 
@@ -120,13 +132,12 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	
 
 	
-	
 	capture confirm file "`export'/`file'"
 	if _rc!=0 {
 		save "`export'/`file'"
 	}
 
-	else {
+	else if _rc==0 & `c(N)'>0 {
 					qui ds, has(type numeric)
 					local masternum `r(varlist)'
 					local tostringvars: list masternum & usingstr`filepure'
@@ -154,15 +165,16 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 					sleep 20
 					save  "`export'\\`file'", replace
 	}
-
+	if `c(N)'>0 {
 	qui ds, has(type string) 
 	local usingstr`filepure'  `r(varlist)'
 	qui ds, has(type numeric)
 	local usingnum`filepure' `r(varlist)'
 	}
+	}
 	loc ++i
 	}
-	
+
 capt confirm file "`export'/`master'.dta"
 if length("`server'")>0 & !_rc {
 	use "`export'/`master'.dta", clear 
@@ -187,7 +199,7 @@ else if length("`server'")==0 & !_rc {
 
 
 
-local worked: list folderstructure- notworked
+local worked: list sortstructure- notworked
 
 	if `i'==1 & length("`notworked'")==0 {
 		noi di as result _n(2) "Only 1 version found and successfully appended: "
@@ -211,7 +223,6 @@ noi di as error "`fail'"
 }
 
 
-
 //MERGING SPECIFIED VARIABLES
 
 capt confirm file "`export'/`master'.dta"
@@ -224,8 +235,6 @@ if length("`copy'")>0 & !_rc {
 	
 	loc break=0
 	foreach x of loc copy {
-
-
 	capt confirm v `x'
 	if _rc!=0 {
 	noi dis as error "Attention. Variable `x' specified in copy does not exist in `master'.dta"
@@ -234,10 +243,11 @@ if length("`copy'")>0 & !_rc {
 		} 
 	}
 
-         if `break'>0 exit 111
+       if `break'>0 exit 111
 
 	foreach file of loc mergefiles { 
 		use "`export'/`file'", clear
+		if `c(N)'==0 continue
 		qui distinct interview__id
 		if `r(N)'==`r(ndistinct)' {
 		merge 1:1 interview__id using "`export'/`master'.dta", nogen keepusing(`copy') keep(1 3)
@@ -255,6 +265,7 @@ capt confirm file "`export'/`master'.dta"
 if length("`noactions'")==0 & !_rc {
 		no di as text _n "Interview action statistics are merged to `master'.dta"
 		use "`export'/interview__actions.dta", clear
+		if `c(N)'>0 {
 		levelsof action, loc(levels)
 		foreach lev of loc levels {
 		loc lbl:  label (action) `lev'
@@ -368,6 +379,7 @@ save "`export'/`master'.dta", replace
 capt confirm file "`export'\interview__comments.dta"
 	if _rc==0 {
 		use "`export'\interview__comments.dta", clear
+		if `c(N)'>0 {
 		gen n_cmt_int=1 if role==1
 		gen n_cmt_sup=1 if role==2
 		gen n_cmt_hq=1 if role==3
@@ -381,11 +393,11 @@ capt confirm file "`export'\interview__comments.dta"
 		use "`export'/`master'.dta", clear
 		merge 1:1 interview__id using `commentcollaps' , nogen
 		save "`export'/`master'.dta", replace
-
+			}
+		}
 	}
-		
 }
-	
+
 capt confirm file "`export'\interview__comments.dta"
 if _rc==0 {
 use "`export'\interview__comments.dta", clear

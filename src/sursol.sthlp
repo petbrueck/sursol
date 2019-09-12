@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.0.0  25/07/2019}{...}
+{* *! version 1.1  12/09/2019}{...}
 {title:Title}
 
 {p2colset 5 22 24 2}{...}
@@ -25,14 +25,17 @@
 {synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required{p_end}
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_transcheck:transcheck}}compares translation against original text to identify software-related misalignments. {p_end}
+{synopt :{helpb sursol_transcheck:getcomm}}merges all comments left at all questions during the interview process to the data files. {p_end}
 {synoptline}
 {p2colreset}{...}
 
-{marker description}{...}
-{title:Description}
 
-{pstd}
-{cmd:sursol} DESCRIPTION TO BE ADDED
+{title:Author}
 
-{pstd}
-{p_end}
+{pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+Please report any bugs!!
+
+No responsibility or liability for the correct functionality of the do-file taken!
+
+Most commands of {cmd:sursol} were last updated using Survey Solutions 19.07

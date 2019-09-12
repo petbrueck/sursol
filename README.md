@@ -14,15 +14,12 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.
 
 ### **Installation**
-For now, you can just simply download all .ado & .sthlp files from the 'src' folder. Copy them into any folder on your drive. Within Stata write 
-`sysdir set PERSONAL  "FOLDER PATH IN WHICH YOU COPIED ALL FILES"`  
+Simply type 
+`net install sursol , from("https://raw.githubusercontent.com/petbrueck/sursol/master/src") replace`  
+in your Stata console.
 
 Type
-`help sursol`
-or 
-`help sursol append`
-to retrieve more information about each command
-
+`help sursol` to retrieve more information about the package.
 
 
 ===  

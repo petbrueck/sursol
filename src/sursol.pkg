@@ -1,4 +1,25 @@
-v 6.1
+v 1.0
+f /sursol.ado
+f /sursol_append.ado
+f /sursol_approveHQ.ado
 f /sursol_export.ado
+f /sursol_getcomm.ado
+f /sursol_import.ado
+f /sursol_para.ado
+f /sursol_transcheck.ado
+f /sursol_unapproveHQ.ado
+f /sursol_varcomm.ado
+
+f /sursol.sthlp
+f /sursol_append.sthlp
+f /sursol_approveHQ.sthlp
 f /sursol_export.sthlp
+f /sursol_getcomm.sthlp
+f /sursol_import.sthlp
+f /sursol_para.sthlp
+f /sursol_transcheck.sthlp
+f /sursol_unapproveHQ.sthlp
+f /sursol_varcomm.sthlp
+
+
 e

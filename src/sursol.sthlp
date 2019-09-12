@@ -25,7 +25,7 @@
 {synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required{p_end}
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_transcheck:transcheck}}compares translation against original text to identify software-related misalignments. {p_end}
-{synopt :{helpb sursol_transcheck:getcomm}}merges all comments left at all questions during the interview process to the data files. {p_end}
+{synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the data files. {p_end}
 {synoptline}
 {p2colreset}{...}
 

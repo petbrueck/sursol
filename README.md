@@ -12,6 +12,7 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 - `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required.
 - `sursol import` imports tabular data exported by Survey Solutions.
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.
+- `sursol getcomm` merges all comments left at all questions during the interview process to the data files.
 
 ### **Installation**
 Simply type 

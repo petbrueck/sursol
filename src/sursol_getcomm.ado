@@ -1,7 +1,7 @@
 capture program drop sursol_getcomm
 
 program sursol_getcomm 
-syntax  [using/], [DIRectory(string)]  QXVAR(string) [ID(varlist  min=1 max =1)] [STAThistory] [ROSTERID(varlist  min=1 max =3)] [clear]
+syntax  [using/], [DIRectory(string)]  QXVAR(string) [ID(varlist  min=1 max =1)] [STATHistory] [ROSTERID(varlist  min=1 max =3)] [clear]
 
 if length("`directory'")==0 local dir `c(pwd)'
 else if length("`directory'")>0 local dir `directory'

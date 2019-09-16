@@ -1,6 +1,6 @@
 program sursol_varcomm
 
-syntax varlist [if],  SERver(string) USER(string) PASSword(string) COMMent(string) [Rpath(string)]   [ID(varlist str min=1 max =1)]
+syntax anything [if],  SERver(string) USER(string) PASSword(string) COMMent(string) [Rpath(string)]   [ID(varlist str min=1 max =1)]
 
 
 qui {
@@ -14,6 +14,7 @@ if !_rc==0 {
 noi dis as error "Attention. interview__id not found. Specify option id()"
 ex 111
 }
+loc id "interview__id"
 }
 
 if length("`id'")>0 {
@@ -28,7 +29,7 @@ ex 198
 if length("`rpath'")==0 {
 if strpos(lower("`c(os)'"),"window")==0 {
 noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
@@ -41,10 +42,9 @@ if strpos("`c(machine_type)'","32")>0 loc bit="x32"
 mata : st_numscalar("OK", direxists("C:\Program Files\R"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No R folder in ""C:\Program Files\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
-
 
 
 
@@ -72,30 +72,31 @@ else if `length'==1 {
 }
 
 
+
 capt mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\"))
 if _rc==3000 {
 noi dis as error _n "The command has problems identifying your R version."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No bin folder in ""C:\Program Files\R\\`version'\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\\`bit'\"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No `bit' folder in ""C:\Program Files\R\\`version'\bin"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 capt confirm file "C:\Program Files\R\\`version'\bin\\`bit'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""C:\Program Files\R\\`version'\bin\\`bit'\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 loc rpath="C:\Program Files\R\\`version'\bin\\`bit'\"
@@ -116,32 +117,34 @@ loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
 capt confirm file "`rpath'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
-noi dis as error  "Please correctly specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 }
 
-if length("`if'")>0 {
+if length(`"`if'"')>0 {
 preserve
 keep `if'
 if `c(N)'>0{ 
-replace interview__id=`"""'+interview__id+`"""'
-levelsof interview__id, loc(levels) clean sep(,)
+replace `id'=`"""'+`id'+`"""'
+levelsof `id', loc(levels) clean sep(,)
+
 }
 restore
 }
-else if length("`if'")==0 {
-replace interview__id=`"""'+interview__id+`"""'
-levelsof interview__id, loc(levels) clean sep(,)
+else if length(`"`if'"')==0 {
+replace `id'=`"""'+`id'+`"""'
+levelsof `id', loc(levels) clean sep(,)
 }
-qui capt rm "`c(pwd)'\approve.R"
+
+qui capt rm "`c(pwd)'\varcomm.R"
 qui capt rm "`c(pwd)'\.Rhistory" 
- quietly: file open rcode using  "`c(pwd)'\approve.R", write replace 							
+ quietly: file open rcode using  "`c(pwd)'\varcomm.R", write replace 							
  quietly: file write rcode  /// 
  `"server <- "`server'" "' _newline ///
 `"user= "`user'"  "' _newline ///
 `"password="`password'" "' _newline ///
-`"interview__id <- c(`levels')"' _newline /// 
+`"`id' <- c(`levels')"' _newline /// 
 `"Sys.setlocale("LC_TIME", "English")"' _newline ///
 `"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")	 "'  _newline ///
 `"for (newpack in packages) { "'  _newline ///
@@ -177,11 +180,11 @@ qui capt rm "`c(pwd)'\.Rhistory"
                 `"    stop()  "'    _newline ///
                 `"  }  "'    _newline ///
                 `"}  "'    _newline ///
-`"command <- "/comment-by-variable/`varlist'?comment=`comment'""' _newline ///
+`"command <- "/comment-by-variable/`anything'?comment=`comment'""' _newline ///
 `"counter=0"' _newline ///
 `"count406=0"' _newline ///
 `"count404=0"' _newline ///
-`"for (val in interview__id){"' _newline ///
+`"for (val in `id'){"' _newline ///
 `"approve_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline ///
 `"approve <- POST(approve_query, authenticate(user, password))"' _newline ///
   `"if (status_code(approve)==404) {  "' _newline ///
@@ -193,9 +196,9 @@ qui capt rm "`c(pwd)'\.Rhistory"
  `"  count406= count406+1 "' _newline ///
  `"}  "' _newline ///
 `" counter= counter+1 "' _newline ///
-`"if (counter==length(interview__id)) { "' _newline ///
-`" count200= length(interview__id)-count406-count404"' _newline ///
-`"message(paste(count200,"interviews have been successfully commented")) "' _newline ///  
+`"if (counter==length(`id')) { "' _newline ///
+`" count200= length(`id')-count406-count404"' _newline ///
+`"message(paste(count200,"interviews have been successfully commented on")) "' _newline ///  
 `"message(paste(count406,"interviews have been in status that was not ready to be commented on")) "' _newline ///  
 `"message(paste(count404,"interviews have been not found")) "' _newline ///  
 `"  Sys.sleep(5) "' _newline ///
@@ -204,8 +207,8 @@ qui capt rm "`c(pwd)'\.Rhistory"
  file close rcode 
 
 
-shell "`rpath'\R" --vanilla <"`c(pwd)'\approve.R"
-qui capt rm "`c(pwd)'\approve.R"
+shell "`rpath'\R" --vanilla <"`c(pwd)'\varcomm.R"
+qui capt rm "`c(pwd)'\varcomm.R"
 qui capt rm "`c(pwd)'\.Rhistory" 
 
 }

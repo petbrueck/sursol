@@ -50,10 +50,10 @@ the command uses the Survey Solutions system generated variable "interview__id" 
 An installed version of R Statistical Software is required. The command shell returns warnings if (1) interviews was in status that was not ready to be (un)approved or (2)  interviews have been not found. {p_end}
 
 {pstd}
-Interviews can be approved as Headuqarter with the following status only: Completed and Approved by Supervisor.  {p_end}
+Interviews can be approved as Headuqarter with the following status only: {it:Completed} and {it:Approved by Supervisor}.  {p_end}
 
 {pstd} 
-Interviews can be unapproved with the following status only: Approved by Headquarters. {p_end}
+Interviews can be unapproved with the following status only: {it:Approved by Headquarters}. {p_end}
 
 {marker syntax}{...}
 {title:Syntax}

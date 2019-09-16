@@ -3,7 +3,8 @@
 **sursol** is a set of user-written Stata commands that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
 
 ## **Content**
-The list of sub-commands of **sursol**  is work in progress and improved continuously. The commands have not been used in enough scenarios if Beta Status is indicated.
+The list of sub-commands of **sursol**  is work in progress and improved continuously. Some of those commandshave not been used in many survey scenarios which increases the likelihood of bugs. Anyone is more than welcome to report any bug or provide feature requests!
+
 No responsibility or liability for the correct functionality of any of the commands is taken!
 
 ### Server and Field Management

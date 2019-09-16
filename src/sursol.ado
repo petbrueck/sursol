@@ -1,9 +1,12 @@
 *****
-* version 1.0  01August2019
+*! version 1.1  01Aug2019
 
 capture prog drop sursol
 program define sursol
 	
+*** 0. Version check
+********************************************************************************
+
 
 *** 1. IDENTIFY SUBCOMMAND
 ********************************************************************************
@@ -13,14 +16,11 @@ gettoken proc 0: 0
 		exit 198
 	}
 	
-    if "`proc'"=="approveHQ" {
+   	if "`proc'"=="approveHQ" {
 	sursol_approveHQ `0'
 	}
 	else if "`proc'"=="unapproveHQ" {
 	sursol_unapproveHQ `0'
-	}
-	else if "`proc'"=="approve" {
-	sursol_approve `0'
 	}
 	else if "`proc'"=="transcheck" {
 	sursol_transcheck `0'
@@ -42,6 +42,12 @@ gettoken proc 0: 0
 	}
 	else if "`proc'"=="getcomm" {
 	sursol_getcomm `0'
+	}
+	else if "`proc'"=="rejectHQ" {
+	sursol_rejectHQ `0'
+	}
+	else if "`proc'"=="reject" {
+	sursol_reject `0'
 	}
 	else {
 	di as error "unrecognized command. check subcommand. see help on {help sursol##|_new:sursol}"

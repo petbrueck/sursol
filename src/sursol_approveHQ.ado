@@ -28,7 +28,7 @@ ex 198
 if length("`rpath'")==0 {
 if strpos(lower("`c(os)'"),"window")==0 {
 noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
@@ -40,7 +40,7 @@ if strpos("`c(machine_type)'","32")>0 loc bit="x32"
 mata : st_numscalar("OK", direxists("C:\Program Files\R"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No R folder in ""C:\Program Files\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
@@ -74,27 +74,27 @@ else if `length'==1 {
 capt mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\"))
 if _rc==3000 {
 noi dis as error _n "The command has problems identifying your R version."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No bin folder in ""C:\Program Files\R\\`version'\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\\`bit'\"))
 if scalar(OK)==0 {
 noi dis as error _n "Attention. No `bit' folder in ""C:\Program Files\R\\`version'\bin"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 
 capt confirm file "C:\Program Files\R\\`version'\bin\\`bit'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""C:\Program Files\R\\`version'\bin\\`bit'\"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 loc rpath="C:\Program Files\R\\`version'\bin\\`bit'\"
@@ -115,7 +115,7 @@ loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
 capt confirm file "`rpath'\R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
-noi dis as error  "Please correctly specify the path of your R.exe using the option {help ss_approveHQ##ss_approveHQ_rpath:rpath(string)}"
+noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_approveHQ##sursol_approveHQ_rpath:rpath(string)}"
 ex
 }
 }

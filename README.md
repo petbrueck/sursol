@@ -18,7 +18,7 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 
 - `sursol para`  detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.
 - `sursol import` imports tabular data exported by Survey Solutions.
-- `sursol getcomm` merges all comments left at all questions during the interview process to the data files.
+- `sursol getcomm` merges all comments left at all questions during the interview process to the data files. !!No proper helpfile yet!!
 
 
 ### Translation Management

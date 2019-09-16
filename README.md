@@ -2,25 +2,41 @@
 
 **sursol** is a set of user-written Stata commands that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
 
-### **Content**
-The list of sub-commands of **sursol**  is work in progress and improved continuously.  While `export`,  `append`,  `para` and  `transcheck` have been tested in numerous cases, all other commands might be buggy. No responsibility or liability for the correct functionality of any of the commands is taken!
+## **Content**
+The list of sub-commands of **sursol**  is work in progress and improved continuously. The commands have not been used in enough scenarios if Beta Status is indicated.
+No responsibility or liability for the correct functionality of any of the commands is taken!
 
+### Server and Field Management
+- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software is required.
+- `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software is required. 
+- `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software is required. 
+- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required.
+
+### Data Management
 - `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software is required.
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 
 - `sursol para`  detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.
-- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software is required.
-- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required.
 - `sursol import` imports tabular data exported by Survey Solutions.
-- `sursol transcheck` compares translation against original text to identify software-related misalignments.
 - `sursol getcomm` merges all comments left at all questions during the interview process to the data files.
 
-### **Installation**
-Simply type 
-`net install sursol , from("https://raw.githubusercontent.com/petbrueck/sursol/master/src") replace`  
-in your Stata console.
 
-Type
+### Translation Management
+- `sursol transcheck` compares translation against original text to identify software-related misalignments.
+
+## **Installation**
+Type 
+
+`net install sursol , from("https://raw.githubusercontent.com/petbrueck/sursol/master/src") replace`  
+
+in your Stata command window.
+
+Once installed, type
 `help sursol` to retrieve more information about the package.
+
+
+
+
+
 
 
 ===  

@@ -51,8 +51,7 @@ ex 601
 
 //GET THE FILE STRUCTURE
 capt g roster="" //Given old comment files the roster variable might not have been created.
-drop if roster=="Unknown"
-replace roster="`qxvar'" if roster==""
+replace roster="`qxvar'" if roster=="" | roster=="Unknown"
 levelsof roster, loc(files)
 //CHECK IF FILES EXIST
 foreach file of loc files  {

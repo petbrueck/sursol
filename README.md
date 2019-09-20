@@ -8,13 +8,13 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 No responsibility or liability for the correct functionality of any of the commands is taken!
 
 ### Server and Field Management
-- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software is required.
-- `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software is required. 
-- `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software is required. 
-- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software is required.
+- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software needs to be installed.
+- `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software needs to be installed. 
+- `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software needs to be installed. 
+- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software needs to be installed.
 
 ### Data Management
-- `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software is required.
+- `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software needs to be installed.
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 
 - `sursol para`  detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.
 - `sursol import` imports tabular data exported by Survey Solutions.

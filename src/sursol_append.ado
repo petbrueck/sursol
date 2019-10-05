@@ -140,21 +140,21 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	else if _rc==0 & `c(N)'>0 {
 					qui ds, has(type numeric)
 					local masternum `r(varlist)'
-					local tostringvars: list masternum & usingstr`filepure'
+					local tostringvars: list masternum & ustr`filepure'
 					foreach var of local tostringvars {
-						noi di as err  "`var' from `version' converted to string"
+						noi di as err  "`var' from Version `version' converted to string"
 						tostring `var', replace u force
 						replace `var'="" if `var'=="." 
 					}
 					
 					qui ds, has(type string)
 					local masterstr `r(varlist)'
-					local tostringvars: list masterstr & usingnum`filepure' 
+					local tostringvars: list masterstr & unum`filepure' 
 					if length(`"`tostringvars'"')>0{
 					preserve
 						use "`export'\\`file'", clear
 						foreach var of local tostringvars {
-							noi di as err "`var' is string in `version'. `var' in master file converted to string" 
+							noi di as err "`var' is string in Version `version'. `var' in master file converted to string" 
 							tostring `var', replace u force
 							replace `var'="" if `var'=="." 
 						}
@@ -167,9 +167,9 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	}
 	if `c(N)'>0 {
 	qui ds, has(type string) 
-	local usingstr`filepure'  `r(varlist)'
+	local ustr`filepure'  `r(varlist)'
 	qui ds, has(type numeric)
-	local usingnum`filepure' `r(varlist)'
+	local unum`filepure' `r(varlist)'
 	}
 	}
 	loc ++i
@@ -229,7 +229,7 @@ capt confirm file "`export'/`master'.dta"
 if length("`copy'")>0 & !_rc {
 	no di as text _n "The following variables are merged to all datasets: `copy'"
 	local files: dir "`export'" file "*.dta", respectcase 
-	loc not "`master'.dta" "interview__comments.dta" "interview__diagnostics.dta" "interview__actions.dta" "interview__errors.dta" "paradata_all.dta" "paradata_overview.dta"
+	loc not "`master'.dta" "interview__comments.dta" "assignment__actions.dta" "interview__diagnostics.dta" "interview__actions.dta" "interview__errors.dta" "paradata_all.dta" "paradata_overview.dta"
 	local mergefiles: list files-not
 	use "`export'/`master'.dta", clear 
 	

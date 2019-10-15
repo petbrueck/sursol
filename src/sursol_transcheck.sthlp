@@ -35,6 +35,7 @@ If translation file not loaded to the dataset, use {cmd:using} {it:{help filenam
 {synopt:{opt clear}}if {cmd:using} {it:{help filename}} is specified, clear indicates that it is okay to replace the data in memory, even though the current data have not been saved to disk.{p_end}
 {synopt:{opt sub:stitution(string)}}in Survey Solutions, software substitutions are defined by %-signs, e.g. %rostertitle%. If another character is used, specify it in {opt sub:stitution(string)}{p_end}
 {synopt:{opt miss:ing}} includes empty cells of translation in the check syntax and returns a variable indicating missing translations.{p_end}
+{synopt:{opt sort}} arranges the observations in ascending order based on generated variable {it:problem} {p_end}
 {synoptline}
 
 

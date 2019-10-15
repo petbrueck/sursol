@@ -512,7 +512,7 @@ quietly: file write rcode
                 `"        filecon <- file(file.path(directory, Filename), "wb")   "'    _newline
                 `"          "'    _newline
                 `"        writeBin(RawData\$content, filecon)   "'    _newline
-                `"        Sys.sleep(8)     "'    _newline
+                `"        Sys.sleep(1)     "'    _newline
                 `"          "'    _newline
                 `"        close(filecon)  "'    _newline
                 `"          "'    _newline

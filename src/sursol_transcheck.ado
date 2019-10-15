@@ -1,7 +1,7 @@
 capture program drop sursol_transcheck
 
 program sursol_transcheck 
-capt syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear]
+capt syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear] [sort]
 
 
 qui {
@@ -157,7 +157,7 @@ noi dis as result "`r(N)' row(s) have different number of substitutions between 
 }
 noi dis as res "`missingtext'"
 
-capt gsort -problem 
+if "`sort'"!="" capt gsort -problem 
 capt order no_translation, last
 capt lab var problem "1 if translation item needs to be checked, 0 if no problem identified"
 capt lab var missing_orig "Indicates if a substitution has been identified in `2' that could not been found in `1'"

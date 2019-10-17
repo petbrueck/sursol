@@ -105,18 +105,24 @@ loc transvarlist=strreverse(subinstr(strreverse("`transvarlist'"),",","",1))
 loc origvarlist=strreverse(subinstr(strreverse("`origvarlist'"),",","",1))
 g `norig'=0
 g `ntrans'=0
-loc looplength=max(`transcount',`origcount')
 
 g str missing_trans=""
 g str missing_orig=""
 
-forv x=1/`looplength' {
- replace problem=1 if !inlist(fullorig`x',`transvarlist') & fullorig`x'!="" `missing'
-capt replace missing_trans=missing_trans+" "+ fullorig`x'+"," if !inlist(fullorig`x',`transvarlist') & fullorig`x'!="" `missing'
-capt replace problem=1 if !inlist(fulltrans`x', `origvarlist') & fulltrans`x'!="" `missing'
-capt replace missing_orig=missing_orig+" "+ fulltrans`x'+"," if !inlist(fulltrans`x', `origvarlist') & fulltrans`x'!="" `missing'
-capt replace `norig'=`norig'+1 if fullorig`x'!="" `missing'
-capt replace `ntrans'=`ntrans'+1 if fulltrans`x'!="" `missing'
+
+egen fulltrans_comb=concat(fulltrans*), p(,)
+egen fullorig_comb=concat(fullorig*), p(,)
+
+forv x=1/`origcount' {
+replace problem=1 if regexm(fulltrans_comb,fullorig`x')==0 & fullorig`x'!="" `missing'
+replace missing_trans=missing_trans+" "+ fullorig`x'+"," if regexm(fulltrans_comb,fullorig`x')==0 & fullorig`x'!="" `missing'
+replace `norig'=`norig'+1 if fullorig`x'!="" `missing'
+}
+
+forv x=1/`transcount'{
+replace problem=1 if regexm(fullorig_comb,fulltrans`x')==0 & fulltrans`x'!="" `missing'
+replace missing_orig=missing_orig+" "+ fulltrans`x'+"," if regexm(fullorig_comb,fulltrans`x')==0 & fulltrans`x'!="" `missing'
+replace `ntrans'=`ntrans'+1 if fulltrans`x'!="" `missing'
 }
 
 replace missing_trans=strreverse(subinstr(strreverse(missing_trans),",","",1)) + " not found in `2'" if missing_trans!=""

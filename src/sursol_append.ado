@@ -122,7 +122,7 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	continue
 	}
 
-	if regexm("`file'","`master'.dta")==1{
+	if regexm("`file'","`master'.dta")==1 {
 	gen version="`version'"
 	label var version "Version of Survey Solutions questionnaire"
 	order version
@@ -152,18 +152,18 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 					local tostringvars: list masterstr & unum`filepure' 
 					if length(`"`tostringvars'"')>0{
 					preserve
-						use "`export'\\`file'", clear
+						use "`export'//`file'", clear
 						foreach var of local tostringvars {
 							noi di as err "`var' is string in Version `version'. `var' in master file converted to string" 
 							tostring `var', replace u force
 							replace `var'="" if `var'=="." 
 						}
-						save "`export'\\`file'", replace
+						save "`export'//`file'", replace
 					restore
 					}
-					append using "`export'\\`file'"
+					append using "`export'//`file'"
 					sleep 20
-					save  "`export'\\`file'", replace
+					save  "`export'//`file'", replace
 	}
 	if `c(N)'>0 {
 	qui ds, has(type string) 
@@ -376,9 +376,9 @@ merge 1:1 interview__id using `actioncollaps', nogen
 sleep 30
 save "`export'/`master'.dta", replace
 
-capt confirm file "`export'\interview__comments.dta"
+capt confirm file "`export'/interview__comments.dta"
 	if _rc==0 {
-		use "`export'\interview__comments.dta", clear
+		use "`export'/interview__comments.dta", clear
 		if `c(N)'>0 {
 		gen n_cmt_int=1 if role==1
 		gen n_cmt_sup=1 if role==2
@@ -398,12 +398,12 @@ capt confirm file "`export'\interview__comments.dta"
 	}
 }
 
-capt confirm file "`export'\interview__comments.dta"
+capt confirm file "`export'/interview__comments.dta"
 if _rc==0 {
-use "`export'\interview__comments.dta", clear
+use "`export'/interview__comments.dta", clear
 	gen double tmestp=clock(date+" "+time,"MDYhms")
 	format tmestp %tc
-save "`export'\interview__comments.dta", replace
+save "`export'/interview__comments.dta", replace
 }
 
 

@@ -54,7 +54,7 @@ loc nsuccess=0
 qui{
 
 	local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
-	capt erase "`export'\\paradata_all.tab"
+	capt erase "`export'//paradata_all.tab"
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
 	if `length'==0 {
@@ -76,7 +76,7 @@ qui{
 	foreach folder of loc folderstructure {
 	loc version= subinstr("`folder'", "`1'_"," ",.)
 
-	 capt confirm  file "`directory'\\`folder'\paradata.tab" 
+	 capt confirm  file "`directory'//`folder'/paradata.tab" 
 		if _rc!=0 {
 		noi di as error  "ATTENTION! No paradata.tab file found for `folder' "
 		local notworked `" `notworked'  "`folder'" " " "'
@@ -89,12 +89,12 @@ qui{
 	else {
  	noi di as text _n "Version`version' will be appended..."
 	if length("`size'")>0 {	
-      qui checksum "`directory'\\`folder'\paradata.tab"
+      qui checksum "`directory'//`folder'/paradata.tab"
       loc kb= round(`r(filelen)'/1024, 0.1)
       if `kb'>100000 noi dis as text "The file is `kb' KB large. That'll take a while..."
       else if `kb'>1000000 noi dis as text "The file is `kb' KB large. That'll take super long..."
 	}
-	insheet using "`directory'\\`folder'\paradata.tab", tab case names clear
+	insheet using "`directory'//`folder'/paradata.tab", tab case names clear
 
 
 	if  `c(N)'==0  {
@@ -167,21 +167,21 @@ qui{
 	drop time1 time timestamp1 help 
 
 
-		capt confirm file "`export'\\paradata_all.tab"
+		capt confirm file "`export'//paradata_all.tab"
 				if _rc!=0 {
 					capture sort interview__id order
-					export delimited using "`export'\\paradata_all.tab", replace delimiter(tab)
+					export delimited using "`export'//paradata_all.tab", replace delimiter(tab)
 				}
 				else {
 					tempfile finalversion
 					save `finalversion'
 					sleep 150
-					import delimited using "`export'\\paradata_all.tab", clear
+					import delimited using "`export'//paradata_all.tab", clear
 					capt confirm str var variable
 					if _rc!=0 tostring variable, replace 
 					append using `finalversion'
 					capture sort interview__id order
-					export delimited using  "`export'\\paradata_all.tab", replace delimiter(tab)
+					export delimited using  "`export'//paradata_all.tab", replace delimiter(tab)
 				}
 	loc ++nsuccess
 	}	
@@ -198,7 +198,7 @@ exit
 
 
 if  `c(N)'==0  {
-import delimited using "`export'\\paradata_all.tab", clear
+import delimited using "`export'//paradata_all.tab", clear
 }
 
 
@@ -244,7 +244,7 @@ replace `x'=. if `x'==0
 
 order rawdurint clean_durint cleandur_min rawdur_min rawdur_fstcompl cleandur_fstcompl length_pause `durlist' n_answer answ_pm, a(interview__id)
 
-save "`export'\\paradata_overview.dta", replace
+save "`export'//paradata_overview.dta", replace
 
 
 

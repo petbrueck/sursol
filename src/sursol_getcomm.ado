@@ -55,7 +55,7 @@ replace roster="`qxvar'" if roster=="" | roster=="Unknown"
 levelsof roster, loc(files)
 //CHECK IF FILES EXIST
 foreach file of loc files  {
-capt confirm file "`dir'\\`file'.dta"
+capt confirm file "`dir'//`file'.dta"
 	if !_rc==0 {
 		if length("`directory'")==0  {
 		noi dis as error "`file'.dta not found in current directory (`dir')"
@@ -77,7 +77,7 @@ save `mastercomment'
 foreach file of loc files  {
 
 //GET THE ROSTER ID'S
-use "`dir'\\`file'.dta" , clear 
+use "`dir'//`file'.dta" , clear 
 
 if "`file'"!="`qxvar'" {
 ds *__id
@@ -146,7 +146,7 @@ save `masterroster'
 			save ``currvar'_file'
 	
 			//MERGE TO THE ROSTER FILE
-			use "`dir'\\`file'.dta" , clear 
+			use "`dir'//`file'.dta" , clear 
 			//GET THE ORDERING RIGHT
 			capt confirm var `currvar'
 			if !_rc==0 {
@@ -165,7 +165,7 @@ save `masterroster'
 			order `currvar'_comm , a(`lastvar')
 			sleep 30
 
-			save "`dir'\\`file'.dta", replace				
+			save "`dir'//`file'.dta", replace				
 		}
 			
 						
@@ -209,15 +209,15 @@ noi display as result _n "Interview status history comments will be merged to th
 					lab var `newvar' "Comment left at action: `cleanstatus'"
 					tempfile finalcomment
 					save `finalcomment' 
-					use "`dir'\\`qxvar'.dta"
+					use "`dir'//`qxvar'.dta"
 					merge 1:1 `id' using `finalcomment', nogen assert(1 3) keepusing(`newvar') replace update
 					order `newvar', last
-					save "`dir'\\`qxvar'.dta" , replace
+					save "`dir'//`qxvar'.dta" , replace
 					}
 
 		}
 
-use "`dir'\\`qxvar'.dta", clear
+use "`dir'//`qxvar'.dta", clear
 }
 }
 

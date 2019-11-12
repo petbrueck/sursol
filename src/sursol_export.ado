@@ -40,12 +40,16 @@ ex 601
 }
 
 
-foreach x in "//" "/" "\\\" "\\" {
-loc directory=subinstr("`directory'","`x'","\",.)
-loc zipdir=subinstr("`zipdir'","`x'","\",.)
+
+foreach x in "//" "\\\" "\\" "\\" "\" {
+loc directory=subinstr("`directory'","`x'","/",.)
+loc zipdir=subinstr("`zipdir'","`x'","/",.)
 }
-loc directory=subinstr("`directory'","\","\\",.)
-loc zipdir=subinstr("`zipdir'","\","\\",.)
+
+*loc directory=subinstr("`directory'","/","//",.)
+*loc zipdir=subinstr("`zipdir'","/","//",.)
+
+
 
 if length("`paradata'")>0 {
 loc paradata="yes"
@@ -63,7 +67,6 @@ else if length("`ddi'")==0 loc ddi="no"
 
 if length("`format'")>0 {
 loc  format=itrim(subinstr("`format'",","," ",.)) 
-
 loc newformat ""
 foreach x of loc format {
 if !inlist(lower("`x'"),"spss","stata","tabular") {
@@ -100,9 +103,9 @@ ex 198
 if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
 if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
 
-mata : st_numscalar("OK", direxists("C:\Program Files\R"))
+mata : st_numscalar("OK", direxists("C:/Program Files/R"))
 if scalar(OK)==0 {
-noi dis as error _n "Attention. No R folder in ""C:\Program Files\"" was found."
+noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 ex 601
 }
@@ -110,7 +113,7 @@ ex 601
 
 
 
-	local folderstructure: dir "C:\Program Files\R" dirs "*", respectcase 
+	local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
 
@@ -134,7 +137,7 @@ else if `length'==1 {
 }
 
 
-capt mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\"))
+capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
 if _rc==3000 {
 noi dis as error _n "The command has problems identifying your R version."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
@@ -142,30 +145,30 @@ ex 601
 }
 
 if scalar(OK)==0 {
-noi dis as error _n "Attention. No bin folder in ""C:\Program Files\R\\`version'\"" was found."
+noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 ex 601
 }
 
-mata : st_numscalar("OK", direxists("C:\Program Files\R\\`version'\bin\\`bit'\"))
+mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
 if scalar(OK)==0 {
-noi dis as error _n "Attention. No `bit' folder in ""C:\Program Files\R\\`version'\bin"" was found."
+noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 ex 601
 }
 
-capt confirm file "C:\Program Files\R\\`version'\bin\\`bit'\R.exe"
+capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
 if _rc {
-no dis as error _n "Attention. No R.exe in ""C:\Program Files\R\\`version'\bin\\`bit'\"" was found."
+no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
 noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 ex 601
 }
-loc rpath="C:\Program Files\R\\`version'\bin\\`bit'\"
+loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
 
 } 
 
 
-if length("`rpath'")>0 {
+if length("`rpath'")>0 & strpos(lower("`c(os)'"),"window")>0 {
 if strpos(lower(strreverse("`rpath'")),"r")==1 {
 loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
 }
@@ -175,7 +178,7 @@ loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
 }
 
 
-capt confirm file "`rpath'\R.exe"
+capt confirm file "`rpath'/R.exe"
 if _rc {
 no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
 noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
@@ -184,10 +187,12 @@ ex 601
 }
 
 
-                qui capt rm "`directory'\export.R"
-                qui capt rm "`directory'\.Rhistory" 
+                qui capt rm "`directory'/export.R"
+                qui capt rm "`directory'/.Rhistory" 
 
-quietly: file open rcode using "`directory'\export.R", write replace 
+
+
+quietly: file open rcode using "`directory'/export.R", write replace 
 #d ;
 quietly: file write rcode  
 
@@ -334,7 +339,7 @@ quietly: file write rcode
 
 
 
-                `"} else if (status_code(data) == 401) {   # login error  "'    _newline
+                `"} else if (status_code(data) == 401) {   "'    _newline
                 `"  message("Incorrect username or password. Check login credentials for API user")  "'    _newline
                 `"  Sys.sleep(5)  "'    _newline
                 `"  stop()  "'    _newline
@@ -417,7 +422,7 @@ quietly: file write rcode
                 `"    if (datatype %in% c("stata", "DDI")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="") else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")   "'    _newline
                 `"     Filename <-paste(c(qxvar,"_", val, dataname, "_All.zip"), collapse = "")  "'    _newline
                 `"      "'    _newline
-                `"    fn<- paste(c(directory, "\\", Filename), collapse = "")  "'    _newline
+                `"    fn<- paste(c(directory, "//", Filename), collapse = "")  "'    _newline
                 `"    if (file.exists(fn)) file.remove(fn)  "'    _newline
                 `"      "'    _newline
                 `"    start_query <- sprintf("%s/export/%s/%s/start?%s%s%s",   "'    _newline
@@ -431,7 +436,7 @@ quietly: file write rcode
                 `"      "'    _newline
                 `"      "'    _newline
                 `"    gen_data <- POST(start_query, authenticate(user, password))  "'    _newline
-                `"    if (status_code(gen_data) == 200) {   #if request was posted sucessfully  "'    _newline
+                `"    if (status_code(gen_data) == 200) {    "'    _newline
                 `"    if (datatype=="paradata")  dat<-"Para"  else dat<- toupper(datatype)  "'    _newline
                 `"    "'    _newline
                 `"        "'    _newline
@@ -518,23 +523,22 @@ quietly: file write rcode
                 `"          "'    _newline
                 `"        if ("yes" %in% str_to_lower(unzip)) {  "' _newline
                 `"        if (zip_directory=="") {  "'    _newline
-                `"         zip_path<- paste0(directory,"\\",  "'    _newline
+                `"         zip_path<- paste0(directory,"//",  "'    _newline
                 `"                              qxvar,"_",val)    "'    _newline
-                `"          if (datatype=="binary") zip_path<- paste0(directory, qxvar, "_",  val,"\\Binary")    "'    _newline
- 		`"          if (datatype=="ddi") zip_path<- paste0(directory, qxvar, "_",  val,"\\DDI")    "'    _newline
+                `"          if (datatype=="binary") zip_path<- paste0(directory, qxvar, "_",  val,"//Binary")    "'    _newline
+ 		`"          if (datatype=="ddi") zip_path<- paste0(directory, qxvar, "_",  val,"//DDI")    "'    _newline
                 `"        } else  {  "'    _newline
-                `"        zip_path<- paste0(zip_directory,"\\",  "'    _newline
+                `"        zip_path<- paste0(zip_directory,"//",  "'    _newline
                 `"                           qxvar,"_",val)    "'    _newline
-           	`"	if (datatype=="binary") zip_path<- paste0(zip_directory,"\\", qxvar, "_",  val,"\\Binary")  "'    _newline
-		`"	if (datatype=="ddi") zip_path<- paste0(zip_directory,"\\", qxvar, "_",  val,"\\DDI")  "'    _newline
+           	`"	if (datatype=="binary") zip_path<- paste0(zip_directory,"//", qxvar, "_",  val,"//Binary")  "'    _newline
+		`"	if (datatype=="ddi") zip_path<- paste0(zip_directory,"//", qxvar, "_",  val,"//DDI")  "'    _newline
                 `"        }  "'    _newline
           	`"	if (datatype=="binary") {  "'    _newline
          	`"	   unlink(zip_path, recursive = TRUE)  "'    _newline
           	`"		  dir.create(zip_path)  "'    _newline
          	`"			 }  "'    _newline
-                `"        zip_name<- paste0(directory,"\\",  "'    _newline
+                `"        zip_name<- paste0(directory,"//",  "'    _newline
                 `"                          Filename)  "'    _newline
-                `"  "'    _newline
                 `"        unzip(zip_name,exdir = zip_path)  "'    _newline
                 `"        message("Data files successfully unzipped into folder: ", "\n", zip_path)  "'    _newline
                 `"        }  "'    _newline
@@ -551,12 +555,11 @@ quietly: file write rcode
                 
                 #d cr
                 
-                file close rcode  
- 
-                shell "`rpath'\R" --vanilla <"`directory'\export.R" 
+                file close rcode
+                shell "`rpath'/R" --vanilla <"`directory'/export.R" 
 
-                qui capt rm "`directory'\export.R"
-                qui capt rm "`directory'\.Rhistory" 
+                qui capt rm "`directory'/export.R"
+                qui capt rm "`directory'/.Rhistory" 
                 qui  cd "`currdir'"
                 
                 end	

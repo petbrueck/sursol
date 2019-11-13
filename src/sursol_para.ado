@@ -95,6 +95,7 @@ qui{
       else if `kb'>1000000 noi dis as text "The file is `kb' KB large. That'll take super long..."
 	}
 	insheet using "`directory'//`folder'/paradata.tab", tab case names clear
+	
 
 
 	if  `c(N)'==0  {
@@ -154,7 +155,8 @@ qui{
 	
 	//CREATE SOME DESCR. INDICATORS 
 	bys interview__id: egen n_invalidq=total(event=="QuestionDeclaredInvalid")
-	bys interview__id: egen n_answer=total(event=="AnswerSet")
+	bys interview__id: egen n_answer=total(event=="AnswerSet" | event=="2")
+ 
 	bys interview__id: egen n_removed=total(event=="AnswerRemoved")
 	
 	//CREATE LENGTH OF BREAKS

@@ -555,7 +555,8 @@ quietly: file write rcode
                 
                 #d cr
                 
-                file close rcode
+                file close rcode 
+
                 shell "`rpath'/R" --vanilla <"`directory'/export.R" 
 
                 qui capt rm "`directory'/export.R"

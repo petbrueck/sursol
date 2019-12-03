@@ -89,7 +89,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {pstd}Load survey dataset and leave a comment at the GPS Question if no GPS was recorded{p_end}
 
 {phang2}{cmd:. use "C:\Users\survey_X.dta" ,clear }{p_end}
-{phang2}{cmd:. sursol varcomm gps_location if gps_location__Latitutde==., server("survey_X.mysurvey.solutions") /// }{p_end}
+{phang2}{cmd:. sursol varcomm gps_location if gps_location__Latitutde==.a, server("survey_X.mysurvey.solutions") /// }{p_end}
 {phang2}{cmd:. user("API_acc") ///  }{p_end}
 {phang2}{cmd:. password("API_acc2019")  /// }{p_end}
 {phang2}{cmd:. comment("Please go back to the household and obtain GPS Location") }{p_end}

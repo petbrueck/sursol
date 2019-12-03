@@ -67,6 +67,7 @@ qui{
 	foreach folder of loc folderstructure {
 	noi di as result  "`folder'"
 	}
+	noi di as result ""
 	
 	}
 
@@ -78,7 +79,7 @@ qui{
 
 	 capt confirm  file "`directory'//`folder'/paradata.tab" 
 		if _rc!=0 {
-		noi di as error  "ATTENTION! No paradata.tab file found for `folder' "
+		noi di as error  "No paradata.tab file found for `folder' "
 		local notworked `" `notworked'  "`folder'" " " "'
 		loc ++i		
 		continue 
@@ -87,7 +88,7 @@ qui{
 		
 		
 	else {
- 	noi di as text _n "Version`version' will be appended..."
+ 	noi di as text "Version`version' will be appended..."
 	if length("`size'")>0 {	
       qui checksum "`directory'//`folder'/paradata.tab"
       loc kb= round(`r(filelen)'/1024, 0.1)
@@ -99,7 +100,7 @@ qui{
 
 
 	if  `c(N)'==0  {
-		noi di as error  "ATTENTION! No data in paradata.tab file found for `folder' "
+		noi di as error  "No data in paradata.tab file found for `folder' "
 		local notworked `" `notworked'  "`folder'" " " "'
 		loc ++i		
 		continue 
@@ -155,7 +156,7 @@ qui{
 	
 	//CREATE SOME DESCR. INDICATORS 
 	bys interview__id: egen n_invalidq=total(event=="QuestionDeclaredInvalid")
-	bys interview__id: egen n_answer=total(event=="AnswerSet" | event=="2")
+	bys interview__id: egen n_answer=total(event=="AnswerSet")
  
 	bys interview__id: egen n_removed=total(event=="AnswerRemoved")
 	
@@ -270,7 +271,7 @@ noi di as result "`folder'"
 if length("`notworked'")>0 {
 noi di as error _n "The following folders were found but paradata failed to be appended: "
 foreach fail of loc notworked {
-noi di as error "`fail'"
+noi di as result in red "`fail'"
 }
 }
 	cd "`currdir'"		

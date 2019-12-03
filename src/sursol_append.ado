@@ -57,7 +57,7 @@ loc sortstructure `"`folderstructure'"'
 
 
 //To get them sorted the other way (starting with higher versions).
-/*
+
 loc cnthelp=`length'+1
 loc sortstructure ""
 forvalue folder=`cnthelp'(-1)2 {
@@ -209,7 +209,7 @@ local worked: list sortstructure- notworked
 
 	} 
 	else if `i'>1 {
-noi di as text _n "The following data has been successfully appended: "
+noi di as text "The following data has been successfully appended: "
 foreach folder of loc worked {
 noi di as result "`folder'"
 	}
@@ -263,7 +263,7 @@ if length("`copy'")>0 & !_rc {
 
 capt confirm file "`export'/`master'.dta"
 if length("`noactions'")==0 & !_rc {
-		no di as text _n "Interview action statistics are merged to `master'.dta"
+		no di as text "Interview action statistics are merged to `master'.dta"
 		use "`export'/interview__actions.dta", clear
 		if `c(N)'>0 {
 		levelsof action, loc(levels)
@@ -311,7 +311,7 @@ if length("`noactions'")==0 & !_rc {
 		by interview__id: replace lstact = lstact[_n-1] if missing(lstact) & _n !=1	
 		label var lstact "last action"
 		tostring lstact, replace force
-		
+	
 		levelsof lstact, loc(levels)
 		foreach lev of loc levels {
 		loc lbl:  label (action) `lev'
@@ -328,7 +328,7 @@ if length("`noactions'")==0 & !_rc {
 		gen double dateTime=Clock(date,"YMD hms")
 		format dateTime %tC 
 		sort interview__id dateTime	
-
+		
 		* interviewing times
 		sort interview__id role dateTime 
 		by interview__id role: gen sT=dateTime if _n==1 & role==1
@@ -348,21 +348,28 @@ if length("`noactions'")==0 & !_rc {
 		drop sT	
 		label var tmlcmp "datetime: last interview completion"
 
-		format tmstrt tmfcmp tmlcmp %tC 
+		sort interview__id dateTime 
+		bys interview__id: gen eW=dateTime if _n==_N 
+		by interview__id: egen double tmlstact=max(eW)
+		drop eW	
+		label var tmlstact "datetime: last  action"
 
 
-	
-	 foreach v of var n_* enum_* sprvsr lstact approved tmstrt tmfcmp tmlcmp  {
+
+		format tmstrt tmfcmp tmlcmp tmlstact  %tC 
+
+
+	 foreach v of var n_* enum_* sprvsr lstact approved tmstrt tmfcmp tmlcmp tmlstact    {
 		 local l`v' : variable label `v'
 		 if `"`l`v''"' == "" {
 			local l`v' "`v'"
 			}
 		 }
 		 
-	collapse (firstnm)  n_* enum_* sprvsr lstact approved tmstrt tmfcmp tmlcmp  , by(interview__id)
+	collapse (firstnm)  n_* enum_* sprvsr lstact approved tmstrt tmfcmp tmlcmp tmlstact   , by(interview__id)
 
 
-		foreach v of var  n_* enum_* sprvsr lstact approved  tmstrt tmfcmp tmlcmp  {
+		foreach v of var  n_* enum_* sprvsr lstact approved  tmstrt tmfcmp tmlcmp tmlstact    {
 		 label var `v' "`l`v''"
 		  } 
 
@@ -409,7 +416,7 @@ save "`export'/interview__comments.dta", replace
 
 capt confirm file "`export'/`master'.dta"
 if length("`nodiagnostics'")==0 & !_rc {
-noi di as text _n "Interview diagnostics are merged to `master'.dta"
+noi di as text "Interview diagnostics are merged to `master'.dta"
 use "`export'/`master'.dta", clear
 merge 1:1 interview__id using "`export'/interview__diagnostics.dta", nogen keepusing (interview__status responsible interviewers rejections__sup rejections__hq entities__errors questions__comments interview__duration)
 lab var interview__duration "Active time it took to complete the interview according to Survey Solutions"

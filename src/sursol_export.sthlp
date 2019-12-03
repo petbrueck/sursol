@@ -20,7 +20,7 @@
 {synoptset 21 tabbed}{...}
 {synopthdr:Required }
 {synoptline}
-{synopt:{it:questionnaire_name}}name of the questionnaire as found on the server. Case insensitive {p_end}
+{synopt:{it:questionnaire_name}}name of the questionnaire as found on the server. Case and space insensitive {p_end}
 {marker sursol_export_directory}{...}
 {synopt:{opt dir:ectory(string)}}path in which exported data will be stored {p_end}
 {synopt:{opt serv:er(string)}}prefix of server domain name {p_end}

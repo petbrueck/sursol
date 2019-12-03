@@ -1,7 +1,7 @@
 capture program drop sursol_getcomm
 
 program sursol_getcomm 
-syntax  [using/], [DIRectory(string)]  QXVAR(string) [ID(varlist  min=1 max =1)] [STATHistory] [ROSTERID(varlist  min=1 max =3)] [clear]
+syntax  [using/], QXVAR(string)  [DIRectory(string)]  [ID(varlist  min=1 max =1)] [STATHistory] [ROSTERID(varlist  min=1 max =3)] [clear]
 
 if length("`directory'")==0 local dir `c(pwd)'
 else if length("`directory'")>0 local dir `directory'
@@ -81,14 +81,14 @@ use "`dir'//`file'.dta" , clear
 
 if "`file'"!="`qxvar'" {
 ds *__id
-noi dis as result "Roster ID's in `file'.dta to be used: `r(varlist)'"
+noi dis as text "Roster ID's in `file'.dta to be used: " as result  "`r(varlist)'"
 loc rosterids `r(varlist)'
 }
 
 
 if "`file'"=="`qxvar'" {
 loc rosterids "`id'"
-noi display as result "`id' will be used to identify variables at the interview level"
+noi display as result "`id' will be used to identify variables at the interview level (`qxvar'.dta)"
 }
 
 use `mastercomment', clear
@@ -175,7 +175,7 @@ save `masterroster'
 //OPTION INTcomments
 
 if length("`stathistory'")>0 {
-noi display as result _n "Interview status history comments will be merged to the `qxvar'.dta"
+noi display as result _n "Interview status history comments will be merged to the `qxvar'.dta file"
 			use `mastercomment', clear
 			 keep if strpos(variable,"@@")>0 & comment!=""
 			 

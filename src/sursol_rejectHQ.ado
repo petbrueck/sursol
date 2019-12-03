@@ -14,6 +14,7 @@ if !_rc==0 {
 noi dis as error "Attention. interview__id not found. Specify option id()"
 ex 111
 }
+loc idvar "interview__id"
 }
 
 if length("`id'")>0 {
@@ -24,6 +25,7 @@ if `r(min)'!=32 | `r(max)'!=32 {
 noi dis as error "Attention. Variable `id' specified in option id(varlist) is not a unique 32-character long identifier"
 ex 198
 }
+loc idvar "`id'"
 }
 if length("`rpath'")==0 {
 if strpos(lower("`c(os)'"),"window")==0 {
@@ -123,8 +125,8 @@ ex
 preserve
 keep `if'
 if `c(N)'>0{ 
-replace interview__id=`"""'+interview__id+`"""'
-levelsof interview__id, loc(levels) clean sep(,)
+replace `idvar'=`"""'+`idvar'+`"""'
+levelsof `idvar', loc(levels) clean sep(,)
 }
 restore
 

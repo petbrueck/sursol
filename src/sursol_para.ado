@@ -155,7 +155,7 @@ qui{
 
 	
 	//CREATE SOME DESCR. INDICATORS 
-	bys interview__id: egen n_invalidq=total(event=="QuestionDeclaredInvalid")
+	*bys interview__id: egen n_invalidq=total(event=="QuestionDeclaredInvalid")
 	bys interview__id: egen n_answer=total(event=="AnswerSet")
  
 	bys interview__id: egen n_removed=total(event=="AnswerRemoved")
@@ -217,7 +217,7 @@ sort interview__id order
 						}
 
 
-collapse (firstnm) n_invalidq n_answer n_removed  rawdur_fstcompl cleandur_fstcompl length_pause  rawdurint  (sum) `durlist'  cleandur , by(interview__id)
+collapse (firstnm) /*n_invalidq*/ n_answer n_removed  rawdur_fstcompl cleandur_fstcompl length_pause  rawdurint  (sum) `durlist'  cleandur , by(interview__id)
 rename cleandur clean_durint
 
 g cleandur_min=clean_durint/60
@@ -225,7 +225,7 @@ g rawdur_min=rawdurint/60
 g answ_pm=n_answer/cleandur_min 
 
 lab var answ_pm "Answers per Minute"
-lab var n_invalidq "Number of times a question was declared invalid during interview"
+*lab var n_invalidq "Number of times a question was declared invalid during interview"
 lab var rawdurint "Raw duration of interview in seconds between first and last action" 
 lab var rawdur_fstcompl "Raw duration of interview in seconds between first action and first completion"
 lab var n_answer "Number of answers sets" 

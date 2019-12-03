@@ -55,9 +55,7 @@ In addition, a paradata overview file is saved at {opt directory}.
 {synopt:{it: n_answer } } # of answers set. For multi-select questions each option ticked, one answer{p_end}
 {synopt:{it: answ_pm } } Answers per minute: {it:n_answer}/{it:clean_durint} {p_end}
 {synopt:{it: n_removed} } # of times question answers have been changed and/or removed.{p_end}
-{synopt:{it: n_invalidq} } # of error messages displayed during interview*{p_end}
-{synoptline}
-{phang}*Please note, this does not reflect the number of error messages still displayed at the end of an interview. This indicator can be found in the "interview_diagnostics.dta" file provided by Survey Solutions. 
+{synoptline} 
 
 {marker syntax}{...}
 {title:Syntax}

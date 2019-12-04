@@ -3,7 +3,7 @@
 **sursol** is a set of user-written Stata commands that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
 
 ## **Content**
-The list of sub-commands of **sursol**  is work in progress and improved continuously. Some of those commands have not been used in many survey scenarios (`import`, `getcomm` and `varcomm` in particular) which increases the likelihood of bugs. Anyone is more than welcome to report any bug or provide feature requests!
+The list of sub-commands of **sursol**  is work in progress and improved continuously. Some of those commands have not been used in many survey scenarios (`import`and `varcomm` in particular) which increases the likelihood of bugs. Anyone is more than welcome to report any bug or provide feature requests!
 
 No responsibility or liability for the correct functionality of any of the commands is taken!
 
@@ -18,7 +18,7 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 
 - `sursol para`  detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.
 - `sursol import` imports tabular data exported by Survey Solutions.
-- `sursol getcomm` merges all comments left at all questions during the interview process to the data files. !!Early Beta. No helpfile!!
+- `sursol getcomm` merges all comments left at all questions during the interview process to the data files. !!Beta. Only rudimentary helpfile!!
 
 
 ### Translation Management

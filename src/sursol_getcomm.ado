@@ -98,6 +98,8 @@ if "`file'"=="`qxvar'" drop if strpos(variable,"@@")>0
 
 tempfile masterroster
 save `masterroster'
+
+
 	levelsof variable, loc(vars)
 
 		foreach currvar of loc vars {
@@ -128,18 +130,29 @@ save `masterroster'
 			rename role_str role
 			rename comment cmt_sursol //to reduce likelihood that there is a comment to a SurSol variable containing *comment*
 
+
 			collapse (firstnm) interview__key order role variable, by(`rosterids' cmt_sursol) 
-			bys `rosterids' : gen help=_n
+			sort `rosterids' order 
+			by `rosterids' : gen help=_n
 			
+			replace role="Int." if role=="Interviewer"
+			replace role="Sup." if role=="Supervisor"
+			replace role="HQ" if role=="Headquarter"
+			replace role="Admin" if role=="Administrator"
+			replace role="API" if role=="Api User"
+
 			reshape wide cmt_sursol order role variable, i(`rosterids') j(help)
-		
+					
+			
 		
 			g `currvar'_comm=""
 				foreach var of var cmt_sursol* {
 				loc comment_id=substr("`var'",11,.)
-				replace `currvar'_comm=`currvar'_comm + "`comment_id'." +role`comment_id' +": "  + `var' + ". " if `var'!="" 
+				replace `currvar'_comm=`currvar'_comm + "`comment_id') " +role`comment_id' +": "  + `var' + ". " if `var'!="" 
 				}
 			
+ 
+
 			lab var `currvar'_comm "Comment(s) left at question: `currvar'"
 
 			tempfile `currvar'_file
@@ -178,7 +191,8 @@ if length("`stathistory'")>0 {
 noi display as result _n "Interview status history comments will be merged to the `qxvar'.dta file"
 			use `mastercomment', clear
 			 keep if strpos(variable,"@@")>0 & comment!=""
-			 
+			
+
 			if `c(N)'>0 {
 				levelsof variable, loc(statuses)
 				tempfile masterintfile
@@ -201,11 +215,12 @@ noi display as result _n "Interview status history comments will be merged to th
 					if "`cleanstatus '"=="UnapprovedByHeadquarter" loc newvar "unapprove_hq_comm"
 					if "`cleanstatus '"=="Completed" loc newvar "completed_comm"
 					g `newvar'=""
+
+
 						foreach var of var comment* {
 						loc varid=substr("`var'",8,.)
 						replace `newvar'=`newvar' + "`varid'. `cleanstatus': " + `var' + ". " if `var'!="" 
 						}
-
 					lab var `newvar' "Comment left at action: `cleanstatus'"
 					tempfile finalcomment
 					save `finalcomment' 

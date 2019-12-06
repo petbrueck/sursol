@@ -27,10 +27,11 @@ If translation file not loaded to the dataset, use {cmd:using} {it:{help filenam
 {it:Original} and {it:Translation} specified in the {cmd:sursol transcheck} command must be in the first row of this excel file. {p_end}
 
 
-{marker C4ED_append_options}{...}
+{marker sursol_transcheck_options}{...}
 {synoptset 21 tabbed}{...}
 {synopthdr:transcheck options }
 {synoptline}
+{synopt:{opt html}}if specified, misalignments of html tags that can be used to format text will be checked{p_end}
 {synopt:{opt sheet(string)}}if {cmd:using} {it:{help filename}} is specified, {opt sheet(string)} can be used to indicate the excel sheet in which {it:Original} and {it:Translation} can be found{p_end}
 {synopt:{opt clear}}if {cmd:using} {it:{help filename}} is specified, clear indicates that it is okay to replace the data in memory, even though the current data have not been saved to disk.{p_end}
 {synopt:{opt sub:stitution(string)}}in Survey Solutions, software substitutions are defined by %-signs, e.g. %rostertitle%. If another character is used, specify it in {opt sub:stitution(string)}{p_end}
@@ -53,10 +54,22 @@ Especially for large and complex surveys, machine-readable translation files con
 This command will flag misalignments if:  {p_end}
 
 {pstd} 
-a) Text substitutions (e.g. %rostertitle%) are to be found in the {it:Original} but not in the {it:Translation} text and vice versa{p_end}
+a) Text substitutions (e.g. %rostertitle%) or HTML tags, or HTML tags if {opt html} is specified, are to be found in the {it:Original} but not in the {it:Translation} text and vice versa{p_end}
 
 {pstd} 
-b) The number of text substitutions differs between the {it:Original} and the {it:Translation} text. E.g. two times %rostertitle% used in {it:Original} but only once in {it:Translation}.{p_end}
+b) The number of text substitutions, or HTML tags if {opt html} is specified, differs between the {it:Original} and the {it:Translation} text. E.g. two times %rostertitle% used in {it:Original} but only once in {it:Translation}.{p_end}
+
+{pstd} 
+The command creates the following variables, if applicable:{p_end}
+
+		{hline 20}
+        	problem 
+		sub_missing_trans   
+		sub_missing_orig 
+		html_missing_trans
+		html_missing_orig 
+		no_translation         
+	 	{hline 20}
 
 
 {title:Examples}
@@ -71,4 +84,4 @@ Please report any bugs!!
 
 No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol transcheck} was last updated using Survey Solutions 19.07
+{cmd:sursol transcheck} was last updated using Survey Solutions 19.11

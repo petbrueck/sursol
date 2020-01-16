@@ -47,6 +47,7 @@
 {synopthdr:subcommand}
 {synoptline}
 {synopt :{helpb sursol_transcheck:transcheck}}compares translation against original text to identify software-related misalignments{p_end}
+{synopt :{helpb sursol_transcolor:transcolor}}changes the font color of specific text items in the translation file.{p_end}
 {synoptline}
 {p2colreset}{...}
 

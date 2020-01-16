@@ -1,7 +1,7 @@
 capture program drop sursol_transcheck
 
 program sursol_transcheck 
-capt syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear] [sort] html 
+syntax anything [using/], [sheet(string)] [SUBstitution(string)] [MISSing] [clear] [sort] [html]
 
 
 qui {
@@ -32,7 +32,6 @@ local currdir `c(pwd)'
 
 if "`using'"!="" import excel "`using'", sheet("`sheet'") firstrow allstring `clear'
 
-if "`using'"==""	 {
   	foreach x in problem sub_missing_trans sub_missing_orig sub_n_difference {
 	capt confirm var `x' 
 	if !_rc {
@@ -40,7 +39,7 @@ if "`using'"==""	 {
 	ex 110
 	}
 		}
-}
+
 
 gen problem=0
 //Check if missing is specified
@@ -57,7 +56,11 @@ tab problem if problem==1
 loc n_missing_problem= `r(N)'
 
 foreach vars in `anything' {
-confirm str var `vars'
+capt confirm str var `vars'
+if !_rc==0 {
+noi display as error"Variable '`vars'' needs to be string variable. Check {help sursol_transcheck:sursol transcheck}"
+ex 109 
+}
 }
 
 if "`substitution'"=="" loc substitution "%"
@@ -75,7 +78,7 @@ foreach b in orig trans {
 	if `r(N)'>0 {
 		forv x=1/100 {
 		gen full`b'`x'=substr(``b'1' ,1,strpos(subinstr(``b'1' , "`substitution'", " ", 1),"`substitution'"))
-		 distinct full`b'`x'
+		 count if full`b'`x'!=""
 			if `r(N)'==0 {
 			drop full`b'`x'
 			continue, break

@@ -50,11 +50,11 @@ In any CAPI-software, it is of importance that the translation of questionnaire 
 original script. Those codes mainly imply html-code for formatting text as well as software "substitutions" which are used to reference previous given answers in e.g. a question text or error messages. {p_end}
 
 {pstd}
-Especially for large and complex surveys, machine-readable translation files contain too much text to check for consistency. 
+Especially for large and complex surveys, machine-readable translation files contain too much text to check for consistency manually. 
 This command will flag misalignments if:  {p_end}
 
 {pstd} 
-a) Text substitutions (e.g. %rostertitle%) or HTML tags, or HTML tags if {opt html} is specified, are to be found in the {it:Original} but not in the {it:Translation} text and vice versa{p_end}
+a) Text substitutions (e.g. %rostertitle%), or HTML tags if {opt html} is specified, are to be found in the {it:Original} but not in the {it:Translation} text and vice versa{p_end}
 
 {pstd} 
 b) The number of text substitutions, or HTML tags if {opt html} is specified, differs between the {it:Original} and the {it:Translation} text. E.g. two times %rostertitle% used in {it:Original} but only once in {it:Translation}.{p_end}
@@ -75,6 +75,7 @@ The command creates the following variables, if applicable:{p_end}
 {title:Examples}
 
 {phang2}{cmd:. sursol transcheck Originaltext Translation using "C:\Users\translation.xlsx", clear missing}{p_end}
+
 
 {title:Author}
 

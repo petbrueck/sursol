@@ -23,6 +23,7 @@ No responsibility or liability for the correct functionality of any of the comma
 
 ### Translation Management
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.
+- `sursol transcolor` changes the font color of specific text items in the translation file. 
 
 ## **Installation**
 Type 

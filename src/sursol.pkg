@@ -7,6 +7,7 @@ f /sursol_getcomm.ado
 f /sursol_import.ado
 f /sursol_para.ado
 f /sursol_transcheck.ado
+f /sursol_transcolor.ado
 f /sursol_unapproveHQ.ado
 f /sursol_varcomm.ado
 f /sursol_reject.ado
@@ -20,6 +21,7 @@ f /sursol_getcomm.sthlp
 f /sursol_import.sthlp
 f /sursol_para.sthlp
 f /sursol_transcheck.sthlp
+f /sursol_transcolor.sthlp
 f /sursol_varcomm.sthlp
 f /sursol_reject.sthlp
 f /sursol_rejectHQ.sthlp

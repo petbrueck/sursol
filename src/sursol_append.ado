@@ -2,7 +2,7 @@
 capture program drop sursol_append
 
 program sursol_append 
-syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SErver(string)] [NOSkip]
+syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SErver(string)] [NOSkip] [sortdesc]
 
 local currdir `c(pwd)'
 
@@ -57,12 +57,13 @@ loc sortstructure `"`folderstructure'"'
 
 
 //To get them sorted the other way (starting with higher versions).
-
+if "`sortdesc'"!="" {
 loc cnthelp=`length'+1
 loc sortstructure ""
 forvalue folder=`cnthelp'(-1)2 {
 loc ver: word `folder' of ""`folderstructure'""
 loc sortstructure `"`sortstructure' "`ver'" "'		
+}
 }
 */
 	if `length'==0 {
@@ -165,12 +166,12 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 					sleep 20
 					save  "`export'//`file'", replace
 	}
-	if `c(N)'>0 {
+	
 	qui ds, has(type string) 
 	local ustr`filepure'  `r(varlist)'
 	qui ds, has(type numeric)
 	local unum`filepure' `r(varlist)'
-	}
+	
 	}
 	loc ++i
 	}

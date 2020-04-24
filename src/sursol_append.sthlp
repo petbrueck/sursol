@@ -34,8 +34,9 @@
 {synopt:{opt co:py(varlist)}}copies all variables specified in {it:varlist} from questionnaire level file to all other survey data files{p_end}
 {synopt:{opt noac:tions}}no descriptive variables found in {it:interview__actions.dta} and {it:interview__comments.dta} will be merged to the questionnaire level file{p_end}
 {synopt:{opt nodiag:nostics}}no descriptive variables found in {it:interview__diagnostics.dta} will be merged to the questionnaire level file{p_end}
-{synopt:{opt qxvar(string)}}questionnaire variable specified in Survey Solutions Questionnaire Designer{p_end}  
-{synopt:{opt noskip}}also saves empty datafile in the folder specified in {opt ex:port(string)}{p_end}  
+{synopt:{opt qxvar(string)}}questionnaire variable specified in Survey Solutions Questionnaire Designer{p_end}
+{synopt:{opt noskip}}also saves empty datafile in the folder specified in {opt ex:port(string)}{p_end}
+{synopt:{opt sortdesc}}appends versions in descending order{p_end} 
 {synoptline}
 
 
@@ -45,11 +46,11 @@
 {pstd}
 {cmd:sursol append} identifies all folders in the path specified in {opt directory} of which the folder names contain {it: folder_uniqueid}.
 Within each located folder, the command identifies all containing .dta files and appends the respective files in one master version. The master files are either saved in {opt directory} or {opt export}.{p_end}
-{pstd}
-A variable containing the version name is generated in the questionnaire level file. Variables that are string in one version and numeric 
+
+{pstd}A variable containing the version name is generated in the questionnaire level file. Variables that are string in one version and numeric 
 in another are converted to string to avoid data loss. {p_end}
-{pstd} 
-Previously existing files in the path in which data is exported are overwritten. {p_end}
+
+{pstd} Previously existing files in the path in which data is exported are overwritten. {p_end}
 
 
 {marker syntax}{...}
@@ -98,31 +99,37 @@ interview files. Useful for variables that are used in future data processing su
 {opt noskip} By default, {cmd: sursol append} ignores empty files of each version and does not attempt to append or save this file in the specified export folder. 
 Especially in the beginning of data collections, rosters and their related data files can be empty. If {opt noskip} is specified, those empty files will still be saved which guarantees that the full data structure is available. 
 
-by default, data files of each version with no observations are skipped. 
+{phang}
+{opt sortdesc} By default, {cmd: sursol append} appends datasets in ascending order. For example if the command identifies Version 1, 2 and 4, Version 1 will serve as the master file for appending while 2 and 4 are using files.
+If {opt sortdesc} is specified, Version 4 would be the master file. This has implications for the variable labels which are always determined by the master file when appending. 
 
 {title:Examples}
 
 {pstd}Idenitfy and append all versions of the questionnaire "Project X Baseline Survey" which was hosted on "https://projectX.mysurvey.solutions" {p_end}
-{phang2}{cmd:. sursol append "Project X Baseline Survey",  dir("${download}") ///}{p_end}
+
+{pstd}In the folder specified in {opt dir:ectory(string)}, sub-folders exist called "projectx_1", "projectx_2", "projectx_4", "projectx_8" which contain the survey data of different questionnaires.{p_end}
+
+{pstd}In addition, variables "village" and "treatment" are stored in the projectx.dta, the questionnaire level data file, which shall be merged to all subordinate roster files.{p_end}
+
+{phang2}{cmd:. sursol append "projectx",  dir("${download}") ///}{p_end}
 {phang2}{cmd:. export("C:\Users\username\Desktop\Project X\RAW_FILES") ///}{p_end}
 {phang2}{cmd:. copy (village treatment)  ///}{p_end}
-{phang2}{cmd:. qxvar("PROJECTX")  ///}{p_end}
 {phang2}{cmd:. server("projectX")}{p_end}
 
 
 {title:Author}
 
-This command builds upon work by:
+{pstd}This command builds upon work by:
 
 {pstd}Andreas Kutka, andreas.kutka@gmail.com
 
-Revised and extended by:
+{pstd}Revised and extended by:
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol append} was last updated using Survey Solutions 19.07
+{pstd}{cmd:sursol append} was last updated using Survey Solutions 19.07
 

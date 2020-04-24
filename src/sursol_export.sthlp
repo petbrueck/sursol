@@ -141,9 +141,27 @@ If this is not convenient for the user {opt zipdir(string)} specifies the path i
 
 {marker sursol_export_rpath}{...}
 {phang}
-{opt rpath(string)} specifies the path to the R.exe through which the data export request tothe server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol export} assumes that the executable  
+{opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol export} assumes that the executable  
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
 
+{title:Debugging}
+
+{pstd} If you encounter the problem that the windows/mac shell box opens but closes shortly after without any data being exported: {p_end}
+{pstd}{cmd:sursol export} relies on various R packages. By default, those R packages are being installed if the command can not locate the packages.{p_end} 
+{pstd}However, some users reported that this is not working properly.{p_end}
+{pstd}Therefore, try to install the following packages manually in R by opening R, either in applications such as RStudio or R.exe itself: {p_end}
+
+{synoptline}
+{pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd} 	install.packages("tidyverse", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd} 	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd} 	install.packages("dplyr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("date", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{synoptline}
+
+Afterwards, {cmd:sursol export} should run.
 
 {title:Examples}
 
@@ -159,8 +177,10 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol export} was last updated using Survey Solutions 19.08
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 19.08
+
+{pstd}The command builds upon R scripts and snippets from other Survey Solutions users including {browse "https://forum.mysurvey.solutions/t/access-api-using-r/149/3": Michael Rahija, Arthur Shaw and Lena Nguyen.} 

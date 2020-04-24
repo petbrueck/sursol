@@ -216,6 +216,11 @@ quietly: file write rcode
 		`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")	 "'  _newline
 		`"for (newpack in packages) { "'  _newline
 		`" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline
+		`" if(newpack %in% rownames(installed.packages()) == FALSE) {  "'  _newline
+      		`" message("Attention. Problems installing package: ",newpack,"\n", "Try to install it manually")   "'  _newline       
+     		 `" Sys.sleep(5)       "'  _newline  
+      		`" stop()       "'  _newline
+    		`" } "'  _newline
 		`"} "'  _newline
 		`"library(stringr) "'  _newline
 		`"library(jsonlite) "'  _newline

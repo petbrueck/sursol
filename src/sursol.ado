@@ -55,6 +55,9 @@ gettoken proc 0: 0
 	else if "`proc'"=="mscrelab" {
 	sursol_mscrelab `0'
 	}
+	else if "`proc'"=="reshape" {
+	sursol_reshape `0'
+	}
 	else {
 	di as error "unrecognized command. check subcommand. see help on {help sursol##|_new:sursol}"
 	qui ex 199

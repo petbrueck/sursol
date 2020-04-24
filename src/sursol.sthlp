@@ -38,6 +38,7 @@
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the data files{p_end}
 {synopt :{helpb sursol_mscrelab:mscrelab}}creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label{p_end}
+{synopt :{helpb sursol_reshape:reshape}} reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.{p_end}
 {synoptline}
 {p2colreset}{...}
 

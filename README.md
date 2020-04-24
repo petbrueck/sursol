@@ -19,7 +19,7 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol para`  detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview.
 - `sursol import` imports tabular data exported by Survey Solutions.
 - `sursol getcomm` merges all comments left at all questions during the interview process to the data files. 
-
+- `sursol mscrelab` creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label. 
 
 ### Translation Management
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.

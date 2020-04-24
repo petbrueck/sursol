@@ -20,7 +20,7 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol import` imports tabular data exported by Survey Solutions.
 - `sursol getcomm` merges all comments left at all questions during the interview process to the data files. 
 - `sursol mscrelab` creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label. 
-- `sursol reshape` reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.
+- `sursol reshape` reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped stub variables.
 
 ### Translation Management
 - `sursol transcheck` compares translation against original text to identify software-related misalignments.

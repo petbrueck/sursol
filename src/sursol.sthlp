@@ -63,4 +63,4 @@
 
 {pstd}Most commands of {cmd:sursol} were last updated using Survey Solutions 19.07
 
-{pstd}The routines are updated continously. It is worthwhile to st by from time to time on {browse "https://github.com/petbrueck/sursol":GitHub} to install any updates.
+{pstd}The routines are updated continously. It is worthwhile to stop by from time to time on {browse "https://github.com/petbrueck/sursol":GitHub} to install any updates.

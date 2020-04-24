@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.1  12/09/2019}{...}
+{* *! version 1.2  24/04/2020}{...}
 {title:Title}
 
 {p2colset 5 22 24 2}{...}
@@ -37,6 +37,7 @@
 {synopt :{helpb sursol_para:para}}detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview{p_end}
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the data files{p_end}
+{synopt :{helpb sursol_mscrelab:mscrelab}}creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -56,8 +57,10 @@
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-Most commands of {cmd:sursol} were last updated using Survey Solutions 19.07
+{pstd}Most commands of {cmd:sursol} were last updated using Survey Solutions 19.07
+
+{pstd}The routines are updated continously. It is worthwhile to st by from time to time on {browse "https://github.com/petbrueck/sursol":GitHub} to install any updates.

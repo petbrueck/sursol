@@ -145,8 +145,10 @@ qui{
 							replace dur`x'= 2 if variable[_n-1] == word("`dur`x' '",-1) /*& !missing(variable)*/				
 							bys interview__id: egen maxdur=max(dur`x')
 							bys interview__id: replace dur`x' = sum(dur`x') if maxdur==2
+							
 							replace dur`x' = 0 if dur`x' != 1  | maxdur!=2 | variable== word("`dur`x' '",-1) 
 							replace dur`x' = cleandur if dur`x' == 1 
+							
 							drop maxdur
 
 						}

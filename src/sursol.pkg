@@ -12,6 +12,7 @@ f /sursol_unapproveHQ.ado
 f /sursol_varcomm.ado
 f /sursol_reject.ado
 f /sursol_rejectHQ.ado
+f /sursol_mscrelab.ado
 
 f /sursol.sthlp
 f /sursol_append.sthlp
@@ -25,5 +26,5 @@ f /sursol_transcolor.sthlp
 f /sursol_varcomm.sthlp
 f /sursol_reject.sthlp
 f /sursol_rejectHQ.sthlp
-
+f /sursol_mscrelab.sthlp
 e

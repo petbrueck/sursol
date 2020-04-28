@@ -13,6 +13,7 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software must be installed. 
 - `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software must be installed. 
 - `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software must be installed.
+- `sursol actionlog`  downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software must be installed. 
 
 ### Data Management
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 

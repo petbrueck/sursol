@@ -104,8 +104,8 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol rejectHQ} was last updated using Survey Solutions 19.08
+{pstd}{cmd:sursol rejectHQ} was last updated using Survey Solutions 19.08

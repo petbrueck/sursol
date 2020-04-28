@@ -91,8 +91,8 @@ By default, {cmd:sursol transcolor} identifies any software text substitution (e
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol transcolor} was last updated using Survey Solutions 20.01
+{pstd}{cmd:sursol transcolor} was last updated using Survey Solutions 20.01

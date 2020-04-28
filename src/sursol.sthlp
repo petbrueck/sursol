@@ -24,6 +24,7 @@
 {synopt :{helpb sursol_reject:reject}}rejects interview(s) as Supervisor based on specified rule. R software is required{p_end}
 {synopt :{helpb sursol_rejectHQ:rejectHQ}}rejects interview(s) as Headquarter based on specified rule. R software is required{p_end}
 {synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interview(s) on the Survey Solutions Server. R software is required{p_end}
+{synopt :{helpb sursol_actionlog:actionlog}}downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software is required. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -38,7 +39,7 @@
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the data files{p_end}
 {synopt :{helpb sursol_mscrelab:mscrelab}}creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label{p_end}
-{synopt :{helpb sursol_reshape:reshape}} reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.{p_end}
+{synopt :{helpb sursol_reshape:reshape}}reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -57,6 +58,8 @@
 {title:Author}
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
+
+{pstd}Some commands build upon previous work by colleagues and other Survey Solutions users. Those are credited within each respective help file. 
 
 {pstd}Please report any bugs!!
 

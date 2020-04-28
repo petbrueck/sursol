@@ -81,8 +81,8 @@ The command creates the following variables, if applicable:{p_end}
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the do-file taken!
+{pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{cmd:sursol transcheck} was last updated using Survey Solutions 19.11
+{pstd}{cmd:sursol transcheck} was last updated using Survey Solutions 19.11

@@ -7,6 +7,7 @@ syntax anything, DIRectory(string) SERver(string) USER(string) PASSword(string) 
 
 local currdir `c(pwd)'		
 
+tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 
 if length("`versions'")>0 & length("`lastversion'")>0 {
 
@@ -217,35 +218,25 @@ quietly: file write rcode
 		`"for (newpack in packages) { "'  _newline
 		`" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline
 		`" if(newpack %in% rownames(installed.packages()) == FALSE) {  "'  _newline
-      		`" message("Attention. Problems installing package: ",newpack,"\n", "Try to install it manually")   "'  _newline       
-     		 `" Sys.sleep(5)       "'  _newline  
-      		`" stop()       "'  _newline
+       		`" stop(paste0("Attention. Problems installing package: ",newpack, "Try to install it manually"))       "'  _newline
     		`" } "'  _newline
 		`"} "'  _newline
-		`"library(stringr) "'  _newline
-		`"library(jsonlite) "'  _newline
-		`"library(httr) "'  _newline
-		`"library(dplyr) "'  _newline
-		`"library(lubridate) "'  _newline								                
-		`"library(date)"'  _newline	
+
+		`"suppressMessages(suppressWarnings(library(stringr))) "'  _newline
+		`"suppressMessages(suppressWarnings(library(jsonlite))) "'  _newline
+		`"suppressMessages(suppressWarnings(library(httr))) "'  _newline
+		`"suppressMessages(suppressWarnings(library(dplyr))) "'  _newline
+		`"suppressMessages(suppressWarnings(library(lubridate))) "'  _newline								                
+		`"suppressMessages(suppressWarnings(library(date)))"'  _newline	
 		
 		`"Sys.setlocale("LC_TIME", "English")"' _newline
 
-                `" if (((tolower(unzip) %in% c("no")) == TRUE) & nchar(zip_directory)>0) {  	"' _newline
-                `"  message("Attention. Zip Directory has been specified but UNZIP was not requested.")  	"' _newline
-                `"  Sys.sleep(5)  	"' _newline
-                `"  stop()  	"' _newline
-                `"}   	"' _newline
-                
-                
+                                       
                 `"server_url<-sprintf("https://%s.mysurvey.solutions", server)  "'    _newline
                 `"  "'    _newline
                 `"serverCheck <- try(http_error(server_url), silent = TRUE)  "'    _newline
                 `"if (class(serverCheck) == "try-error") {  "'    _newline
-                `"  message("The following server does not exist. Check internet connection or the server name:",  "'    _newline
-                `"       "\n", server_url)  "'    _newline
-                `"  Sys.sleep(5)  "'    _newline
-                `"  stop()  "'    _newline
+               `"  stop(paste0("The following server does not exist. Check internet connection or the server name:", server_url))  "'    _newline
                 `"    "'    _newline
                 `"}  "'    _newline
                 `"  "'    _newline
@@ -345,13 +336,9 @@ quietly: file write rcode
 
 
                 `"} else if (status_code(data) == 401) {   "'    _newline
-                `"  message("Incorrect username or password. Check login credentials for API user")  "'    _newline
-                `"  Sys.sleep(5)  "'    _newline
-                `"  stop()  "'    _newline
+                 `"  stop("Incorrect username or password. Check login credentials for API user")  "'    _newline
                 `"} else {  "'    _newline
-                `"  message("Encountered issue with status code ", status_code(data))  "'    _newline
-                `"  Sys.sleep(5)  "'    _newline
-                `"  stop()  "'    _newline
+               `"  stop(paste0("Encountered issue with status code ", status_code(data)))  "'    _newline
                 `"}  "'    _newline 
                 `"  "'    _newline
                 `"  "'    _newline
@@ -363,14 +350,10 @@ quietly: file write rcode
                 `"  qxid<-(unique(qnrList_all\$QuestionnaireId[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
 		`"  qxvar<-(unique(qnrList_all\$Variable[qnrList_all\$Title == questionnaire_name_up]))  "'    _newline
                 `"} else if (questionnaire_name_up == "") {  "'    _newline
-                `"  message("Error: Please provide the name of the questionnaire.")  "'    _newline
-                `"  Sys.sleep(5)  "'    _newline
-                `"  stop()  "'    _newline
+                `"  stop("Please provide the name of the questionnaire.")  "'    _newline
                 `"    "'    _newline
                 `"} else {  "'    _newline
-                `"  message("Error: Please check the questionnaire name.")  "'    _newline
-                `"  Sys.sleep(5)  "'    _newline
-                `"  stop()  "'    _newline
+                `"  stop("Please check the questionnaire name.")  "'    _newline
                 `"    "'    _newline
                 `"}  "'    _newline
                 `"  "'    _newline
@@ -418,10 +401,7 @@ quietly: file write rcode
                 `"for (datatype in datasets) {  "'    _newline
                 `"  for (val in versions_download) {  "'    _newline
                  `" if (val %in% versions_server ==FALSE) {  "' _newline
-      		 `"  message("Error: Version ", val," of ",questionnaire_name," was not found on the server.")  "' _newline
-		 `"  message("Check your versions specified in versions(numlist)")  "' _newline      		 
-		`"  Sys.sleep(5)  "' _newline
-    		 `"  stop()  "' _newline
+		 `"  stop(paste0("Version ",val," of ",questionnaire_name," was not found on the server.", "Check your versions specified in versions(numlist)"))  "' _newline
    		 `"  } "'  _newline
                 `"    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")  "'    _newline
                 `"    if (datatype %in% c("stata", "DDI")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="") else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")   "'    _newline
@@ -445,9 +425,9 @@ quietly: file write rcode
                 `"    if (datatype=="paradata")  dat<-"Para"  else dat<- toupper(datatype)  "'    _newline
                 `"    "'    _newline
                 `"        "'    _newline
-                `"    message("Requesting ",dat, " data for ",  "'    _newline
+                `"    print(paste0("Requesting ",dat, " data for ",  "'    _newline
                 `"            questionnaire_name, " VERSION ", val,  "'    _newline
-                `"            " to be compiled on server.")  "'    _newline
+                `"            " to be compiled on server."))  "'    _newline
                 `"    }  "'    _newline
                 `"      "'    _newline
                 `"      "'    _newline
@@ -484,12 +464,12 @@ quietly: file write rcode
                 `"        "'    _newline
                 `"        "'    _newline
                 `"      if (content\$ExportStatus == "Queued") {  "'    _newline
-                `"        message("Waiting for export files to be generated...")  "'    _newline
+                `"        print(paste0("Waiting for export files to be generated..."))  "'    _newline
                 `"        Sys.sleep(3)     "'    _newline
                 `"      }  "'    _newline
                 `"        "'    _newline
                 `"      if (identical(Status,"FinishedWithErrors")) {  "'    _newline
-                `"        message("THERE IS SOMETHING WRONG WITH THE SERVER! PLEASE TRY AGAIN")  "'    _newline
+                `"        print(paste0("THERE IS SOMETHING WRONG WITH THE SERVER! PLEASE TRY AGAIN"))  "'    _newline
                 `"        Sys.sleep(5)  "'    _newline
                 `"        stop()  "'    _newline
                 `"          "'    _newline
@@ -505,7 +485,7 @@ quietly: file write rcode
                 `"      }  "'    _newline
                 `"        "'    _newline
                 `"      if (content\$ExportStatus == "Running") {  "'    _newline
-                `"        message(paste0("Data is currently being generated. Percent: ",  "'    _newline
+                `"        print(paste0("Data is currently being generated. Percent: ",  "'    _newline
                 `"                       content\$RunningProcess['ProgressInPercents'], '%'))  "'    _newline
                 `"        Sys.sleep(4)  "'    _newline
                 `"      }  "'    _newline
@@ -513,7 +493,7 @@ quietly: file write rcode
                 `"        "'    _newline
                 `"        "'    _newline
                 `"      if (content\$ExportStatus=="Finished")  {  "'    _newline
-                `"        message("Data is currently being downloaded..")  "'    _newline
+                `"        print("Data is currently being downloaded..")  "'    _newline
                 `"          "'    _newline
                 `"        download_data <- GET(download_query, authenticate(user, password))  "'    _newline
                 `"        redirectURL <- download_data\$url   "'    _newline
@@ -545,7 +525,7 @@ quietly: file write rcode
                 `"        zip_name<- paste0(directory,"//",  "'    _newline
                 `"                          Filename)  "'    _newline
                 `"        unzip(zip_name,exdir = zip_path)  "'    _newline
-                `"        message("Data files successfully unzipped into folder: ", "\n", zip_path)  "'    _newline
+                `"        print(paste0("Data files successfully unzipped into folder: ", zip_path))  "'    _newline
                 `"        }  "'    _newline
                 `"        break  "'    _newline
                 `"      }  "'    _newline
@@ -562,8 +542,19 @@ quietly: file write rcode
                 
                 file close rcode 
 
-                shell "`rpath'/R" --vanilla <"`directory'/export.R" 
 
+		//EXECUTE THE COMMAND
+	
+                shell "`rpath'/R" --vanilla <"`directory'/export.R" 2>`error_message' 
+		
+
+		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
+		di as result _n
+		di as error "{ul:Warnings & Error messages displayed by R:}"
+		di as error "`="_"*80'"
+		type `error_message'
+		di as error "`="_"*80'"
+		
                 qui capt rm "`directory'/export.R"
                 qui capt rm "`directory'/.Rhistory" 
                 qui  cd "`currdir'"

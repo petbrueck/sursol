@@ -76,8 +76,8 @@ If the roster variables have been reordered before running this command will pro
 
 {pstd}Peter Brückmann, p.brueckmann@mailbox.org 
 
-Please report any bugs!!
+{pstd}Please report any bugs!!
 
-No responsibility or liability for the correct functionality of the command is taken!
+{pstd}No responsibility or liability for the correct functionality of the command is taken!
 
-{cmd:sursol getcomm} was last updated using Survey Solutions 19.11
+{pstd}{cmd:sursol getcomm} was last updated using Survey Solutions 19.11

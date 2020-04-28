@@ -181,6 +181,10 @@ Afterwards, {cmd:sursol export} should run.
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 19.08
+{pstd} The command builds upon R scripts and snippets from other Survey Solutions users including {browse "https://forum.mysurvey.solutions/t/access-api-using-r/149/3": Michael Rahija, Arthur Shaw and Lena Nguyen.} 
 
-{pstd}The command builds upon R scripts and snippets from other Survey Solutions users including {browse "https://forum.mysurvey.solutions/t/access-api-using-r/149/3": Michael Rahija, Arthur Shaw and Lena Nguyen.} 
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.04. 
+
+{pstd} {ul:Attention!} The current export API as used by {cmd:sursol export} will be {browse "https://support.mysurvey.solutions/release-notes/version-20-04/":phased out in future releases.} 
+{pstd} Drop by on {browse "https://github.com/petbrueck/sursol":GitHub} in the coming months to see if {cmd:sursol export} has been updated. 
+

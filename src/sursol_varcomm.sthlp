@@ -2,8 +2,6 @@
 {cmd:help sursol varcomm}
 {hline}
 
-!!!!!! NO VARIABLES NESTED IN ROSTERS CURRENTLY SUPPORTED!!!!!!
-
 {title:Title}
 {p 5 20}
 {cmd:sursol varcomm} {hline 2} can be used to leave a comment on a question on the Survey Solutions Server. R software is required. 
@@ -35,6 +33,10 @@
 
 {synopt:{opt id:(var)}}variable that contains the globally unique identifier of each interview according to Survey Solutions format{p_end}
 {synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
+{synopt:{opt roster1(numlist)}}Roster rowcode if variable is placed in first-level roster. {p_end}
+{synopt:{opt roster2(numlist)}}Roster rowcode if variable is placed in second-level roster. {opt roster1(numlist)} needs to be specified. {p_end}
+{synopt:{opt roster3(numlist)}}Roster rowcode if variable is placed in third-level roster. {opt roster1(numlist)} &  {opt roster2(numlist)}  needs to be specified.{p_end}
+{synopt:{opt roster4(numlist)}}Roster rowcode if variable is placed in fourth-level roster. {opt roster1(numlist)} &  {opt roster2(numlist)} &  {opt roster3(numlist)} needs to be specified.{p_end}
 {synoptline}
 
 
@@ -44,12 +46,16 @@
 {pstd}
 {opt sursol varcomm} comments on variables as headquarter on a Survey Solutions server for which the {it:if} condition is true (if used). {p_end}
 
+
 {pstd}
 The command lists all 32-character long identifier of the interviews for which the {it:if} condition is true in the current dataset. If not specified in {opt id(varlist)}, 
 the command uses the Survey Solutions system generated variable "interview__id" by default.{p_end}
 
 {pstd}
-An installed version of R Statistical Software is required. The command shell returns warnings if (1) interviews was in status that was not ready to be commented on or (2)  interviews have been not found. {p_end}
+In case {it:if} condition is not specified all observations all identifiers in the current dataset will be listed and commented on.{p_end}
+
+{pstd}
+An installed version of R Statistical Software is required. The command shell returns warnings if (1) interviews was in status that was not ready to be commented on or question not found and if (2)  interviews have been not found. {p_end}
 
 {pstd} 
 Interviews can be commented only if it is not "Approved by Headquarters". {p_end}
@@ -71,7 +77,7 @@ Interviews can be commented only if it is not "Approved by Headquarters". {p_end
 {phang}
 {opt comm:ent(string)} text to be attached to specified variable. 
 
-{marker optiona}{...}
+{marker optional}{...}
 {dlgtab:Optional}
 
 {phang}
@@ -82,6 +88,20 @@ If interview__id has been renamed {opt id:(var)} can be used to indicate the new
 {phang}
 {opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol varcomm} assumes that the executable  
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
+
+{marker rostervars}{...}
+{phang}
+{opt roster1(numlist)} can be used if a variable that needs to be commented on is placed in a first-level roster. {it:numlist} refers to the rowcode of the roster item, often stored in the variable {it:"rostername__id"}. 
+
+{phang}
+{opt roster2(numlist)} similar to {opt roster1(numlist)}, needs to be specified if question is placed in second-level roster. In those cases, specify {opt roster1(numlist)} using the row code of the parent roster. 
+
+{phang}
+{opt roster3(numlist)} same as {opt roster2(numlist)}. In those cases, specify {opt roster1(numlist)} using the row code of the first-level parent roster and {opt roster2(numlist)} using the row code of second-level parent roster. 
+
+{phang}
+{opt roster4(numlist)} same as {opt roster3(numlist)}. In those cases, specify {opt roster1(numlist)} using the row code of the first-level parent roster, 
+{opt roster2(numlist)} using the row code of second-level parent roster and {opt roster3(numlist)} the row code of third-level parent roster. 
 
 
 {title:Examples}
@@ -104,4 +124,4 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol varcomm} was last updated using Survey Solutions 19.07
+{pstd}{cmd:sursol varcomm} was last updated using Survey Solutions 20.04

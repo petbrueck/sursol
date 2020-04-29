@@ -544,7 +544,7 @@ quietly: file write rcode
 
 
 		//EXECUTE THE COMMAND
-	
+
                 shell "`rpath'/R" --vanilla <"`directory'/export.R" 2>`error_message' 
 		
 

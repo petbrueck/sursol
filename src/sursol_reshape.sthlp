@@ -10,7 +10,7 @@
 {title:Syntax}
 
 {p 8 17 2}
-{cmd:sursol_reshape}
+{cmd:sursol reshape}
 {it:stub} 
 {cmd:,} {opt id(varlist)} {opt roster(varlist)}  [{opt sub:stitut(string)}}
 
@@ -56,13 +56,13 @@ such an id stores the respective rowname in its value label.{p_end}
 
 {pstd}Aim is to reshape from long to wide and add the name of the asset to each variable label{p_end}
 
-{phang2}{cmd:. sursol_reshape q1 ,id(interview__id) roster(asset__id) sub("%asset%") } {p_end}
+{phang2}{cmd:. sursol reshape q1 ,id(interview__id) roster(asset__id) sub("%asset%") } {p_end}
 
 {pstd}Result is wide dataset with 40 variables and only one observation per interview__id. q1__1 -> "How many ASSET1 does your family own", q1__2 -> "How many ASSET2 does your family own" {p_end}
 
 
 {pstd}Assuming that "asset.dta" would be nested within a roster called "household_member.dta", you'd need to account for that when reshaping:{p_end} 
-{phang2}{cmd:. sursol_reshape q1 ,id(interview__id household_member__id) roster(asset__id) sub("%asset%") } {p_end}
+{phang2}{cmd:. sursol reshape q1 ,id(interview__id household_member__id) roster(asset__id) sub("%asset%") } {p_end}
 
 {pstd}Result would be the reshaped asset data at the interview-household_member leve.{p_end}
 {hline}

@@ -446,7 +446,7 @@ quietly: file write rcode
 `"	      stop(paste0("Questionnaire ID is malformed.", "Request to compile ",dat, " data for ",     "'  _newline
 `"	                  questionnaire_name, " VERSION ", val,     "'  _newline
 `"	                  "has been not successfull."))     "'  _newline
-`"	      }     else if  (status_code(gen_data)==400) {   "'  _newline
+`"	      }     else if  (status_code(gen_data)==404) {   "'  _newline
 `"	           "'  _newline
 `"	        stop(paste0("Questionnaire was not found.", "Request to compile ",dat, " data for ",     "'  _newline
 `"	                    questionnaire_name, " VERSION ", val,     "'  _newline
@@ -476,46 +476,49 @@ quietly: file write rcode
 `"	   "'  _newline
 `"	      #CHECK THE STATUS    "'  _newline
 `"	         "'  _newline
-`"	      if (content\$exportStatus == "Created") {     "'  _newline
+`"	      if (content\$ExportStatus == "Created") {     "'  _newline
 `"	        print(paste0("Export files have been created"))     "'  _newline
 `"	        Sys.sleep(2)        "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
-`"	      if (content\$exportStatus == "Fail") {     "'  _newline
+`"	      if (content\$ExportStatus == "Fail") {     "'  _newline
 `"             if (nchar(dropbox_token)>0) stop("The export process has failed. Try again or check the server or Dropbox Access.")      "'  _newline
 `"	        stop("The export process has failed. Try again or check the server.")     "'  _newline
 `"	             "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
-`"	      if (content\$exportStatus == "Canceled") {     "'  _newline
+`"	      if (content\$ExportStatus == "Canceled") {     "'  _newline
 `"	        stop("The export process has been canceled by a user. Try again or check the server.")     "'  _newline
 `"	      }    "'  _newline
 `"	         "'  _newline
-`"	      if (content\$exportStatus == "Running") {     "'  _newline
+`"	      if (content\$ExportStatus == "Running") {     "'  _newline
 `"	        print(paste0("Data is currently being generated. Progress: ",     "'  _newline
-`"	                     content\$progress, '%'))     "'  _newline
+`"	                     content\$Progress, '%'))     "'  _newline
 `"	        Sys.sleep(2)     "'  _newline
 `"	      }    "'  _newline
 `"	       "'  _newline
 `"	         "'  _newline
-`"	      if (content\$exportStatus=="Completed")  {     "'  _newline
+`"	      if (content\$ExportStatus=="Completed")  {     "'  _newline
 `"            ##STOP THE LOOP IF STORAGE TYPE NOT DOWNLOAD  "'  _newline
 `"            if (nchar(dropbox_token)>0) { "'  _newline
-`"              Sys.sleep(1) "'  _newline
 `"              print(paste0("Request successfull!")) "'  _newline
 `"              print(paste0("Data files are now being pushed to the Dropbox")) "'  _newline
+`"              Sys.sleep(1) "'  _newline
 `"             break "'  _newline
 `"            } "'  _newline
 `"	        print("Data is currently being downloaded..")     "'  _newline
 `"	        ##THE DOWNLOAD REQUEST, WHICH IS SAVED IN DETAIL REQUEST   "'  _newline
-`"	        download_data <- GET(content\$links\$download, authenticate(user, password))     "'  _newline
+`"	        download_data <- GET(content\$Links\$Download, authenticate(user, password))     "'  _newline
  `"			Sys.sleep(1)      "'  _newline
 `"	           "'  _newline
 `"	        #IF REDIRECT NECESSARY   "'  _newline
-`"	        if (download_data\$url!=content\$links\$download) {   "'  _newline
+`"	        if (download_data\$url!=content\$Links\$Download) {   "'  _newline
 `"	        download_data <- GET(download_data\$url)    "'  _newline
 `"	        }   "'  _newline
 `"	           "'  _newline
+`"              if (status_code(download_data) %in% c(400,404)) {   "'  _newline
+`"                      stop("Downloading the data has failed. Try again or check the server.")      "'  _newline
+`"                    }  "'  _newline
 `"	        #START WRITING THE DATA IN BINARY MODE TO DIRECTORY   "'  _newline
 `"	        filecon <- file(file.path(directory, Filename), "wb")    "'  _newline
 `"	        writeBin(download_data\$content, filecon)      "'  _newline

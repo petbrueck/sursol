@@ -234,6 +234,8 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd} The command builds upon R scripts and snippets from other Survey Solutions users including {browse "https://forum.mysurvey.solutions/t/access-api-using-r/149/3": Lena Nguyen, Michael Rahija, and Arthur Shaw.} 
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.05 and adjusted to API V2.
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.04 and adjusted to API V2. 
+{title:Acknowledgments}
+
+{pstd} The command builds upon R scripts and snippets from other Survey Solutions users including {browse "https://forum.mysurvey.solutions/t/access-api-using-r/149/3": Lena Nguyen, Michael Rahija, and Arthur Shaw.} 

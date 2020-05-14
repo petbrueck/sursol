@@ -8,8 +8,10 @@ qui {
 tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 
 
-foreach x in ".mysurvey.solutions" "//" ":" "https" { 
-loc server=subinstr("`server'","`x'","",.)
+**GIVE WARNING IF PROTOCOL OF URL NOT GIVEN 
+if strpos("`server'","http")==0 {
+noi dis as error _n "Attention. There is no protocol specified in {help sursol_varcomm##server:server({it:url})}"
+noi dis as error "The command will not work if the URL is not specified correctly. Let's give it a try nevertheless..."
 }
 
 if length("`id'")==0 {
@@ -86,7 +88,7 @@ ex 601
 	foreach x of loc folderstructure {
 	noi dis as error "`x'" 
 	if `length'==`i' {
-	noi dis as result _n "Version `x' of R will be used to export the data"
+	noi dis as result _n "Version `x' of R will be used to comment on the interviews"
 	loc version="`x'"
 	} 
 	loc ++i
@@ -169,11 +171,11 @@ levelsof `id', loc(levels) clean sep(,)
 
 ********************************************************************************
 //WRITE R SCRIPT
-qui capt rm "`c(pwd)'\varcomm.R"
-qui capt rm "`c(pwd)'\.Rhistory" 
+qui capt rm "`c(pwd)'/varcomm.R"
+qui capt rm "`c(pwd)'/.Rhistory" 
 
 
- quietly: file open rcode using  "`c(pwd)'\varcomm.R", write replace 		
+ quietly: file open rcode using  "`c(pwd)'/varcomm.R", write replace 		
  
  #d ;
  quietly: file write rcode   
@@ -192,7 +194,7 @@ qui capt rm "`c(pwd)'\.Rhistory"
 `"Sys.setlocale("LC_TIME", "English")"' _newline 
 
 `" ##PACKAGES																																		 "' _newline
-`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")     														 "' _newline
+`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")    "' _newline
 `"for (newpack in packages) {  "' _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}  "' _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {   "' _newline
@@ -208,28 +210,22 @@ qui capt rm "`c(pwd)'\.Rhistory"
 
 																																		
 
- `"server_url<-sprintf("https://%s.mysurvey.solutions", server)  "'    _newline																				  										
+ `"server_url<-sprintf("%s", server)  "'    _newline																				  										
                 `"  "'    _newline  
-                `"serverCheck <- try(http_error(server_url), silent = TRUE)  "'    _newline  
-                `"if (class(serverCheck) == "try-error") {  "'    _newline  
-                `"  message("The following server does not exist. Check internet connection or the server name:",  "'    _newline  
-                `"       "\n", server_url)  "'    _newline  
-                `"  Sys.sleep(5)  "'    _newline  
-                `"  stop()  "'    _newline  
-                `"    "'    _newline  
-                `"}  "'    _newline  																																	  
+`"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
+`"	if (class(serverCheck) == "try-error") {     "'  _newline
+`"	  stop(paste0("The following server does not exist. Check internet connection or the server name:", server_url))     "'  _newline
+`"	       "'  _newline
+`"	}     "'  _newline
+`" "'  _newline
  `"for (x in c("user", "password", "server")) {  "'    _newline 
                 `"  if (!is.character(get(x))) {  "'    _newline 
-                `"    message(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))  "'    _newline 
-                `"    Sys.sleep(5)  "'    _newline 
-                `"    stop()  "'    _newline	  
+                `"    stop(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))  "'    _newline	  
                 `"      "'    _newline  
                 `"  }  "'    _newline  
                 `"    "'    _newline			  
                 `"  if (nchar(get(x)) == 0) {  "'    _newline 
-                `"    message(paste("The following parameter is not specified in the program:", x))  "'    _newline  
-                `"    Sys.sleep(5)  "'    _newline 
-                `"    stop()  "'    _newline 
+                `"    stop(paste("The following parameter is not specified in the program:", x))  "'    _newline 
                 `"  }  "'    _newline 
                 `"}  "'    _newline 
 				
@@ -241,9 +237,6 @@ qui capt rm "`c(pwd)'\.Rhistory"
 
 `"command <- paste0("/comment-by-variable/`anything'?",roster_vec1,  roster_vec2, roster_vec3, roster_vec4, "&comment=`comment'")"' _newline 
 
-
-
-
 `"counter=0"' _newline 
 `"count406=0"' _newline 
 `"count404=0"' _newline 
@@ -251,40 +244,49 @@ qui capt rm "`c(pwd)'\.Rhistory"
 `"comment_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline 
 `"comment_post <- POST(comment_query, authenticate(user, password))"' _newline 
   `"if (status_code(comment_post)==404) {  "' _newline 
-  `"message(paste("Target interview", val," was not found")) "' _newline   
+  `"print(paste("Target interview", val," was not found")) "' _newline   
  `"  count404= count404+1 "' _newline 
  `"}  "' _newline 
  `"if (status_code(comment_post)==406) {  "' _newline 
- `"message(paste("Target interview", val," is in status that was not ready to comment on variable or question was not found"))  "' _newline   
+ `"print(paste("Target interview", val," is in status that was not ready to comment on variable or question was not found"))  "' _newline   
  `"  count406= count406+1 "' _newline 
  `"}  "' _newline 
 `" counter= counter+1 "' _newline 
 `"if (counter==length(`id')) { "' _newline 
 `" count200= length(`id')-count406-count404"' _newline 
-`"message(paste(count200,"interviews have been successfully commented on")) "' _newline   
-`"message(paste(count406,"interviews have been in status that was not ready to be commented on or question was not found")) "' _newline   
-`"message(paste(count404,"interviews have been not found")) "' _newline   
+`"print(paste(count200,"interviews have been successfully commented on")) "' _newline   
+`"print(paste(count406,"interviews have been in status that was not ready to be commented on or question was not found")) "' _newline   
+`"print(paste(count404,"interviews have been not found")) "' _newline   
 `"  Sys.sleep(5) "' _newline 
 `"}"' _newline 
 `"}"'	_newline;
                 
  #d cr
  file close rcode 
+}
+}
 
+timer clear
+timer on 1
+shell "`rpath'/R" --vanilla <"`c(pwd)'/varcomm.R" 2>`error_message' 
+timer off 1	
+		qui timer list 1
+		if `r(t1)'<=2 {
+		dis as error "Whoopsa! That was surprisingly fast."
+		dis as error "Please check if the variables have been commented on." 
+		dis as error "If not, have a look at {help sursol_varcomm##debugging:debugging information} in the help file."
+		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
+		}
 
-shell "`rpath'\R" --vanilla <"`c(pwd)'\varcomm.R" 
-
-/*
 //DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
 		di as result _n
-		di as error "{ul:Results & Error messages displayed by R:}"
+		di as error "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
-		di as error "`="_"*80'"
-*/
 
-qui capt rm "`c(pwd)'\varcomm.R"
-qui capt rm "`c(pwd)'\.Rhistory" 
 
-}
-}
+qui capt rm "`c(pwd)'/varcomm.R"
+qui capt rm "`c(pwd)'/.Rhistory" 
+
+
  end
+

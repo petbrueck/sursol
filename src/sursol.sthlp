@@ -21,10 +21,12 @@
 {synoptline}
 {synopt :{helpb sursol_export:export}}downloads survey data of a questionnaire from a Survey Solutions Server. R software is required{p_end}
 {synopt :{helpb sursol_approveHQ:[un]approveHQ}}(un)approves interview(s) as Headquarter based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_reject:reject}}rejects interview(s) as Supervisor based on specified rule. R software is required{p_end}
 {synopt :{helpb sursol_rejectHQ:rejectHQ}}rejects interview(s) as Headquarter based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interview(s) on the Survey Solutions Server. R software is required{p_end}
+{synopt :{helpb sursol_approve:approve}}approves interview(s) as Supervisor based on specified rule. R software is required{p_end}
+{synopt :{helpb sursol_reject:reject}}rejects interview(s) as Supervisor based on specified rule. R software is required{p_end}
+{synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interview(s) on the Survey Solutions Server. R software is required {p_end}
 {synopt :{helpb sursol_actionlog:actionlog}}downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software is required. {p_end}
+{synopt :{helpb sursol_userreport:userreport}}exports detailed interviewer report for all interviewer users created on a Survey Solutions Server. R software is required. {p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -37,7 +39,7 @@
 {synopt :{helpb sursol_append:append}}detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files.{p_end}
 {synopt :{helpb sursol_para:para}}detects all Survey Solutions Version folders in the specified working directory, appends all para data versions and creates descriptive statistics for each interview{p_end}
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
-{synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the data files{p_end}
+{synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the survey data files{p_end}
 {synopt :{helpb sursol_mscrelab:mscrelab}}creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label{p_end}
 {synopt :{helpb sursol_reshape:reshape}}reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.{p_end}
 {synoptline}
@@ -65,6 +67,10 @@
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}Most commands of {cmd:sursol} were last updated using Survey Solutions 19.07
+
+{title:Version:} 20.05.2
+
+{pstd}Most commands of {cmd:sursol} were last updated using Survey Solutions 20.05
 
 {pstd}The routines are updated continously. It is worthwhile to stop by from time to time on {browse "https://github.com/petbrueck/sursol":GitHub} to install any updates.
+

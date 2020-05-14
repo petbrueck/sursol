@@ -11,7 +11,7 @@
 {p 5 5 2}
 {cmd:sursol varcomm} {it:{help varlist}}
 [{it:{help if}}]
-{cmd:,} {opt serv:er(string)}  {opt user(string)} {opt password(string)} [{it:{help sursol varcomm##sursol varcomm_options:varcomm_options}}]
+{cmd:,} {opt serv:er(url)}  {opt user(string)} {opt password(string)} [{it:{help sursol varcomm##sursol varcomm_options:varcomm_options}}]
 
 
 {synoptset 20 tabbed}{...}
@@ -19,7 +19,7 @@
 {synoptline}
 
 {synopt:{opt {help varlist}}}variable name to which comment shall be attached. This is the variable name for a question in the Survey Solutions Designer{p_end}
-{synopt:{opt serv:er(string)}}prefix of server domain name {p_end}
+{synopt:{opt serv:er(url)}}string of full URL of server, including protocol and hostname {p_end}
 {synopt:{opt user(string)}}API user name{p_end}
 {synopt:{opt password(string)}}password of API user{p_end}
 {synopt:{opt comm:ent(string)}}text to be attached to variable{p_end}
@@ -65,8 +65,10 @@ Interviews can be commented only if it is not "Approved by Headquarters". {p_end
 
 {dlgtab:Required}
 
+{marker server}{...}
 {phang}
-{opt serv:er(string)} specifies the server on which the survey is hosted. Only prefix of domain name required: PREFIX.mysurvey.solutions. Full domain name, protocol and other URL information will be added automatically. 
+{opt serv:er(string)} specifies the server on which the survey is hosted. Full URL required: Protocol (e.g. {it:https://}), hostname (e.g. {it:projectX.mysurvey.solutions}) and any other URL information.
+A typical server URL for servers hosted by the World Bank: {it: https://projectX.mysurvey.solutions}
 
 {phang}
 {opt user(string)} specifies the login name of an API account created on the server itself. 
@@ -103,17 +105,34 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {opt roster4(numlist)} same as {opt roster3(numlist)}. In those cases, specify {opt roster1(numlist)} using the row code of the first-level parent roster, 
 {opt roster2(numlist)} using the row code of second-level parent roster and {opt roster3(numlist)} the row code of third-level parent roster. 
 
+{marker debugging}{...}
+{title:Debugging}
+
+{pstd} If you encounter the problem that the windows/mac shell box opens but closes shortly after without any action logs being downloaded{p_end}
+{pstd}{cmd:sursol varcomm} relies on various R packages. By default, those R packages are being installed if the command can not locate the packages.{p_end} 
+{pstd}However, some users reported that this is not working properly. This is most likely because of Stata / Windows or Mac Shell Box not having administrator rights to install the packages.{p_end}
+{pstd}Therefore, try to install the following packages manually in R by opening R, either in IDE' such as RStudio or R.exe itself: {p_end}
+
+{synoptline}
+{pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("dplyr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{synoptline}
+
+{pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol varcomm} should run. {p_end}
 
 {title:Examples}
 
 {pstd}Load survey dataset and leave a comment at the GPS Question if no GPS was recorded{p_end}
 
 {phang2}{cmd:. use "C:\Users\survey_X.dta" ,clear }{p_end}
-{phang2}{cmd:. sursol varcomm gps_location if gps_location__Latitutde==.a, server("survey_X.mysurvey.solutions") /// }{p_end}
+
+{phang2}{cmd:. sursol varcomm gps_location if gps_location__Latitutde==.a, server("https://projectX.mysurvey.solutions") /// }{p_end}
 {phang2}{cmd:. user("API_acc") ///  }{p_end}
 {phang2}{cmd:. password("API_acc2019")  /// }{p_end}
 {phang2}{cmd:. comment("Please go back to the household and obtain GPS Location") }{p_end}
-
 
 
 {title:Author}
@@ -124,4 +143,4 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol varcomm} was last updated using Survey Solutions 20.04
+{pstd}{cmd:sursol varcomm} was last updated using Survey Solutions 20.05

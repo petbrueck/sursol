@@ -12,21 +12,21 @@
 
 {p 8 17 2}
 {cmd:sursol actionlog}
-{cmd:,} {opt dir:ectory(string)} {opt serv:er(string)}  {opt user(string)} {opt password(string)} [{it:{help sursol actionlog##sursol actionlog_options:sursol actionlog options}}]
+{cmd:,} {opt dir:ectory(string)} {opt serv:er(url)}  {opt user(string)} {opt password(string)} [{it:{help sursol actionlog##sursol actionlog_options:sursol actionlog options}}]
 
 
 {synoptset 21 tabbed}{...}
 {synopthdr:Required }
 {synoptline}
-{marker sursol_export_directory}{...}
+{marker sursol_actionlog_directory}{...}
 {synopt:{opt dir:ectory(string)}}path in which exported data will be stored {p_end}
-{synopt:{opt serv:er(string)}}prefix of server domain name {p_end}
+{synopt:{opt serv:er(url)}}string of full URL of server, including protocol and hostname {p_end}
 {synopt:{opt user(string)}}API user name{p_end}
 {synopt:{opt password(string)}}password of API user{p_end}
 {synoptline}
 
 
-{marker sursol_export_options}{...}
+{marker sursol_actionlog_options}{...}
 {synoptset 21 tabbed}{...}
 {synopthdr:sursol actionlog options }
 {synoptline}
@@ -62,8 +62,10 @@ An installed version of R Statistical Software is required. {p_end}
 {phang}
 {opt dir:ectory(string)} specifies the path in which the action log files will be saved. 
 
+{marker server}{...}
 {phang}
-{opt serv:er(string)} specifies the server on which the survey is hosted. Only prefix of domain name required: PREFIX.mysurvey.solutions. Full domain name, protocol and other URL information will be added automatically. 
+{opt serv:er(url)} specifies the server on which the survey is hosted. Full URL required: Protocol (e.g. {it:https://}), hostname (e.g. {it:projectX.mysurvey.solutions}) and any other URL information.
+A typical server URL for servers hosted by the World Bank: {it: https://projectX.mysurvey.solutions}
 
 {phang}
 {opt user(string)} specifies the login name of an API account created on the server itself. 
@@ -75,7 +77,7 @@ An installed version of R Statistical Software is required. {p_end}
 {marker optiona}{...}
 {dlgtab:Optional}
 
-{marker sursol_export_rpath}{...}
+{marker sursol_actionlog_rpath}{...}
 {phang}
 {opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol actionlog} assumes that the executable  
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
@@ -109,12 +111,13 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {synopt:{it: assignment__id} } Assignment__id from which interview has been created{p_end}
 {synoptline} 
 
+{marker debugging}{...}
 {title:Debugging}
 
 {pstd} If you encounter the problem that the windows/mac shell box opens but closes shortly after without any data being exported: {p_end}
 {pstd}{cmd:sursol actionlog} relies on various R packages. By default, those R packages are being installed if the command can not locate the packages.{p_end} 
-{pstd}However, some users reported that this is not working properly.{p_end}
-{pstd}Therefore, try to install the following packages manually in R by opening R, either in applications such as RStudio or R.exe itself: {p_end}
+{pstd}However, some users reported that this is not working properly. This is most likely because of Stata / Windows or Mac Shell Box not having administrator rights to install the packages.{p_end}
+{pstd}Therefore, try to install the following packages manually in R by opening R, either in IDE' such as RStudio or R.exe itself: {p_end}
 
 {synoptline}
 {pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
@@ -124,14 +127,14 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {pstd}	install.packages("data.table", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {synoptline}
 
-Afterwards, {cmd:sursol actionlog} should run.
+{pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol actionlog} should run. {p_end}
 
 {title:Examples}
 
 {pstd}Request to export detailed action logs from server {it:https://projectX.mysurvey.solutions}, append and analyse parts of the content {p_end}
 
 {phang2}{cmd:. sursol actionlog,  dir("${download}/action_log_folder") ///}{p_end}
-{phang2}{cmd:. server("projectX") ///}{p_end}
+{phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}
 {phang2}{cmd:. append ///}{p_end}
@@ -145,4 +148,4 @@ Afterwards, {cmd:sursol actionlog} should run.
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol actionlog} was last updated using Survey Solutions 20.04
+{pstd}{cmd:sursol actionlog} was last updated using Survey Solutions 20.05

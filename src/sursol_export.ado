@@ -11,8 +11,6 @@ syntax anything, SERver(string) USER(string) PASSword(string) [Rpath(string)]  [
 local currdir `c(pwd)'		
 
 
-tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
-
 //CHECK OPTIONS CORRECTLY SPECIFIED 
 ************************************************************************************************
 **VERSIONS
@@ -37,6 +35,12 @@ else if length("`versions'")==0 & length("`lastversion'")>0 loc newversions ""la
 if length("`zipdir'")>0 & length("`nozip'")>0 {
 noi disp as error _n "Attention. Zip directory was specified but option ""NOZIP"" enforced. Please check." 
 ex 601
+}
+
+**GIVE WARNING IF PROTOCOL OF URL NOT GIVEN 
+if strpos("`server'","http")==0 {
+noi dis as error _n "Attention. There is no protocol specified in {help sursol_export##server:server({it:url})}"
+noi dis as error "The command will not work if the URL is not specified correctly. Let's give it a try nevertheless..."
 }
 
 
@@ -106,10 +110,6 @@ noi dis as error "But let's try it nevertheless... "
 
 if length("`nozip'")==0 loc zip="yes"
 else if length("`nozip'")>0 loc zip="no"
-
-foreach x in ".mysurvey.solutions" "//" ":" "https" { 
-loc server=subinstr("`server'","`x'","",.)
-}
 
 
 if length("`rpath'")==0 {
@@ -217,7 +217,7 @@ quietly: file open rcode using "`currdir'/export.R", write replace
 #d ;
 quietly: file write rcode  
 
-`"server <- "`server'" "' _newline
+`" server <- "`server'" "' _newline
 `"user= "`user'"							 "' _newline
 `"password="`password'" "' _newline
 `"questionnaire_name="`1'" "' _newline
@@ -245,7 +245,7 @@ quietly: file write rcode
 `"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(date)))   "'  _newline
 `"	Sys.setlocale("LC_TIME", "English")   "'  _newline
-`"	server_url<-sprintf("https://%s.mysurvey.solutions", server)     "'  _newline
+`"	server_url<-server     "'  _newline
 `"	     "'  _newline
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
 `"	if (class(serverCheck) == "try-error") {     "'  _newline
@@ -261,9 +261,7 @@ quietly: file write rcode
 `"	     "'  _newline
 `"	for (x in c("user", "password", "server", "datasets", "directory", "questionnaire_name")) {     "'  _newline
 `"	  if (!is.character(get(x))) {     "'  _newline
-`"	    message(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))     "'  _newline
-`"	    Sys.sleep(5)     "'  _newline
-`"	    stop()     "'  _newline
+`"	    stop(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))     "'  _newline
 `"	         "'  _newline
 `"	  }     "'  _newline
 `"	       "'  _newline
@@ -284,9 +282,7 @@ quietly: file write rcode
 `"	if (((interview_status %in% c("Deleted", "Restored" , "Created", "SupervsiorAssigned","InterviewerAssigned",     "'  _newline
 `"	                                      "ReadyForInterview" , "SentToCapi", "Restarted" , "Completed", "RejectedBySupervisor" ,     "'  _newline
 `"	                              "ApprovedBySupervisor", "RejectedByHeadquarters" , "ApprovedByHeadquarters")) == FALSE) && interview_status!="") {     "'  _newline
-`"	  message(paste("Interview status has been not correctly specified:", interview_status,". Please adjust! Attention: Case sensitive"))     "'  _newline
-`"	  Sys.sleep(5)     "'  _newline
-`"	  stop()     "'  _newline
+`"	  stop(paste("Interview status has been not correctly specified:", interview_status,". Please adjust! Attention: Case sensitive"))     "'  _newline
 `"	       "'  _newline
 `"	  }     "'  _newline
 `"	     "'  _newline
@@ -295,14 +291,12 @@ quietly: file write rcode
 `"	  stop(paste0("Data folder does not exist in the expected location: ",directory))     "'  _newline
 `"	}     "'  _newline
 `"	if (!dir.exists(zip_directory) && zip_directory!="") {     "'  _newline
-`"	  message("ZIP folder does not exist in the expected location: ", directory)     "'  _newline
-`"	  Sys.sleep(5)     "'  _newline
-`"	  stop()     "'  _newline
+`"	  stop(paste("ZIP folder does not exist in the expected location: ", directory))     "'  _newline
 `"	}     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
-`"	api_URL <- sprintf("https://%s.mysurvey.solutions/api/v1", server)     "'  _newline
+`"	api_URL <- sprintf("%s/api/v1", server)     "'  _newline
 `"	     "'  _newline
 `"	query <- paste0(api_URL, "/questionnaires")     "'  _newline
 `"	     "'  _newline
@@ -414,7 +408,7 @@ quietly: file write rcode
 `"	       "'  _newline
 `"	       "'  _newline
 `"	    ##QUERIES TO DOWNLOAD   "'  _newline
-`"	    exportapi_url <- sprintf("https://%s.mysurvey.solutions/api/v2/export", server)     "'  _newline
+`"	    exportapi_url <- sprintf("%s/api/v2/export", server)     "'  _newline
 `"	       "'  _newline
 `"	    ##START    "'  _newline
 `"	    #CREATE THE BODY   "'  _newline
@@ -562,6 +556,9 @@ quietly: file write rcode
                 file close rcode 
 
 		//EXECUTE THE COMMAND
+
+		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
+
 		timer clear
 		timer on 1
                 shell "`rpath'/R" --vanilla <"`currdir'/export.R" 2>`error_message' 

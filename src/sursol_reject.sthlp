@@ -14,13 +14,13 @@
 {p 8 17 2}
 {cmd:sursol reject}
 {it:{help if}}
-{cmd:,} {opt serv:er(string)}  {opt user(string)} {opt password(string)} [{it:{help sursol reject##sursol reject_options:reject_options}}]
+{cmd:,} {opt serv:er(url)}  {opt user(string)} {opt password(string)} [{it:{help sursol reject##sursol reject_options:reject_options}}]
 
 
 {synoptset 21 tabbed}{...}
 {synopthdr:Required }
 {synoptline}
-{synopt:{opt serv:er(string)}}prefix of server domain name {p_end}
+{synopt:{opt serv:er(url)}}string of full URL of server, including protocol and hostname {p_end}
 {synopt:{opt user(string)}}API user name{p_end}
 {synopt:{opt password(string)}}password of API user{p_end}
 {synoptline}
@@ -57,8 +57,10 @@ Interviews can be rejected by Supervisor with the following status only: {it:Com
 
 {dlgtab:Required}
 
+{marker server}{...}
 {phang}
-{opt serv:er(string)} specifies the server on which the survey is hosted. Only prefix of domain name required: PREFIX.mysurvey.solutions. Full domain name, protocol and other URL information will be added automatically. 
+{opt serv:er(url)} specifies the server on which the survey is hosted. Full URL required: Protocol (e.g. {it:https://}), hostname (e.g. {it:projectX.mysurvey.solutions}) and any other URL information.
+A typical server URL for servers hosted by the World Bank: {it: https://projectX.mysurvey.solutions}
 
 {phang}
 {opt user(string)} specifies the login name of an API account created on the server itself. 
@@ -67,7 +69,7 @@ Interviews can be rejected by Supervisor with the following status only: {it:Com
 {opt password(string)} the corresponding password of the API account specified in {opt user(string)}. 
 
 
-{marker optiona}{...}
+{marker optional}{...}
 {dlgtab:Optional}
 
 {phang}
@@ -82,6 +84,24 @@ If interview__id has been renamed {opt id:(var)} can be used to indicate the new
 {opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol reject} assumes that the executable  
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
 
+{marker debugging}{...}
+{title:Debugging}
+
+{pstd} If you encounter the problem that the windows/mac shell box opens but closes shortly after without any interviews being rejected: {p_end}
+{pstd}{cmd:sursol reject} relies on various R packages. By default, those R packages are being installed if the command can not locate the packages.{p_end} 
+{pstd}However, some users reported that this is not working properly. This is most likely because of Stata / Windows or Mac Shell Box not having administrator rights to install the packages.{p_end}
+{pstd}Therefore, try to install the following packages manually in R by opening R, either in IDE's such as RStudio or R.exe itself: {p_end}
+
+{synoptline}
+{pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd} 	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd} 	install.packages("dplyr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("date", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{synoptline}
+
+{pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol reject} should run. {p_end}
 
 {title:Examples}
 
@@ -89,7 +109,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {phang2}{cmd:. use "C:\Users\survey_X.dta" ,clear }{p_end}
 
-{phang2}{cmd:. sursol reject if q61>7, server("survey_X.mysurvey.solutions") /// }{p_end}
+{phang2}{cmd:. sursol reject if q61>7, server("https://projectX.mysurvey.solutions") /// }{p_end}
 {phang2}{cmd:. user("API_acc") ///  }{p_end}
 {phang2}{cmd:. password("API_acc2019")  /// }{p_end}
 {phang2}{cmd:. comment("This is not possible at all. Please confirm.") }{p_end}
@@ -103,4 +123,4 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol reject} was last updated using Survey Solutions 19.08
+{pstd}{cmd:sursol reject} was last updated using Survey Solutions 20.05

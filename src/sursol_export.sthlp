@@ -12,8 +12,7 @@
 
 {p 8 17 2}
 {cmd:sursol export}
-{it:questionnaire_name}
-{cmd:,} {opt dir:ectory(string)} {opt serv:er(string)}  {opt user(string)} {opt password(string)} {it: dataset} [{it:{help sursol export##sursol export_options:sursol export options}}]
+{it:questionnaire_name}{cmd:,} {opt serv:er(url)}  {opt user(string)} {opt password(string)} {it:file-destination}  {it: dataset} [{it:{help sursol export##sursol export_options:sursol export options}}]
 
 
 {synoptset 25 tabbed}{...}
@@ -21,11 +20,11 @@
 {synoptline}
 {synopt:{it:questionnaire_name}}name of the questionnaire as found on the server. Case and space insensitive {p_end}
 {marker sursol_export_directory}{...}
-{synopt:{opt serv:er(string)}}prefix of server domain name {p_end}
+{synopt:{opt serv:er(url)}}string of full URL of server, including protocol and hostname {p_end}
 {synopt:{opt user(string)}}API user name{p_end}
 {synopt:{opt password(string)}}password of API user{p_end}
 
-{synopt:{it:File destination}}{it:One of the following:}{p_end}
+{synopt:{it:file-destination}}{it:One of the following:}{p_end}
 {synopt:{opt dir:ectory(string)}}Downloads data to your machine. Specify path in which exported data shall be stored.{p_end}
 {marker dropbox}{...}
 {synopt:{opt dropbox(access_token)}}Uploads data to Dropbox. Specify API Dropbox App access token.{p_end}
@@ -76,8 +75,10 @@ An installed version of R Statistical Software is required. Each Survey Solution
 {phang}
 {it: questionnaire_name} requests a list of all questionnaire versions available on the server corresponding to {it: questionnaire_name}. Case insensitive. Error message is displayed if no questionnaire is found. 
 
+{marker server}{...}
 {phang}
-{opt serv:er(string)} specifies the server on which the survey is hosted. Only prefix of domain name required: PREFIX.mysurvey.solutions. Full domain name, protocol and other URL information will be added automatically. 
+{opt serv:er(url)} specifies the server on which the survey is hosted. Full URL required: Protocol (e.g. {it:https://}), hostname (e.g. {it:projectX.mysurvey.solutions}) and any other URL information.
+A typical server URL for servers hosted by the World Bank: {it: https://projectX.mysurvey.solutions}
 
 {phang}
 {opt user(string)} specifies the login name of an API account created on the server itself. 
@@ -209,7 +210,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}{p_end}
 
 {phang2}{cmd:. sursol export "MyQnr",  dir("${download}") ///}{p_end}
-{phang2}{cmd:. server("projectX") ///}{p_end}
+{phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}
 {phang2}{cmd:. stata paradata  ///}{p_end}
@@ -219,7 +220,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {pstd}Afterwards download all binary data for all versions but push it to dropbox{p_end}
 
 {phang2}{cmd:. sursol export "MyQnr",   ///}{p_end}
-{phang2}{cmd:. server("projectX") ///}{p_end}
+{phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}
 {phang2}{cmd:. binary ///}{p_end}

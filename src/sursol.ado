@@ -16,7 +16,10 @@ gettoken proc 0: 0
 		exit 198
 	}
 	
-   	if "`proc'"=="approveHQ" {
+	if "`proc'"=="approve" {
+	sursol_approve `0'
+	}
+   	else if "`proc'"=="approveHQ" {
 	sursol_approveHQ `0'
 	}
 	else if "`proc'"=="unapproveHQ" {
@@ -61,9 +64,12 @@ gettoken proc 0: 0
 	else if "`proc'"=="actionlog" {
 	sursol_actionlog `0'
 	}
+	else if "`proc'"=="userreport" {
+	sursol_userreport `0'
+	}
 	else {
-	di as error "unrecognized command. check subcommand. see help on {help sursol##|_new:sursol}"
-	qui ex 199
+	di as error "Unrecognized command. Check subcommand. see help on {help sursol##|_new:sursol}"
+	ex 199
 	}
 end
 

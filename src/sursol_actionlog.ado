@@ -28,10 +28,12 @@ loc directory=subinstr("`directory'","`x'","/",.)
 }
 
 
-//CORRECT SERVER ADDRESS
-foreach x in ".mysurvey.solutions" "//" ":" "https" { 
-loc server=subinstr("`server'","`x'","",.)
+**GIVE WARNING IF PROTOCOL OF URL NOT GIVEN 
+if strpos("`server'","http")==0 {
+noi dis as error _n "Attention. There is no protocol specified in {help sursol_actionlog##server:server({it:url})}"
+noi dis as error "The command will not work if the URL is not specified correctly. Let's give it a try nevertheless..."
 }
+
 
 //RPATH? 
 if length("`rpath'")==0 {
@@ -63,7 +65,7 @@ ex 601
 	foreach x of loc folderstructure {
 		noi dis as result "`x'" 
 		if `length'==`i' {
-		noi dis as result _n "Version `x' of R will be used to export the data"
+		noi dis as result _n "Version `x' of R will be used to download the action logs"
 		loc version="`x'"
 		} 
 		loc ++i
@@ -162,7 +164,7 @@ quietly: file write rcode
 		
 		`"##DATE PACKAGE, SET LOCAL TIME TO ENGLISH"' _newline
 		`"Sys.setlocale("LC_TIME", "English")"' _newline                       
-                `"server_url<-sprintf("https://%s.mysurvey.solutions", server)  "'    _newline
+                `"server_url<-sprintf("%s", server)  "'    _newline
                 `"  "'    _newline
                 `"serverCheck <- try(http_error(server_url), silent = TRUE)  "'    _newline
                 `"if (class(serverCheck) == "try-error") {  "'    _newline
@@ -173,7 +175,7 @@ quietly: file write rcode
 `" ##START GETTING THE LOGS      "' _newline
 `"       "' _newline
 `" ##GENERAL API_URL      "' _newline
-`" api_URL <- sprintf("https://%s.mysurvey.solutions/api/v1", server)        "' _newline
+`" api_URL <- sprintf("%s/api/v1", server)        "' _newline
 `"       "' _newline
 `"       "' _newline
 `" ##FIRST GET LIST OF SUPERVISORS      "' _newline
@@ -244,7 +246,7 @@ quietly: file write rcode
 `"           ##IF THERE HAS BEEN ANY TABLET SET UP      "' _newline
 `"           if (!length(list_log)==FALSE) {      "' _newline
 `"             #DISPLAY INFO      "' _newline 
-`"             print(paste0(int_name, "- action log now being downloaded"))  "' _newline 
+`"             print(paste0(int_name, ": Action log now being downloaded"))  "' _newline 
 `"                   "' _newline 
 `"             ##RENAME TABLE HEADER      "' _newline
 `"             names(list_log) <- c("Timestamp", "Action")      "' _newline
@@ -297,7 +299,7 @@ quietly: file write rcode
 `"                "' _newline
 `"                   "' _newline
 `"              }      "' _newline
-`"           else if (!length(list_log)==TRUE) print(paste0(int_name,"- tablet has not been set up."))      "' _newline
+`"           else if (!length(list_log)==TRUE) print(paste0(int_name,": Tablet has not been set up yet. No download."))      "' _newline
 `"                 "' _newline
 `"         }      "' _newline
 `"            "' _newline
@@ -331,8 +333,17 @@ file close rcode
 
 
 		//EXECUTE THE COMMAND
+		timer clear
+		timer on 1
                 shell "`rpath'/R" --vanilla <"`directory'/action_log.R" 2>`error_message' 
-		
+		timer off 1	
+		qui timer list 1
+		if `r(t1)'<=2 {
+		dis as error "Whoopsa! That was surprisingly fast."
+		dis as error "Please check if the action logs have been downloaded correctly." 
+		dis as error "If not, have a look at {help sursol_actionlog##debugging:debugging information} in the help file."
+		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
+		}
 
 		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
 		di as result _n

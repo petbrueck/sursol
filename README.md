@@ -11,9 +11,11 @@ No responsibility or liability for the correct functionality of any of the comma
 - `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software must be installed.
 - `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software must be installed.
 - `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software must be installed. 
+- `sursol approve`  approves interview(s) as Supervisor based on specified rule. R software must be installed. 
 - `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software must be installed. 
 - `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software must be installed.
 - `sursol actionlog`  downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software must be installed. 
+- `sursol userreport`  exports detailed interviewer reports for all interviewer users created on a Survey Solutions Server. R software is required.
 
 ### Data Management
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 

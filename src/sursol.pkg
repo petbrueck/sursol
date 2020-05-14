@@ -15,6 +15,8 @@ f /sursol_rejectHQ.ado
 f /sursol_mscrelab.ado
 f /sursol_reshape.ado
 f /sursol_actionlog.ado
+f /sursol_approve.ado
+f /sursol_userreport.ado
 
 f /sursol.sthlp
 f /sursol_append.sthlp
@@ -31,6 +33,8 @@ f /sursol_rejectHQ.sthlp
 f /sursol_mscrelab.sthlp
 f /sursol_reshape.sthlp
 f /sursol_actionlog.sthlp
+f /sursol_approve.sthlp
+f /sursol_userreport.sthlp
 
 e
 

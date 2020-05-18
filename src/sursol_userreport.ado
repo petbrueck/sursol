@@ -2,7 +2,7 @@ capture program drop sursol_userreport
 
 program sursol_userreport 
 
-syntax, DIRectory(string)  SERver(string) HQUSER(string) HQPASSword(string) [Rpath(string)]  [XLSX] [TAB] [CSV] 
+syntax, DIRectory(string)  SERver(string) HQUSER(string) HQPASSword(string) [Rpath(string)]  [XLSX] [TAB] [CSV] [archived]
 
 
 
@@ -157,7 +157,7 @@ quietly: file open rcode using "`currdir'/getreport.R", write replace
 quietly: file write rcode  
 
 `"##GET THE PACKAGES																																															 "'  _newline
-`"packages<- c("httr", "xlsx")   "'  _newline
+`"packages<- c("httr", "openxlsx")   "'  _newline
 `"       "'  _newline
 `"for (newpack in packages) {     "'  _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}     "'  _newline
@@ -167,7 +167,7 @@ quietly: file write rcode
 `"}  "'  _newline
 `" "'  _newline
 `"suppressMessages(suppressWarnings(library(httr))) "'  _newline
-`"suppressMessages(suppressWarnings(library(xlsx))) "'  _newline
+`"suppressMessages(suppressWarnings(library(openxlsx))) "'  _newline
 `" "'  _newline
 `" "'  _newline
 `"##USER SETTINGS "'  _newline
@@ -176,7 +176,9 @@ quietly: file write rcode
 `"user= "`hquser'"                                                          "'  _newline
 `"password="`hqpassword'"  "'  _newline
 `" "'  _newline
-`" "'  _newline
+`"##ARCHIVED STATUS  "'  _newline
+`"if (nchar("`archived'")>0) archived_status <- "true" else archived_status <- "false" "'  _newline
+`" "'  _newline 
 `"##SERVER CHECK "'  _newline
 `"serverCheck <- try(http_error(server), silent = TRUE)      "'  _newline
 `"if (class(serverCheck) == "try-error") {      "'  _newline
@@ -185,8 +187,8 @@ quietly: file write rcode
 `"}      "'  _newline
 `" "'  _newline
 `"##URL "'  _newline
-`"api_URL <- sprintf("%s/UsersApi/AllInterviewers?draw=2&order[0][column]=1&order[0][dir]=asc&order[0][name]=UserName&start=0&length=20&search[value]=&search[regex]=false&supervisorName=&archived=false&facet=None&exportType=tab", "'  _newline
-`"                   server)   "'  _newline
+`"api_URL <- sprintf("%s/UsersApi/AllInterviewers?draw=2&order[0][column]=1&order[0][dir]=asc&order[0][name]=UserName&start=0&length=20&search[value]=&search[regex]=false&supervisorName=&archived=%s&facet=None&exportType=tab", "'  _newline
+`"                   server,archived_status)   "'  _newline
 `"##SEND THE REQUEST "'  _newline
 `"print("Requesting the Interviewer Report. This can take some seconds.") "'  _newline
 `"interviewer_rep_request <-  GET(api_URL,  authenticate(user, password) ) "'  _newline
@@ -205,15 +207,15 @@ quietly: file write rcode
 `" "'  _newline
 `"  #WRITE THE FILES, BASED ON OPTION SPECIFIED "'  _newline
 `"  if (nchar("`xlsx'")>0) { "'  _newline
-`"    write.xlsx(interviewer_report, file = paste0(directory,"Interviewers.xlsx"),  "'  _newline
-`"             sheetName="Data", showNA = FALSE, row.names=FALSE) "'  _newline
+`"     write.xlsx(list("Data"=interviewer_report), file = paste0(directory,"/Interviewers.xlsx")  "'  _newline
+`"             ) "'  _newline
 `"  }  "'  _newline
 `"  if (nchar("`csv'")>0) { "'  _newline
-`"          write.csv(interviewer_report, file =  paste0(directory,"Interviewers.csv"), "'  _newline
+`"          write.csv(interviewer_report, file =  paste0(directory,"/Interviewers.csv"), "'  _newline
 `"                    na = "") "'  _newline
 `"  }   "'  _newline
 `"  if (nchar("`tab'")>0) { "'  _newline
-`"    write.table(interviewer_report, file = paste0(directory,"Interviewers.tab"), sep="\t", "'  _newline
+`"    write.table(interviewer_report, file = paste0(directory,"/Interviewers.tab"), sep="\t", "'  _newline
 `"                row.names=FALSE,  quote = FALSE, na = "") "'  _newline
 `"  } "'  _newline
 `" "'  _newline
@@ -248,7 +250,7 @@ quietly: file write rcode
 		
 		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
 		di as result _n
-		di as error "{ul:Warnings & Error messages displayed by R:}"
+		di as result "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
 		
                 qui capt rm "`currdir'/getreport.R"

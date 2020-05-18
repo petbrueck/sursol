@@ -228,7 +228,7 @@ shell "`rpath'/R" --vanilla <"`c(pwd)'/approve.R" 2>`error_message'
 
 //DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
 		di as result _n
-		di as error "{ul:Warnings & Error messages displayed by R:}"
+		di as  result "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
 
 qui capt rm "`c(pwd)'/approve.R"

@@ -36,6 +36,7 @@
 {synopthdr:sursol userreport options }
 {synoptline}
 {synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
+{synopt:{opt archived}}download only report for archived interviewers.{p_end}
 {synoptline}
 
 
@@ -92,7 +93,7 @@ A typical server URL for servers hosted by the World Bank: {it: https://projectX
 {opt csv} interviewer report will be saved as "Interviewers.csv" on sheet "Interviewers".{p_end}
 
 {phang}
-{opt tab} interviewer report will be saved as "Interviewers.tab"{p_end}
+{opt tab} interviewer report will be saved as "Interviewers.tab".{p_end}
 {synoptline}
 
 
@@ -104,6 +105,8 @@ A typical server URL for servers hosted by the World Bank: {it: https://projectX
 {opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol userreport} assumes that the executable  
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
 
+{phang}
+{opt archived} by default, {cmd:sursol userreport} exports the interviewer report only for interviewers with archive status 'Active'. If {opt archived}  is specified, only the archived interviewers will be downloaded
 
 {marker debugging}{...}
 {title:Debugging}
@@ -115,7 +118,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {synoptline}
 {pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd}	install.packages("xlsx", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
+{pstd}	install.packages("openxlsx", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {synoptline}
 
 {pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol userreport} should run. {p_end}
@@ -123,12 +126,13 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {title:Examples}
 
 {pstd}Request to get interviewer report from server {it:https://projectX.mysurvey.solutions}{p_end}
+{pstd}Save as .xlsx and .tab file {p_end}
 
 {phang2}{cmd:. sursol userreport,  dir("${download}/interview_reports") ///}{p_end}
 {phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. hquser("Hquser1")  ///}{p_end}
 {phang2}{cmd:. hqpassword("Hquser1PW") ///}{p_end}
-
+{phang2}{cmd:. xlsx tab}{p_end}
 
 {title:Author}
 

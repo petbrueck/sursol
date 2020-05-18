@@ -347,10 +347,9 @@ file close rcode
 
 		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
 		di as result _n
-		di as error "{ul:Warnings & Error messages displayed by R:}"
-		di as error "`="_"*80'"
+		di as  result "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
-		di as error "`="_"*80'"
+
 		
                 qui capt rm "`directory'/action_log.R"
                 qui capt rm "`directory'/.Rhistory" 

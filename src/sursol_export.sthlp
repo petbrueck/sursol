@@ -207,9 +207,9 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {title:Examples}
 
-{pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}{p_end}
+{pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire named "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}{p_end}
 
-{phang2}{cmd:. sursol export "MyQnr",  dir("${download}") ///}{p_end}
+{phang2}{cmd:. sursol export "Project X Baseline Survey",  dir("${download}") ///}{p_end}
 {phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}
@@ -219,7 +219,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}Afterwards download all binary data for all versions but push it to dropbox{p_end}
 
-{phang2}{cmd:. sursol export "MyQnr",   ///}{p_end}
+{phang2}{cmd:. sursol export "Project X Baseline Survey",   ///}{p_end}
 {phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}

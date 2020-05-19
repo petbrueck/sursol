@@ -8,14 +8,15 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 No responsibility or liability for the correct functionality of any of the commands is taken!
 
 ### Server and Field Management
-- `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. R software must be installed.
-- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule. R software must be installed.
-- `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule. R software must be installed. 
-- `sursol approve`  approves interview(s) as Supervisor based on specified rule. R software must be installed. 
-- `sursol reject`  rejects interview(s) as Supervisor based on specified rule. R software must be installed. 
-- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. R software must be installed.
-- `sursol actionlog`  downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software must be installed. 
-- `sursol userreport`  exports detailed interviewer report for all interviewer users created on a Survey Solutions Server. R software is required.
+For these commands that make use of the Survey Solutions API, R software must be installed. But no further R knowledge required. 
+- `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. 
+- `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule.
+- `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule.
+- `sursol approve`  approves interview(s) as Supervisor based on specified rule. 
+- `sursol reject`  rejects interview(s) as Supervisor based on specified rule. 
+- `sursol varcomm`  leaves a comment at specified variable for specified interviews on the Survey Solutions Server. 
+- `sursol actionlog`  downloads detailed action log for all interviewer users created on a Survey Solutions Server. 
+- `sursol userreport`  exports detailed interviewer report for all interviewer users created on a Survey Solutions Server. 
 
 ### Data Management
 - `sursol append`  detects all Survey Solutions Version folders  in the specified working directory and appends the survey data versions into master files. 

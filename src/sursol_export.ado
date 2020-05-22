@@ -1,3 +1,9 @@
+*!Version 20.05.1 MAY 2020 
+
+/*
+WRITTEN BY PETER BRUECKMANN, p.brueckmann@mailbox.org
+*/
+
 capture program drop sursol_export
 
 program sursol_export 
@@ -307,35 +313,17 @@ quietly: file write rcode
 `"	       "'  _newline
 `"	  qnrList <- fromJSON(content(data, as = "text"), flatten = TRUE)     "'  _newline
 `"	       "'  _newline
-`"	  if (qnrList\$TotalCount <= 40) {     "'  _newline
-`"	    qnrList_all <- as.data.frame(qnrList\$Questionnaires) %>% arrange(Title, Version)     "'  _newline
-`"	         "'  _newline
-`"	  }    "'  _newline
-`"	   if (qnrList\$TotalCount <= 80) {                                                                                                                                                               "'  _newline
-`"	     qnrList_all <- as.data.frame(qnrList\$Questionnaires)    "'  _newline
-`"	       data2 <- GET(query, authenticate(user, password),    "'  _newline
-`"	                  query = list(limit = 40, offset = 2))       "'  _newline
-`"	     qnrList2 <- fromJSON(content(data2, as = "text"), flatten = TRUE)    "'  _newline
-`"	        qnrList_all <- bind_rows(qnrList_all,    "'  _newline
-`"	                              as.data.frame(qnrList2\$Questionnaires)) %>% arrange(Title, Version)    "'  _newline
-`"	       "'  _newline
-`"	   } else {    "'  _newline
-`"	     qnrList_all <- as.data.frame(qnrList\$Questionnaires)    "'  _newline
-`"	         data2 <- GET(query, authenticate(user, password),    "'  _newline
-`"	                  query = list(limit = 40, offset = 2))    "'  _newline
-`"	         qnrList2 <- fromJSON(content(data2, as = "text"), flatten = TRUE)    "'  _newline
-`"	         "'  _newline
-`"	     qnrList_all <- bind_rows(qnrList_all,    "'  _newline
-`"	                              as.data.frame(qnrList2\$Questionnaires)) %>% arrange(Title, Version)    "'  _newline
-`"	         "'  _newline
-`"	    data3 <- GET(query, authenticate(user, password),    "'  _newline
-`"	                query = list(limit = 40, offset = 3))    "'  _newline
-`"	       "'  _newline
-`"	   qnrList3 <- fromJSON(content(data3, as = "text"), flatten = TRUE)    "'  _newline
-`"	       "'  _newline
-`"	   qnrList_all <- bind_rows(qnrList_all,    "'  _newline
-`"	                            as.data.frame(qnrList3\$Questionnaires)) %>% arrange(Title, Version)    "'  _newline
-`"	 }                "'  _newline
+`"        ##FIRST LIST OF ALL CURRENTLY AVAILABLE QUESTIONNAIRES  "'  _newline
+`"        qnrList_all <- as.data.frame(qnrList\$Questionnaires) %>% arrange(Title, Version)     "'  _newline  
+`"        ##IF THERE ARE MORE THAN 40 QX ON THE SERVER, REPEAT THE QUERY  "'  _newline
+`"        if (qnrList\$TotalCount > 40) {   "'  _newline
+`"        for (i in 1:ceiling((qnrList\$TotalCount-40)/40)) {      "'  _newline
+`"          add_qx_query <- GET(query, authenticate(user, password),      "'  _newline
+`"                       query = list(limit = 40, offset = i+1))        "'  _newline
+`"          qnrList_all <- bind_rows(qnrList_all,     "'  _newline
+`"                                   as.data.frame(fromJSON(content(add_qx_query, as = "text"), flatten = TRUE)\$Questionnaires)) %>% arrange(Title, Version)   "'  _newline   
+`"                  }  "'  _newline
+`"        }  "'  _newline
 `"	} else if (status_code(data) == 401) {      "'  _newline
 `"	  stop("Incorrect username or password. Check login credentials for API user")     "'  _newline
 `"	} else {     "'  _newline

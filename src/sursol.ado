@@ -11,12 +11,12 @@ program define sursol
 
 *** 1. IDENTIFY SUBCOMMAND
 ********************************************************************************
-gettoken proc 0: 0
+gettoken proc 0 : 0, parse(" ,")
+
 	if length("`proc'")==0 {
-		di as error "no subcommand specified. see help on {help sursol##|_new:sursol}"
+		di as error "no subcommand specified. See help on {help sursol##|_new:sursol}"
 		exit 198
 	}
-	
 	if "`proc'"=="approve" {
 	sursol_approve `0'
 	}
@@ -69,7 +69,7 @@ gettoken proc 0: 0
 	sursol_userreport `0'
 	}
 	else {
-	di as error "Unrecognized command. Check subcommand. see help on {help sursol##|_new:sursol}"
+	di as error "Unrecognized command. Check subcommand. See help on {help sursol##|_new:sursol}"
 	ex 199
 	}
 end

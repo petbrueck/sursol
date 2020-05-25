@@ -8,7 +8,8 @@ The list of sub-commands of **sursol**  is work in progress and improved continu
 No responsibility or liability for the correct functionality of any of the commands is taken!
 
 ### Server and Field Management
-For these commands that make use of the Survey Solutions API, R software must be installed. But no further R knowledge required. 
+ Any subcommand of the Server and Field Management makes use of the [Survey Solutions API](https://support.mysurvey.solutions/headquarters/api/survey-solutions-api/). To use the following commands, the [R software environment](https://www.r-project.org/) needs to be installed on your machine. But no further R knowledge is required.
+
 - `sursol export`  downloads survey data of a questionnaire from a Survey Solutions Server. 
 - `sursol [un]approveHQ` (un)approves interviews on the Survey Solutions Server as Headquarter based on specified rule.
 - `sursol rejectHQ`  rejects interview(s) as Headquarter based on specified rule.

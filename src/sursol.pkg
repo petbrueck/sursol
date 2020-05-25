@@ -1,4 +1,10 @@
 v 20.05.2
+
+d {bf: Peter Brueckmann}
+d Stata package that standardizes and simplifies repetitive tasks within the realm of data collection using the Survey Solutions software package.
+d
+d Last major revision: May 2020
+
 f /sursol.ado
 f /sursol_append.ado
 f /sursol_approveHQ.ado

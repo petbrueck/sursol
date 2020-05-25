@@ -34,13 +34,12 @@ the string will be looked up in the variable labels of {it:stub} and replaced wi
 
 {title:Description}
 
-{pstd}Survey Solutions exports the content of questions that are not asked at the questionnaire level, but asked within rosters, in subordinate files. 
-See {browse "https://support.mysurvey.solutions/headquarters/export/questionnaire-data-export-file-anatomy/":here}
-for a detailed description on the Export File Anatomy. {p_end}
+{pstd}Survey Solutions exports the content of questions that are not asked at the questionnaire level, but asked within rosters, in subordinate files.
+See {browse "https://support.mysurvey.solutions/headquarters/export/questionnaire-data-export-file-anatomy/":here} for a detailed description on the Export File Anatomy. {p_end}
 
-{pstd}Each subordinate file contains an id corresponding to the roster row code (@rowcode) of each item. 
-In case of multi-select and fixed set of items {browse "https://support.mysurvey.solutions/questionnaire-designer/components/rosters/": rosters} 
-such an id stores the respective rowname in its value label.{p_end}
+{pstd}Each subordinate file contains variable that stores the id corresponding to the roster row code (@rowcode) of each item. 
+In case of multi-select and fixed set of items {browse "https://support.mysurvey.solutions/questionnaire-designer/components/rosters/":rosters},  
+such an id variable also stores the respective rowname in its value label.{p_end}
 
 {pstd}At the stage of data cleaning and/or analysis it is often necessary to reshape such subordinate files from long to wide to be able to merge it with the questionnaire level dataset, 
 {it:{browse "https://support.mysurvey.solutions/questionnaire-designer/components/questionnaire-variable/":questionnaire_variable}.dta}.{p_end}
@@ -50,22 +49,20 @@ such an id stores the respective rowname in its value label.{p_end}
 
 {title:Example}
 
-{hline}
-{pstd}File asset.dta contains the number of assets owned BY ASSET & OBSERVATION. E.g. for each interview__id there are 20 assets asked => 20 Rows per interview in dataset. {p_end}
-{pstd}Variable "asset__id" contains the value of the asset + the name of the asset in the value label. Variable "q1" contains the quantity of each asset and its variable label: "How many %asset% does your family own?" {p_end}
+{pstd}File {it:asset.dta} contains the number of assets owned BY ASSET & OBSERVATION. E.g. for each interview__id there are 20 assets asked - 20 Rows per interview in dataset. {p_end}
+{pstd}Variable {it:asset__id} stores the value/rowcode of the asset + the name of the asset in the value label. Variable {it:q1} contains the quantity of each asset and its variable label: "How many %asset% does your family own?" {p_end}
 
-{pstd}Aim is to reshape from long to wide and add the name of the asset to each variable label{p_end}
+{pstd}Aim is to reshape from long to wide and add the name of the asset to each variable label instead of %asset% {p_end}
 
 {phang2}{cmd:. sursol reshape q1 ,id(interview__id) roster(asset__id) sub("%asset%") } {p_end}
 
-{pstd}Result is wide dataset with 40 variables and only one observation per interview__id. q1__1 -> "How many ASSET1 does your family own", q1__2 -> "How many ASSET2 does your family own" {p_end}
+{pstd}Result is wide dataset with 20 variables and only one observation per interview__id. q1__1 -> "How many ASSET1 does your family own", q1__2 -> "How many ASSET2 does your family own" {p_end}
 
-
-{pstd}Assuming that "asset.dta" would be nested within a roster called "household_member.dta", you'd need to account for that when reshaping:{p_end} 
+{pstd}Assuming that {it:asset.dta} would be nested within a roster called {it:household_member.dta}, you'd need to account for that when reshaping:{p_end} 
 {phang2}{cmd:. sursol reshape q1 ,id(interview__id household_member__id) roster(asset__id) sub("%asset%") } {p_end}
 
-{pstd}Result would be the reshaped asset data at the interview-household_member leve.{p_end}
-{hline}
+{pstd}Result would be the reshaped dataset at the interview-{it:household_member} level.{p_end}
+
 
 {title:Author}
 
@@ -75,3 +72,4 @@ such an id stores the respective rowname in its value label.{p_end}
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
+{pstd}{cmd:sursol approve} was last updated (& used for the first time) using Survey Solutions 20.04

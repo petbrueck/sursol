@@ -47,7 +47,8 @@ The command lists all 32-character long identifier of the interviews for which t
 the command uses the Survey Solutions system generated variable "interview__id" by default.{p_end}
 
 {pstd}
-An installed version of R Statistical Software is required. The command shell returns warnings if (1) interviews was in status that was not ready to be approved or (2)  interviews have been not found. {p_end}
+An installed version of R Statistical Software is required and will be accessed through the Windows Command Prompt or Mac terminal.
+The command prompt/terminal returns warnings if (1) interview was in status that was not ready to be approved or (2) interview has not been found. {p_end}
 
 {pstd}
 Interviews can be approved as Supervisor with the following status only: {it:Rejected by Headquarter} and {it:Completed}.  {p_end}

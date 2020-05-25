@@ -1,3 +1,6 @@
+*! version 20.05.2  May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 capture program drop sursol_actionlog
 
 program sursol_actionlog 
@@ -305,7 +308,6 @@ quietly: file write rcode
 `"            "' _newline
 `"   }      "' _newline
 `"       "' _newline
-
 `" ##APPEND THEM ALL IN ONE BIG FILE   IF SPECIFIED   "' _newline
 `" if (nchar(append)>0) {      "' _newline
 `"       "' _newline

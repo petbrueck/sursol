@@ -1,3 +1,6 @@
+*! version 20.01 January 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 capture program drop sursol_transcolor
 
 program sursol_transcolor 

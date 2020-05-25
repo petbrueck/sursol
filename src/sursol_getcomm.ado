@@ -1,3 +1,6 @@
+*! version 19.11  November 2019
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 capture program drop sursol_getcomm
 
 program sursol_getcomm 

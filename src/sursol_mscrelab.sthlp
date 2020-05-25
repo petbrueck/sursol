@@ -32,7 +32,8 @@
 {synopt:{opt sheet(string)}}can be used to indicate the excel sheet in which {it:var} can be found. By default, "Translations" is used.{p_end}
 {marker catvalue}{...}{synopt:{opt catvalue(var)}}indicates the variable in {it:translation_filename.xlsx} that contains the categories values of the multi-select questions. By default, "Index" is used.{p_end}
 {marker catvariable}{...}{synopt:{opt catvar:iable(var)}}indicates the variable in {it:translation_filename.xlsx} that contains the variable name of the multi-select questions. By default, "Variable" is used.{p_end}
-{synopt:{opt no:skip}}if specified, {cmd:sursol mscrelab} will include variables to be relabelled for which the command is not 100% certain if variables are indeed a multi-select question. Often can be the case for multi-select quesitons that record answer order.{p_end}
+{synopt:{opt no:skip}}if specified, {cmd:sursol mscrelab} will include variables to be relabelled for which the command is not 100% certain if variables are indeed a multi-select question. Often can be the case for multi-select quesitons
+that record answer order.{p_end}
 {synoptline}
 
 
@@ -67,6 +68,13 @@ Survey Solutions export anatomy splits multi-select questions into different var
 
 
 {title:Examples}
+
+{pstd}Open a file in which variable labels shall be relabelled.  {p_end}
+
+{phang2}{cmd:. use "${raw}/projectX.dta", clear}{p_end}
+
+{pstd}Now run the command. The default translation file exported by the Survey Solutions Questionnaire Designer is used. 
+The content from column "Originaltext" contains the Option Titles as defined in the Questionnaire Designer.{p_end}
 
 {phang2}{cmd:. sursol mscrelab Originaltext using "C:\Users\translation.xlsx", noskip}{p_end}
 

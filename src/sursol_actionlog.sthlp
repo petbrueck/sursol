@@ -5,7 +5,8 @@
 {title:Title}
 
 {p 5 15}
-{cmd:sursol actionlog} {hline 2} downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software is required. 
+{cmd:sursol actionlog} {hline 2} downloads {browse "https://support.mysurvey.solutions/headquarters/reporting/detailed-action-log/":detailed action log}
+ for all interviewer users created on a Survey Solutions Server. R software is required. 
 
 
 {title:Syntax}

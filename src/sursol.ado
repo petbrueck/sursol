@@ -1,5 +1,6 @@
-*****
-*! version 1.1  01Aug2019
+*! version 20.05.2  May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 
 capture prog drop sursol
 program define sursol

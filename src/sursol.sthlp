@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.2  24/04/2020}{...}
+{* *! version 20.05.2  May 2020}{...}
 {title:Title}
 
 {p2colset 5 22 24 2}{...}
@@ -16,17 +16,22 @@
 {marker servermanagement}{...}
 {title:Server and Field Management}
 
+{pstd} Any {it:subcommand} of the Server and Field Management makes use of the {browse "https://support.mysurvey.solutions/headquarters/api/survey-solutions-api/":Survey Solutions API}.
+To use the following commands, the {browse "https://www.r-project.org/":R software environment} needs to be installed on your machine. But no further R knowledge is required. {p_end}
+
 {synoptset 16}{...}
 {synopthdr:subcommand}
 {synoptline}
-{synopt :{helpb sursol_export:export}}downloads survey data of a questionnaire from a Survey Solutions Server. R software is required{p_end}
-{synopt :{helpb sursol_approveHQ:[un]approveHQ}}(un)approves interview(s) as Headquarter based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_rejectHQ:rejectHQ}}rejects interview(s) as Headquarter based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_approve:approve}}approves interview(s) as Supervisor based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_reject:reject}}rejects interview(s) as Supervisor based on specified rule. R software is required{p_end}
-{synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interview(s) on the Survey Solutions Server. R software is required {p_end}
-{synopt :{helpb sursol_actionlog:actionlog}}downloads detailed action log for all interviewer users created on a Survey Solutions Server. R software is required. {p_end}
-{synopt :{helpb sursol_userreport:userreport}}exports detailed interviewer report for all interviewer users created on a Survey Solutions Server. R software is required. {p_end}
+{synopt :{helpb sursol_export:export}}downloads data of any questionnaire from a Survey Solutions Server{p_end}
+{synopt :{helpb sursol_approveHQ:[un]approveHQ}}(un)approves interview(s) as Headquarter based on specified rule {p_end}
+{synopt :{helpb sursol_rejectHQ:rejectHQ}}rejects interview(s) as Headquarter based on specified rule {p_end}
+{synopt :{helpb sursol_approve:approve}}approves interview(s) as Supervisor based on specified rule{p_end}
+{synopt :{helpb sursol_reject:reject}}rejects interview(s) as Supervisor based on specified rule{p_end}
+{synopt :{helpb sursol_varcomm:varcomm}}leaves a comment at specified variable for specified interview(s) on the Survey Solutions Server{p_end}
+{synopt :{helpb sursol_actionlog:actionlog}}downloads {browse "https://support.mysurvey.solutions/headquarters/reporting/detailed-action-log/":detailed action log}
+ for all interviewer users created on a Survey Solutions Server{p_end}
+{synopt :{helpb sursol_userreport:userreport}}downloads {browse "https://support.mysurvey.solutions/headquarters/reporting/downloadable-report-on-interviewers/":report on interviewers} 
+for all interviewer users created on a Survey Solutions Server{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -41,7 +46,7 @@
 {synopt :{helpb sursol_import:import}}imports tabular data exported by Survey Solutions{p_end}
 {synopt :{helpb sursol_getcomm:getcomm}}merges all comments left at all questions during the interview process to the survey data files{p_end}
 {synopt :{helpb sursol_mscrelab:mscrelab}}creates new variable label for multi-select questions for which category value title was not fully displayed in original variable label{p_end}
-{synopt :{helpb sursol_reshape:reshape}}reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables.{p_end}
+{synopt :{helpb sursol_reshape:reshape}}reshapes data from long to wide using the value labels of a roster id variable in the variable labels of reshaped {it: stub} variables{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -52,7 +57,7 @@
 {synopthdr:subcommand}
 {synoptline}
 {synopt :{helpb sursol_transcheck:transcheck}}compares translation against original text to identify software-related misalignments{p_end}
-{synopt :{helpb sursol_transcolor:transcolor}}changes the font color of specific text items in the translation file.{p_end}
+{synopt :{helpb sursol_transcolor:transcolor}}changes the font color of specific text items in the translation file{p_end}
 {synoptline}
 {p2colreset}{...}
 
@@ -68,7 +73,7 @@
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
 
-{title:Version:} 20.05.2
+{title:Updates}
 
 {pstd}Most commands of {cmd:sursol} were last updated using Survey Solutions 20.05
 

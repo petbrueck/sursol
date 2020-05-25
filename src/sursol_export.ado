@@ -1,8 +1,5 @@
-*!Version 20.05.1 MAY 2020 
-
-/*
-WRITTEN BY PETER BRUECKMANN, p.brueckmann@mailbox.org
-*/
+*! version 20.05.2  May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_export
 
@@ -103,10 +100,10 @@ noi dis as error "But let's try it nevertheless... "
 	loc datasets=subinstr(`"`datasets'"',`"",""',"",1)
 	loc datasets=subinstr(`"`datasets'"',  `"",""', ",",.)
 	if length(`"`datasets'"')==0 {
-		noi dis as error "Attention. You have not specified any dataset that you want to export"
+		noi dis as error _n "Attention. You have not specified any dataset that you want to export."
 		noi dis as error "Please specify as option any of the following:"
 		noi dis as error "'spss', 'stata', 'tabular', 'paradata', 'ddi' and/or 'binary'."
-		noi dis as error "For more information see {help sursol_export##sursol_export_options:sursol export options}."
+		noi dis as error "For more information see {help sursol_export##dataset:sursol export {it:dataset}}."
 		ex 198
 		}
 

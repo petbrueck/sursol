@@ -1,3 +1,6 @@
+*! version 20.04  April 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 capture program drop sursol_mscrelab
 
 program sursol_mscrelab 
@@ -12,11 +15,11 @@ qui {
 // NUMBER OF VARIABLES SPECIFIED
 	loc cnt: word count `anything'
 	if `cnt'<1 {
-	noi dis as error"Too few variables specified"
+	noi dis as error "Too few variables specified"
 	ex 102
 	}
 	if `cnt'>1 {
-	noi dis as error"Too many variables specified"
+	noi dis as error "Too many variables specified"
 	ex 103
 	}
 
@@ -26,6 +29,7 @@ capt confirm file "`file'"
 
 if !_rc {
 	File specified in {help using: using} not found
+	ex 198
 }
 
 	
@@ -181,5 +185,6 @@ restore
 
 	
 } //QUIET BRACKET
+
 end
 

@@ -1,3 +1,6 @@
+*! version 19.07  July 2019
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 capture program drop sursol_import
 
 program sursol_import 

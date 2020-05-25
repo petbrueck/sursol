@@ -1,3 +1,6 @@
+*! version 20.05.1  May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 program sursol_approveHQ 
 
 syntax if,  SERver(string) USER(string) PASSword(string) [Rpath(string)]  [COMMent(string)] [ID(varlist str min=1 max =1)]
@@ -220,7 +223,7 @@ shell "`rpath'/R" --vanilla <"`c(pwd)'/approve.R" 2>`error_message'
 		qui timer list 1
 		if `r(t1)'<=3 {
 		dis as error "Whoopsa! That was surprisingly fast."
-		dis as error "Please check if the data was downloaded correctly." 
+		dis as error "Please check if the have been approved by HQ." 
 		dis as error "If not, have a look at {help sursol_approveHQ##debugging:debugging information} in the help file."
 		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
 		}

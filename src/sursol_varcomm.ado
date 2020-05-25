@@ -1,3 +1,7 @@
+*! version 20.05 May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
+
 program sursol_varcomm
 
 syntax anything [if],  SERver(string) USER(string) PASSword(string) COMMent(string) [Rpath(string)]   [ID(varlist str min=1 max =1)] [roster1(numlist min=1 max=1)] [roster2(numlist min=1 max=1)] [roster3(numlist min=1 max=1)] [roster4(numlist min=1 max=1)]

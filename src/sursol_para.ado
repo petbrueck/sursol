@@ -1,3 +1,5 @@
+*! version 19.07  July 2019
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_para
 
@@ -110,7 +112,9 @@ qui{
 	drop if inlist(event,"QuestionDeclaredValid", "VariableDisabled","VariableSet")
 	replace timestamp=subinstr(timestamp,"-","/",.)
 	replace timestamp=subinstr(timestamp,"T"," ",.)
+
 	g variable=substr(parameters,1,strpos(parameters,"||")-1)
+
 	sort interview__id order
 	gen double time=clock(timestamp,"20YMDhms")
 	gen timestamp1  = timestamp[_n - 1]

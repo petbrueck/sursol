@@ -1,3 +1,5 @@
+*! version 19.07  July 2019
+*! Author: Andreas Kutka, andreas.kutka@gmail.com & Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_append
 

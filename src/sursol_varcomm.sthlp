@@ -55,7 +55,8 @@ the command uses the Survey Solutions system generated variable "interview__id" 
 In case {it:if} condition is not specified all observations all identifiers in the current dataset will be listed and commented on.{p_end}
 
 {pstd}
-An installed version of R Statistical Software is required. The command shell returns warnings if (1) interviews was in status that was not ready to be commented on or question not found and if (2)  interviews have been not found. {p_end}
+An installed version of R Statistical Software is required and will be accessed through the Windows Command Prompt or Mac terminal.
+The command prompt/terminal returns warnings if (1) interview was in status that was not ready to be commented on or question not found and if (2) interview has not been found. {p_end}
 
 {pstd} 
 Interviews can be commented only if it is not "Approved by Headquarters". {p_end}

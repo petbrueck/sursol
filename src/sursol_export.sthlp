@@ -5,7 +5,7 @@
 {title:Title}
 
 {p 5 15}
-{cmd:sursol export} {hline 2} downloads survey data of a questionnaire from a Survey Solutions Server. R software is required. 
+{cmd:sursol export} {hline 2} downloads data of a questionnaire from a Survey Solutions Server. R software is required. 
 
 
 {title:Syntax}
@@ -59,7 +59,7 @@ Must be in {it: YYYY-MM-DD} date format{p_end}
 {title:Description}
 
 {pstd}
-{opt sursol export} performs data export of survey data from a Survey Solutions server using your locally installed R.exe through the Windows Command Shell.
+{opt sursol export} performs export of data from a Survey Solutions server using your locally installed R.exe through the Windows Command Prompt or Mac terminal. 
 
 {pstd}
 The command identifies data on the server corresponding to {it:questionnaire_name} and requests the data to be generated on the server. 
@@ -103,7 +103,7 @@ For now, data is not unzipped by {cmd:sursol export} if {opt dropbox(access_toke
 
 {synoptline}
 
-
+{marker dataset}{...}
 {synoptline}
 {phang}
 {it: At least one or any combination of the following type of datasets to be requested: }
@@ -207,7 +207,8 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {title:Examples}
 
-{pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire named "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}{p_end}
+{pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire named "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}.
+Data shall be downloaded to the machine. {p_end}
 
 {phang2}{cmd:. sursol export "Project X Baseline Survey",  dir("${download}") ///}{p_end}
 {phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}
@@ -217,7 +218,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 {phang2}{cmd:. versions(1 2 5)}{p_end}
 
 
-{pstd}Afterwards download all binary data for all versions but push it to dropbox{p_end}
+{pstd}Afterwards request to export all binary data for all versions but push it to dropbox. {p_end}
 
 {phang2}{cmd:. sursol export "Project X Baseline Survey",   ///}{p_end}
 {phang2}{cmd:. server("https://projectX.mysurvey.solutions") ///}{p_end}

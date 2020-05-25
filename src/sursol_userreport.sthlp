@@ -5,7 +5,8 @@
 {title:Title}
 
 {p 5 15}
-{cmd:sursol userreport} {hline 2} exports detailed interviewer report for all interviewer users created on a Survey Solutions Server. R software is required.
+{cmd:sursol userreport} {hline 2} downloads {browse "https://support.mysurvey.solutions/headquarters/reporting/downloadable-report-on-interviewers/":report on interviewers} 
+for all interviewer users created on a Survey Solutions Server. R software is required.
 
 
 {title:Syntax}
@@ -44,7 +45,8 @@
 {title:Description}
 
 {pstd}
-{opt sursol userreport} downloads the full interviewer report for all interviewer user accounts from a Survey Solutions server using your locally installed R.exe through the Command Shell.  {p_end}
+{opt sursol userreport} downloads the full interviewer report for all interviewer user accounts from a Survey Solutions server using your locally installed R.exe 
+through the Windows Command Prompt or Mac terminal.
 
 {pstd}
 The command requests to export the interviewer report which also can be manually downloaded from the server via{p_end}
@@ -52,14 +54,11 @@ The command requests to export the interviewer report which also can be manually
 "Teams and Roles" -> "Interviewers" -> "Download report as XLSX, CSV, or TAB".  {p_end}
 
 {pstd}
-This report contains information about the users device, recent synchronizations activities and connection statistics.{p_end}
+This report contains information about the users device, recent synchronizations activities and connection statistics. For detailed information
+ see in {browse "https://support.mysurvey.solutions/headquarters/reporting/downloadable-report-on-interviewers/":here}.{p_end}
 
 {pstd}  
 If successful, the report will be exported to the path specified in {opt dir:ectory(string)} in either .xlsx, .csv or .tab format. {p_end}
-
-{pstd}
-An installed version of R Statistical Software is required. {p_end}
-
 
 {marker syntax}{...}
 {title:Syntax}
@@ -68,7 +67,7 @@ An installed version of R Statistical Software is required. {p_end}
 
 {marker directory}{...}
 {phang}
-{opt dir:ectory(string)} specifies the path in which the interviewer report will be saved. Existing files "Interviewers" will be overwritten. 
+{opt dir:ectory(string)} specifies the path in which the interviewer report will be saved. Existing files named "Interviewers" will be overwritten. 
 
 {marker server}{...}
 {phang}
@@ -106,7 +105,7 @@ A typical server URL for servers hosted by the World Bank: {it: https://projectX
 can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
 
 {phang}
-{opt archived} by default, {cmd:sursol userreport} exports the interviewer report only for interviewers with archive status 'Active'. If {opt archived}  is specified, only the archived interviewers will be downloaded
+{opt archived} by default, {cmd:sursol userreport} exports the interviewer report only for active interviewers with archive status 'Active'. If {opt archived}  is specified, only the archived interviewers will be downloaded
 
 {marker debugging}{...}
 {title:Debugging}

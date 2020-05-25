@@ -1,3 +1,6 @@
+*! version 20.05 May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 program sursol_unapproveHQ
 
 syntax if,  SERver(string) USER(string) PASSword(string) [Rpath(string)]  [COMMent(string)] [ID(varlist str min=1 max =1)]

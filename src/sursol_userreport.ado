@@ -1,3 +1,7 @@
+*! version 20.05 May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
+
 capture program drop sursol_userreport
 
 program sursol_userreport 

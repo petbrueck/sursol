@@ -1,3 +1,6 @@
+*! version 20.05.1  May 2020
+*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+
 program sursol_approve
 
 syntax if,  SERver(string) USER(string) PASSword(string) [Rpath(string)]  [COMMent(string)] [ID(varlist str min=1 max =1)]
@@ -212,6 +215,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
  file close rcode 
 }
 }
+
 tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear
 		timer on 1

@@ -46,6 +46,7 @@
 {synopt:{opt versions(numlist)}}export only specified versions{p_end}
 {synopt:{opt lastv:ersion}}exports only the last version{p_end}
 {synopt:{opt status(string)}}status of exported interviews{p_end}
+{synopt:{opt translation(string)}}language of export files if translation file was included for {it:questionnaire_name}{p_end}
 {synopt:{opt nozip}}exported data will not be unzipped{p_end}
 {synopt:{opt zipdir(string)}}path in which exported data will be unzipped to{p_end}
 {synopt:{opt start:date(string)}}starting date for time frame of exported interviews. 
@@ -136,8 +137,8 @@ For now, data is not unzipped by {cmd:sursol export} if {opt dropbox(access_toke
 {phang}
 {opt versions(numlist)} by default, {opt sursol export} requests all versions that are found on the server to be exported.
 If {opt versions(numlist)} is specified, only respective versions of {it:questionnaire_name} are exported. 
-Versions can be specified in any order and using either "," or " " as a delimiter. 
-For example, {opt versions(1 3 4)} or {opt versions(4,3,1)} both request to download Version 1,3 and 4 of the specified questionnaire. 
+Versions can be specified in any order and duplicate values will be removed. Regular {help numlist:numlist} syntax applies but values must be integer.
+For example,{opt versions(7 1/4 9)} will request to download Version 1,2,3,4,7 and 9 of {it:questionnaire_name}. 
 
 {marker lastversion}{...}
 {phang}
@@ -162,6 +163,13 @@ can be specified by using one of the following statuses:
 	  	  Restored
 	  	  Deleted             
 	 	{hline 33}
+
+{phang}
+{opt translation(string)}
+Since  {browse "https://support.mysurvey.solutions/release-notes/version-20-06/":Version 20.06}, one can select the language for export. 
+If {opt translation(string)} is specified, the export is produced in the corresponding translation for value and variable labels. 
+Use the name of the translation as specified in the Questionnaire Designer. The command will return an error if the specified translation name is not 
+not to be found for a specific version of {it:questionnaire_name}. If the translation name changed between versions, you'd need to export the versions seperately.
 
 {phang}
 {opt nozip} if specified, the exported ZIP files will not be unzipped. 
@@ -207,7 +215,7 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {title:Examples}
 
-{pstd}Request to export main survey data in stata format and paradata of versions 1,2 and 5 of questionnaire named "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}.
+{pstd}Request to export main survey data in stata format and paradata of versions 1,2,3 and 5 of questionnaire named "Project X Baseline Survey" from server {it:https://projectX.mysurvey.solutions}.
 Data shall be downloaded to the machine. {p_end}
 
 {phang2}{cmd:. sursol export "Project X Baseline Survey",  dir("${download}") ///}{p_end}
@@ -215,7 +223,7 @@ Data shall be downloaded to the machine. {p_end}
 {phang2}{cmd:. user("API_2")  ///}{p_end}
 {phang2}{cmd:. password("API_2_pw123") ///}{p_end}
 {phang2}{cmd:. stata paradata  ///}{p_end}
-{phang2}{cmd:. versions(1 2 5)}{p_end}
+{phang2}{cmd:. versions(1/3 5)}{p_end}
 
 
 {pstd}Afterwards request to export all binary data for all versions but push it to dropbox. {p_end}
@@ -236,7 +244,7 @@ Data shall be downloaded to the machine. {p_end}
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.05 and adjusted to API V2.
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.06.
 
 {title:Acknowledgments}
 

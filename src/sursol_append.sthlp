@@ -19,7 +19,7 @@
 {synoptset 21 tabbed}{...}
 {synopthdr:Required }
 {synoptline}
-{synopt:{it:folder_uniqueid}}string. Unique identifier of exported survey data which is contained in the folder names in {opt directory(string)}{p_end}
+{synopt:{it:folder_uniqueid}}string. Unique identifier of exported survey data which is contained in the name of folders stored in {opt directory(string)}{p_end}
 {synopt:{opt dir:ectory(string)}}path in which all exported survey data folders can be found {p_end}
 {synoptline}
 
@@ -30,7 +30,7 @@
 {synopthdr:sursol append options }
 {synoptline}
 {synopt:{opt ex:port(string)}}folder in which the appended data shall be exported{p_end}
-{synopt:{opt se:rver(string)}}prefix of server url on which the collected data is hosted{p_end}
+{synopt:{opt ser:ver(url)}}string of full URL of server, including protocol and hostname {p_end}
 {synopt:{opt co:py(varlist)}}copies all variables specified in {it:varlist} from questionnaire level file to all other survey data files{p_end}
 {synopt:{opt noac:tions}}no descriptive variables found in {it:interview__actions.dta} and {it:interview__comments.dta} will be merged to the questionnaire level file{p_end}
 {synopt:{opt nodiag:nostics}}no descriptive variables found in {it:interview__diagnostics.dta} will be merged to the questionnaire level file{p_end}
@@ -80,8 +80,9 @@ Usually either the name of the questionnaire as found on the server or the quest
 To be used if the Questionnaire Variable does not match {it:folder_uniqueid} and option {opt copy(varlist)} is used or {opt noactions} and/or {opt nodiagnostics} is NOT specified.
 
 {phang}
-{opt se:rver(string)} specifies the server on which the survey is hosted. Will be used to create URLs for each interview that will redirect the user to the location where each interview is hosted. 
-Only prefix of domain name required: PREFIX.mysurvey.solutions. Full domain name, protocol and other URL information will be added automatically. If not specified, interview link variabe (intlink) will be empty. 
+{opt se:rver(string)} specifies the server on which the survey is hosted. Will be used to create URLs for each interview that will redirect the user to the location where each interview is hosted.
+Full URL required: Protocol (e.g. {it:https://}), hostname (e.g. {it:projectX.mysurvey.solutions}) and any other URL information.
+A typical server URL for servers hosted by the World Bank: {it: https://projectX.mysurvey.solutions}. If not specified, interview link variabe (intlink) will be empty. 
 
 {phang}
 {opt co:py(varlist)} {it: varlist} from the questionnaire level file (either {it:folder_uniqueid}.dta or {it:questionnaire variable.dta}) will be merged to all other 
@@ -107,14 +108,14 @@ If {opt sortdesc} is specified, Version 4 would be the master file. This has imp
 
 {pstd}Idenitfy and append all versions of the questionnaire "Project X Baseline Survey" which was hosted on "https://projectX.mysurvey.solutions" {p_end}
 
-{pstd}In the folder specified in {opt dir:ectory(string)}, sub-folders exist called "projectx_1", "projectx_2", "projectx_4", "projectx_8" which contain the survey data of different questionnaires.{p_end}
+{pstd}In the folder specified in {opt dir:ectory(string)}, sub-folders exist called "projectx_1", "projectx_2", "projectx_4", "projectx_8" which contain the survey data of different questionnaire versions.{p_end}
 
 {pstd}In addition, variables "village" and "treatment" are stored in the projectx.dta, the questionnaire level data file, which shall be merged to all subordinate roster files.{p_end}
 
 {phang2}{cmd:. sursol append "projectx",  dir("${download}") ///}{p_end}
 {phang2}{cmd:. export("C:\Users\username\Desktop\Project X\RAW_FILES") ///}{p_end}
 {phang2}{cmd:. copy (village treatment)  ///}{p_end}
-{phang2}{cmd:. server("projectX")}{p_end}
+{phang2}{cmd:. server("https://projectX.mysurvey.solutions")}{p_end}
 
 
 {title:Author}
@@ -131,5 +132,5 @@ If {opt sortdesc} is specified, Version 4 would be the master file. This has imp
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol append} was last updated using Survey Solutions 19.07
+{pstd}{cmd:sursol append} was last updated using Survey Solutions 20.06
 

@@ -1,10 +1,10 @@
-*! version 19.07  July 2019
+*! version 20.06.1  June 2020
 *! Author: Andreas Kutka, andreas.kutka@gmail.com & Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_append
 
 program sursol_append 
-syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SErver(string)] [NOSkip] [sortdesc]
+syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SERver(string)] [NOSkip] [sortdesc]
 
 local currdir `c(pwd)'
 
@@ -41,33 +41,19 @@ noi ssc install distinct
 }
 
 
-foreach x in ".mysurvey.solutions" "//" ":" "https" { 
-loc server=subinstr("`server'","`x'","",.)
-}
-
-loc server="https://" + "`server'"+".mysurvey.solutions"
 if length("`export'")==0 loc export="`directory'"
+
 
 if length("`qxvar'")==0 loc master="`1'"
 else if length("`qxvar'")>0 loc master="`qxvar'"
 
+//IDENTIFY FOLDER STRUCTURE
 	local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
 
-loc sortstructure `"`folderstructure'"'
 
 
-//To get them sorted the other way (starting with higher versions).
-if "`sortdesc'"!="" {
-loc cnthelp=`length'+1
-loc sortstructure ""
-forvalue folder=`cnthelp'(-1)2 {
-loc ver: word `folder' of ""`folderstructure'""
-loc sortstructure `"`sortstructure' "`ver'" "'		
-}
-}
-*/
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
 	noi di as error "Check questionnaire name specified or directory!" 
@@ -75,6 +61,33 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	}
 
 
+	//SORT NUMERICALLY ASCENDING
+	loc vnumtructure=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
+	capt numlist `"`vnumtructure'"', integer sort
+	if !_rc==0 {
+	noi di as error _n "Attention, it seems that you specified the wrong {help sursol_append:{it:folder_uniqueid}}" 
+	noi di as error "Folders have been identified but it was not possible to identify the version number(s)." 
+	noi di as error "Make sure to only specify the name of the folders and no version numbers or underscore signs." 
+	ex 601
+	}
+	loc sortstructure ""
+	if "`sortdesc'"=="" {
+	foreach version in  `r(numlist)' {
+		loc sortstructure `"`sortstructure' "`1'_`version'" "'		
+	}
+	}
+	//DESCENDING ORDER
+	if "`sortdesc'"!="" {
+	loc length_nums: word count `r(numlist)'
+	loc sortstructure ""
+	forvalue folder=`length_nums'(-1)1 {
+	loc ver: word `folder' of `r(numlist)'
+	loc sortstructure `"`sortstructure' "`1'_`ver'" "'		
+	}
+	}
+
+	
+noi dis _n ""
 	if length("`nodiagnostics'")==0 | length("`noaction'")==0 | length("`copy'")>0 {
 	foreach folder of loc sortstructure  {
 		
@@ -94,6 +107,7 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	} 
 	} 
 
+	//ERASE PREVIOUS DATA 
 	foreach folder of loc sortstructure {
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure 
@@ -113,7 +127,7 @@ loc sortstructure `"`sortstructure' "`ver'" "'
 	local notworked `" `notworked'  "`folder'" " " "'
 	continue
 	}
-	noi di as text _n "Version `version' of `1' found. Will be appended..."
+	noi di as text  "Version `version' of `1' found. Will be appended..."
 
 	foreach file of loc filestructure {
 	sleep 50
@@ -212,14 +226,14 @@ local worked: list sortstructure- notworked
 
 	} 
 	else if `i'>1 {
-noi di as text "The following data has been successfully appended: "
+noi di as text _n "The following data has been successfully appended: "
 foreach folder of loc worked {
 noi di as result "`folder'"
 	}
 }
 
 if length("`notworked'")>0 {
-noi di as error _n(2)"The following versions were found but no .dta files in folder: "
+noi di as error _n "The following versions were found but no .dta files in folder: "
 foreach fail of loc notworked {
 noi di as error "`fail'"
 }
@@ -266,7 +280,7 @@ if length("`copy'")>0 & !_rc {
 
 capt confirm file "`export'/`master'.dta"
 if length("`noactions'")==0 & !_rc {
-		no di as text "Interview action statistics are merged to `master'.dta"
+		no di as text _n "Interview action statistics are merged to `master'.dta"
 		use "`export'/interview__actions.dta", clear
 		if `c(N)'>0 {
 		levelsof action, loc(levels)

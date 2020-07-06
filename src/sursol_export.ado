@@ -1,4 +1,4 @@
-*! version 20.05.2  May 2020
+*! version 20.06.1  June 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_export
@@ -6,8 +6,8 @@ capture program drop sursol_export
 program sursol_export 
 
 syntax anything, SERver(string) USER(string) PASSword(string) [Rpath(string)]  [LASTVersion] ///
-[VERSIONS(string)] [FORMAT(string)] [STATA] [TABULAR] [SPSS] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)] ///
-[DIRectory(string)]  [dropbox(string)]
+[VERSIONS(numlist)] [FORMAT(string)] [STATA] [TABULAR] [SPSS] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)] ///
+[DIRectory(string)]  [dropbox(string)] [translation(string)]
 
 
 **SAVE CURRENT WORKING DIRECTORY
@@ -24,10 +24,13 @@ ex 601
 }
 
 
+**CHECK NUMLIST SPECIFIED IN "VERSIONS"
 if length("`versions'")>0 {
-  loc versions=subinstr("`versions'",","," ",.)
-  loc versions=itrim("`versions'")
-  loc versions=subinstr("`versions'"," ",",",.)
+  capt numlist "`versions'", integer
+  if !_rc==0 {
+	  noi dis as error _n "Attention. {help numlist:numlist} in option {help sursol_export##versions:versions(numlist)} not correctly specified."
+  }
+  loc versions=subinstr("`r(numlist)'"," ",",",.)
   loc newversions `versions'
 }
 else if length("`versions'")==0 & length("`lastversion'")==0 loc newversions ""all""
@@ -220,21 +223,7 @@ quietly: file open rcode using "`currdir'/export.R", write replace
 #d ;
 quietly: file write rcode  
 
-`" server <- "`server'" "' _newline
-`"user= "`user'"							 "' _newline
-`"password="`password'" "' _newline
-`"questionnaire_name="`1'" "' _newline
-`"versions<- c(`newversions') "' _newline
-                `"directory <-  "`directory'"  "' _newline
-                `"datasets <- c(`datasets')   "' _newline
-                `"interview_status <- "`status'" "' _newline
-                `"start_date <- "`startdate'" "' _newline
-                `"end_date <-"`enddate'" "' _newline
-                `"unzip<-"`zip'" "' _newline
-                `"zip_directory <- "`zipdir'"   "' _newline
-                `"dropbox_token <- "`dropbox'"   "' _newline
-                _newline
-		`"	packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")        "'  _newline
+`"	packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")        "'  _newline
 `"	for (newpack in packages) {    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {     "'  _newline
@@ -247,7 +236,26 @@ quietly: file write rcode
 `"	suppressMessages(suppressWarnings(library(dplyr)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(date)))   "'  _newline
-`"	Sys.setlocale("LC_TIME", "English")   "'  _newline
+`"	suppressMessages(suppressWarnings(Sys.setlocale("LC_TIME", "English")))   "'  _newline
+
+
+
+`" server <- "`server'" "' _newline
+`"user= "`user'"							 "' _newline
+`"password="`password'" "' _newline
+`"questionnaire_name="`1'" "' _newline
+`"versions<- unique(str_sort(c(`newversions'), numeric=TRUE)) "' _newline
+`"directory <-  "`directory'"  "' _newline
+`"datasets <- c(`datasets')   "' _newline
+`"interview_status <- "`status'" "' _newline
+`"start_date <- "`startdate'" "' _newline
+`"end_date <-"`enddate'" "' _newline
+`"unzip<-"`zip'" "' _newline
+`"zip_directory <- "`zipdir'"   "' _newline
+`"dropbox_token <- "`dropbox'"   "' _newline
+ `"translation <-  str_to_upper(gsub("\\s", "",  "`translation'"))     "' _newline
+
+                _newline
 `"	server_url<-server     "'  _newline
 `"	     "'  _newline
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
@@ -323,6 +331,8 @@ quietly: file write rcode
 `"        }  "'  _newline
 `"	} else if (status_code(data) == 401) {      "'  _newline
 `"	  stop("Incorrect username or password. Check login credentials for API user")     "'  _newline
+`"	} else if (status_code(data) == 403) {      "'  _newline
+`"	  stop(paste0("Encountered issue with status code ", status_code(data), "\nCheck if you used the correct API account credentials. Do not use HQ credentials!"))      "'  _newline
 `"	} else {     "'  _newline
 `"	  stop(paste0("Encountered issue with status code ", status_code(data)))     "'  _newline
 `"	}     "'  _newline
@@ -378,14 +388,32 @@ quietly: file write rcode
 `"	for (datatype in datasets) {     "'  _newline
 `"	  for (val in versions_download) {     "'  _newline
 `"	       "'  _newline
-`"	    if (val %in% versions_server ==FALSE) stop(paste0("Version ",val," of ",questionnaire_name," was not found on the server.", "Check your versions specified in versions(numlist)"))     "'  _newline
-`"	     "'  _newline
+`"	    if (val %in% versions_server ==FALSE) stop(paste0("Version ",val," of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))     "'  _newline
+
+`" ##CHECK TRANSLATION IF SPECIFIED "'  _newline
+`" if (nchar(translation)>0) { "'  _newline
+`"     documentquery <-  paste(api_URL, "questionnaires",questionnaire_identity,val,"document", sep="/")     "'  _newline
+`"     getqx_document <- GET(documentquery, authenticate(user, password))      "'  _newline
+`"     if (status_code(getqx_document) %in% c(401,403)) {      "'  _newline
+`"       stop("Unauthorized access error when trying to identify translation id.  Check login credentials for API user")     "'  _newline 
+`"     } "'  _newline
+`"     qx_document <- fromJSON(content(getqx_document, as = "text"), flatten = TRUE) "'  _newline
+`"     qx_document\$Translations\$Name <- str_to_upper(gsub("\\s", "", qx_document\$Translations\$Name))     "'  _newline
+`"     if (translation %in% qx_document\$Translations\$Name ==FALSE) stop(paste0("Translation ", translation, " was not found for ",questionnaire_name, " Version ", val,"\nCheck option specified in translation(string)"))   "'  _newline  
+`"     translation_id <- unique(qx_document\$Translations\$Id[qx_document\$Translations\$Name==translation]) "'  _newline
+`" } "'  _newline
+`" if (nchar(translation)==0) translation_id <- "" "'  _newline
+
+
+
+
+
 `"	    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")     "'  _newline
 `"	       "'  _newline
 `"	    ##CREATE FILENAME & PATH   "'  _newline
 `"	    if (datatype %in% c("stata", "ddi","spss")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="")  else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")      "'  _newline
 `"	   "'  _newline
-`"	    Filename <-paste(c(qxvar,"_", val, dataname,"_", int_status,".zip"), collapse = "")     "'  _newline
+`"	    Filename <-paste(c(qxvar,"_", val, dataname,"_", int_status, ifelse(nchar(translation)>0,paste0("_","`translation'"),""),  ".zip"), collapse = "")     "'  _newline
 `"	         "'  _newline
 `"	    fn<- paste(c(directory, "//", Filename), collapse = "")     "'  _newline
 `"	    if (file.exists(fn)) file.remove(fn)     "'  _newline
@@ -403,7 +431,8 @@ quietly: file write rcode
 `"				From=start_date,	 "'  _newline
 `"				To=end_date, 	 "'  _newline
 `"				AccessToken=access_token, 	 "'  _newline
-`"				StorageType=storage_type	 "'  _newline
+`"				StorageType=storage_type,	 "'  _newline
+`"                       TranslationId=translation_id "'  _newline
 `" 				)   "'  _newline
 `"	       "'  _newline
 `"	    ##START EXPORT IS SIMPLY API URL V2/EXPORT   "'  _newline
@@ -456,7 +485,7 @@ quietly: file write rcode
 `"	      #CHECK THE STATUS    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Created") {     "'  _newline
-`"	        print(paste0("Export files have been created"))     "'  _newline
+`"	        print(paste0("Export files have been created/are queued"))     "'  _newline
 `"	        Sys.sleep(2)        "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
@@ -541,7 +570,6 @@ quietly: file write rcode
                 file close rcode 
 
 		//EXECUTE THE COMMAND
-
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 
 		timer clear

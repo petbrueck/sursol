@@ -1,4 +1,4 @@
-*! version 20.06.1  June 2020
+*! version 20.08.1  August 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_export
@@ -254,8 +254,8 @@ quietly: file write rcode
 `"zip_directory <- "`zipdir'"   "' _newline
 `"dropbox_token <- "`dropbox'"   "' _newline
  `"translation <-  str_to_upper(gsub("\\s", "",  "`translation'"))     "' _newline
-
-                _newline
+   `"   ##REPLACE TRAILING SLASH "' _newline
+   `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline
 `"	server_url<-server     "'  _newline
 `"	     "'  _newline
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
@@ -397,6 +397,7 @@ quietly: file write rcode
 `"     if (status_code(getqx_document) %in% c(401,403)) {      "'  _newline
 `"       stop("Unauthorized access error when trying to identify translation id.  Check login credentials for API user")     "'  _newline 
 `"     } "'  _newline
+`"     if (status_code(getqx_document) %in% c(404)) stop("Questionnaire was not found when trying to identify translation id. Something weird is going on...")  "'  _newline     
 `"     qx_document <- fromJSON(content(getqx_document, as = "text"), flatten = TRUE) "'  _newline
 `"     qx_document\$Translations\$Name <- str_to_upper(gsub("\\s", "", qx_document\$Translations\$Name))     "'  _newline
 `"     if (translation %in% qx_document\$Translations\$Name ==FALSE) stop(paste0("Translation ", translation, " was not found for ",questionnaire_name, " Version ", val,"\nCheck option specified in translation(string)"))   "'  _newline  
@@ -458,13 +459,13 @@ quietly: file write rcode
 `"	           "'  _newline
 `"	        stop(paste0("Questionnaire was not found. ", "Request to compile ",dat, " data for ",     "'  _newline
 `"	                    questionnaire_name, " VERSION ", val,     "'  _newline
-`"	                    "has been not successfull."))     "'  _newline
+`"	                    " has been not successfull."))     "'  _newline
 `"	           "'  _newline
 `"	      } else {     "'  _newline
 `"	        "'  _newline
 `"	      stop(paste0("The request to compile ",dat, " data for ",     "'  _newline
 `"	                  questionnaire_name, " VERSION ", val,     "'  _newline
-`"	                  "has been not successfull."))     "'  _newline
+`"	                  " has been not successfull."))     "'  _newline
 `"	         "'  _newline
 `"	    }   "'  _newline
 `"	         "'  _newline
@@ -571,7 +572,6 @@ quietly: file write rcode
 
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
-
 		timer clear
 		timer on 1
                 shell "`rpath'/R" --vanilla <"`currdir'/export.R" 2>`error_message' 

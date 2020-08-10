@@ -144,14 +144,8 @@ qui capt rm "`directory'/.Rhistory"
 quietly: file open rcode using "`directory'/action_log.R", write replace 
 #d ;
 quietly: file write rcode  
-`"server <- "`server'" "' _newline 
-`"user= "`user'"  "' _newline
-`"password="`password'" "' _newline
-`"directory <-  "`directory'"  "' _newline
-`"start_date="`startdate'" "' _newline
-`"end_date="`enddate'" "' _newline
-`"append<-"`append'" "' _newline
-`"process<-"`process'"   "' _newline           
+
+
 		`"packages<- c("stringr", "jsonlite","httr","date","data.table") "'  _newline
 		`"for (newpack in packages) { "'  _newline
 		`" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline
@@ -167,6 +161,19 @@ quietly: file write rcode
 		
 		`"##DATE PACKAGE, SET LOCAL TIME TO ENGLISH"' _newline
 		`"Sys.setlocale("LC_TIME", "English")"' _newline                       
+
+
+`"server <- "`server'" "' _newline 
+`"user= "`user'"  "' _newline
+`"password="`password'" "' _newline
+`"directory <-  "`directory'"  "' _newline
+`"start_date="`startdate'" "' _newline
+`"end_date="`enddate'" "' _newline
+`"append<-"`append'" "' _newline
+`"process<-"`process'"   "' _newline      
+
+   `"   ##REPLACE TRAILING SLASH "' _newline
+   `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline
                 `"server_url<-sprintf("%s", server)  "'    _newline
                 `"  "'    _newline
                 `"serverCheck <- try(http_error(server_url), silent = TRUE)  "'    _newline

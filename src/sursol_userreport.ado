@@ -161,7 +161,7 @@ quietly: file open rcode using "`currdir'/getreport.R", write replace
 quietly: file write rcode  
 
 `"##GET THE PACKAGES																																															 "'  _newline
-`"packages<- c("httr", "openxlsx")   "'  _newline
+`"packages<- c("httr", "openxlsx","stringr")   "'  _newline
 `"       "'  _newline
 `"for (newpack in packages) {     "'  _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}     "'  _newline
@@ -172,11 +172,14 @@ quietly: file write rcode
 `" "'  _newline
 `"suppressMessages(suppressWarnings(library(httr))) "'  _newline
 `"suppressMessages(suppressWarnings(library(openxlsx))) "'  _newline
+`"suppressMessages(suppressWarnings(library(stringr))) "'  _newline
 `" "'  _newline
 `" "'  _newline
 `"##USER SETTINGS "'  _newline
 `"directory <-  "`directory'"   "'  _newline
 `"server <- "`server'"  "'  _newline
+ `"   ##REPLACE TRAILING SLASH "' _newline 
+ `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline 
 `"user= "`hquser'"                                                          "'  _newline
 `"password="`hqpassword'"  "'  _newline
 `" "'  _newline

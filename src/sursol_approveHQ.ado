@@ -163,7 +163,8 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"	suppressMessages(suppressWarnings(library(dplyr)))    "'  _newline ///	
 `"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline ///	
 `"	suppressMessages(suppressWarnings(library(date)))   "'  _newline ///	
- `"	     "'  _newline ///
+ `"   ##REPLACE TRAILING SLASH "' _newline ///
+ `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline ///
 `"	server_url<-sprintf("%s", server)     "'  _newline ///
 `"	     "'  _newline ///
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline ///

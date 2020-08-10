@@ -30,6 +30,7 @@ Reflects the name of the main questionnaire level file. {p_end}
 {synopt:{opt id:(var)}}variable that contains the globally unique identifier of each interview according to Survey Solutions format. By default: interview__id{p_end}
 {synopt:{opt dir:ectory(string)}}path in which the survey data files are saved. Required if those files are not in the current working directory.{p_end}
 {synopt:{opt stath:istory}} Comments left at interview milestones, e.g. when completing or rejecting, will be merged to the interview level file specified in {opt qxvar(string)}{p_end}
+{synopt:{opt onlyv:ar(varlist)}}look up only comments left at specific variables specified through {it:{help varlist}}. The * and ? character can be used following regular {it:{help varlist}} syntax {p_end}
 {synoptline}
 
 
@@ -100,6 +101,13 @@ It is therefore advised to use this command with a very early version of the exp
 {phang2}{cmd:. qxvar("projectX") ///}{p_end}
 {phang2}{cmd:. stathistory}{p_end}
 
+{pstd}If you wish to only attach comments from question q12 and all variables starting with "q20_"{p_end}
+
+{phang2}{cmd:. sursol getcomm using ""C:\Users\ProjectX\RAW_DATA\interview__comments.dta", ///}{p_end}
+{phang2}{cmd:. dir("C:\Users\Desktop\ProjectX\RAW_DATA\") ///}{p_end}
+{phang2}{cmd:. qxvar("projectX") ///}{p_end}
+{phang2}{cmd:. onlyv(q12 q20_*)}{p_end}
+
 
 {title:Author}
 
@@ -109,4 +117,4 @@ It is therefore advised to use this command with a very early version of the exp
 
 {pstd}No responsibility or liability for the correct functionality of the command is taken!
 
-{pstd}{cmd:sursol getcomm} was last updated using Survey Solutions 19.11
+{pstd}{cmd:sursol getcomm} was last updated using Survey Solutions 20.06

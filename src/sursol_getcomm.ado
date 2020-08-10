@@ -1,10 +1,11 @@
-*! version 19.11  November 2019
+*! version 20.06.1  June 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_getcomm
 
 program sursol_getcomm 
-syntax  [using/], QXVAR(string)  [DIRectory(string)]  [ID(varlist  min=1 max =1)] [STATHistory] [ROSTERID(varlist  min=1 max =3)] [clear]
+syntax  [using/], QXVAR(string)  [DIRectory(string)]  [ID(varlist  min=1 max =1)] [STATHistory] /// 
+[ROSTERID(varlist  min=1 max =3)] [clear] [ONLYVar(string)]
 
 if length("`directory'")==0 local dir `c(pwd)'
 else if length("`directory'")>0 local dir `directory'
@@ -51,10 +52,49 @@ ex 601
 	}
 	}	
 
-
+if `c(N)'==0 & "`using'"!=""  noi dis as result _n "No comments to be found in `using'." 
+if `c(N)'==0 & "`using'"==""  noi dis as result _n "No comments to be found in currently loaded dataset." 
 //GET THE FILE STRUCTURE
 capt g roster="" //Given old comment files the roster variable might not have been created.
 replace roster="`qxvar'" if roster=="" | roster=="Unknown"
+tempfile comm_fullmaster
+save `comm_fullmaster'
+//IF "onlyvar" SPECIFIED
+if "`onlyvar'"!="" {
+	*GET LIST OF VARS THAT ACTUALLY EXIST
+	levelsof variable, loc(vars)
+	foreach v1 of loc vars {
+		capt g `v1'=. 
+	}
+		loc keepvarlist ""
+		foreach onlyv in `onlyvar' {
+			capt ds `onlyv'
+			if _rc==111 {
+				noi dis as error "Comments left at variable(s) `onlyv' not found"
+				continue
+			}
+			loc keepvarlist "`keepvarlist' `r(varlist)'"			
+		}
+	foreach v2 of loc vars {
+		capt drop `v2'
+	}
+	*GET RID OF ALL OTHER VARS
+	if length("`keepvarlist'")>0 {
+	g keepvar=.
+	foreach v in `keepvarlist'  {
+		replace keepvar=1 if variable=="`v'"
+	}
+	keep if keepvar==1
+	noi dis as result _n "Comments will be merged to dataset for variables: `keepvarlist'"
+	noi dis as result "" 
+	}
+	if length("`keepvarlist'")==0 noi dis as result "No comments have been merged."	
+}
+if ((length("`keepvarlist'")==0 & "`onlyvar'"!="") |  "`onlyvar'"=="") use `comm_fullmaster', clear
+
+//START OF getcoom LOOP
+if ((length("`keepvarlist'")>0 & "`onlyvar'"!="") |  "`onlyvar'"=="") {
+
 levelsof roster, loc(files)
 //CHECK IF FILES EXIST
 foreach file of loc files  {
@@ -74,8 +114,8 @@ capt confirm file "`dir'//`file'.dta"
 }
 
 //FILE LOOP
-tempfile mastercomment
-save `mastercomment'
+	tempfile process_master
+	save `process_master'
 
 foreach file of loc files  {
 
@@ -94,7 +134,7 @@ loc rosterids "`id'"
 noi display as result "`id' will be used to identify variables at the interview level (`qxvar'.dta)"
 }
 
-use `mastercomment', clear
+use `process_master', clear
 keep if roster=="`file'"
 
 if "`file'"=="`qxvar'" drop if strpos(variable,"@@")>0
@@ -187,12 +227,15 @@ save `masterroster'
 						
 
 }
+use `comm_fullmaster'
+} 
+//END OF REGULAR getcomm SYNTAX
 
 //OPTION INTcomments
 
 if length("`stathistory'")>0 {
 noi display as result _n "Interview status history comments will be merged to the `qxvar'.dta file"
-			use `mastercomment', clear
+			use `comm_fullmaster', clear
 			 keep if strpos(variable,"@@")>0 & comment!=""
 			
 

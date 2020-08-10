@@ -440,8 +440,8 @@ quietly: file write rcode
 `"	    gen_data <- POST(exportapi_url, authenticate(user, password), body=body_request, encode = "json")     "'  _newline
 `"	       "'  _newline
 `"	    ##IF SUCCESSFULL GET JOB ID & PRINT TO USER   "'  _newline
+`"	    if (datatype=="paradata")  dat <-"Para"  else dat<- toupper(datatype)     "'  _newline
 `"	    if (status_code(gen_data) %in% c(200,201))  {       "'  _newline
-`"	      if (datatype=="paradata")  dat <-"Para"  else dat<- toupper(datatype)     "'  _newline
 `"	           "'  _newline
 `"	    print(paste0("Requesting ",dat, " data for ",     "'  _newline
 `"	            questionnaire_name, " VERSION ", val,     "'  _newline
@@ -453,10 +453,10 @@ quietly: file write rcode
 `"	    }  else if (status_code(gen_data)==400) {   "'  _newline
 `"	      stop(paste0("Questionnaire ID is malformed.", "Request to compile ",dat, " data for ",     "'  _newline
 `"	                  questionnaire_name, " VERSION ", val,     "'  _newline
-`"	                  "has been not successfull."))     "'  _newline
+`"	                  " has been not successfull."))     "'  _newline
 `"	      }     else if  (status_code(gen_data)==404) {   "'  _newline
 `"	           "'  _newline
-`"	        stop(paste0("Questionnaire was not found.", "Request to compile ",dat, " data for ",     "'  _newline
+`"	        stop(paste0("Questionnaire was not found. ", "Request to compile ",dat, " data for ",     "'  _newline
 `"	                    questionnaire_name, " VERSION ", val,     "'  _newline
 `"	                    "has been not successfull."))     "'  _newline
 `"	           "'  _newline
@@ -479,14 +479,14 @@ quietly: file write rcode
 `"	      ##CHECK DETAILS OF EXPORT PROCESS    "'  _newline
 `"	      check_ready <- GET(exportjobid_url, authenticate(user, password))      "'  _newline
 `"	      content<-content(check_ready)     "'  _newline
- `"			Sys.sleep(2)      "'  _newline
+ `"			Sys.sleep(3)      "'  _newline
 `"	   "'  _newline
 `"	   "'  _newline
 `"	      #CHECK THE STATUS    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Created") {     "'  _newline
 `"	        print(paste0("Export files have been created/are queued"))     "'  _newline
-`"	        Sys.sleep(2)        "'  _newline
+`"	        Sys.sleep(3)        "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
 `"	      if (content\$ExportStatus == "Fail") {     "'  _newline

@@ -223,7 +223,7 @@ quietly: file open rcode using "`currdir'/export.R", write replace
 #d ;
 quietly: file write rcode  
 
-`"	packages<- c("stringr","lubridate", "jsonlite","httr","date")        "'  _newline
+`"	packages<- c("stringr", "jsonlite","httr")        "'  _newline
 `"	for (newpack in packages) {    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {     "'  _newline
@@ -233,9 +233,7 @@ quietly: file write rcode
 `"	suppressMessages(suppressWarnings(library(stringr)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(jsonlite)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(httr)))    "'  _newline
-`"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline
-`"	suppressMessages(suppressWarnings(library(date)))   "'  _newline
-`"	suppressMessages(suppressWarnings(Sys.setlocale("LC_TIME", "English")))   "'  _newline
+`"	#suppressMessages(suppressWarnings(Sys.setlocale("LC_TIME", "English")))   "'  _newline
 
 
 
@@ -335,9 +333,6 @@ quietly: file write rcode
 `"	} else {     "'  _newline
 `"	  stop(paste0("Encountered issue with status code ", status_code(data)))     "'  _newline
 `"	}     "'  _newline
-`" qnrList_all <- qnrList_all[order(qnrList_all\$Title, qnrList_all\$Version),]   "'  _newline 
-`"	     "'  _newline
-`"	     "'  _newline
 `"	     "'  _newline
 `"	  questionnaire_name_up <- str_to_upper(gsub("\\s", "", questionnaire_name))    "'  _newline
 `"	  qnrList_all\$Title <- str_to_upper(gsub("\\s", "", qnrList_all\$Title))     "'  _newline
@@ -391,9 +386,7 @@ quietly: file write rcode
 `" if (nchar(translation)>0) { "'  _newline
 `"     documentquery <-  paste(api_URL, "questionnaires",questionnaire_identity,val,"document", sep="/")     "'  _newline
 `"     getqx_document <- GET(documentquery, authenticate(user, password))      "'  _newline
-`"     if (status_code(getqx_document) %in% c(401,403)) {      "'  _newline
-`"       stop("Unauthorized access error when trying to identify translation id.  Check login credentials for API user")     "'  _newline 
-`"     } "'  _newline
+`"     if (status_code(getqx_document) %in% c(401,403)) stop("Unauthorized access error when trying to identify translation id.  Check login credentials for API user")     "'  _newline 
 `"     if (status_code(getqx_document) %in% c(404)) stop("Questionnaire was not found when trying to identify translation id. Something weird is going on...")  "'  _newline     
 `"     qx_document <- fromJSON(content(getqx_document, as = "text"), flatten = TRUE) "'  _newline
 `"     qx_document\$Translations\$Name <- str_to_upper(gsub("\\s", "", qx_document\$Translations\$Name))     "'  _newline
@@ -401,7 +394,6 @@ quietly: file write rcode
 `"     translation_id <- unique(qx_document\$Translations\$Id[qx_document\$Translations\$Name==translation]) "'  _newline
 `" } "'  _newline
 `" if (nchar(translation)==0) translation_id <- "" "'  _newline
-`"	    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")     "'  _newline
 `"	       "'  _newline
 `"	    ##CREATE FILENAME & PATH   "'  _newline
 `"	    if (datatype %in% c("stata", "ddi","spss")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="")  else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")      "'  _newline
@@ -419,7 +411,7 @@ quietly: file write rcode
 `"	    ##START    "'  _newline
 `"	    #CREATE THE BODY   "'  _newline
 `"	    body_request <- list(ExportType=datatype,    "'  _newline
-`"	                         QuestionnaireId=questionnaire_version,   "'  _newline
+`"	                         QuestionnaireId=paste(c(questionnaire_identity,"\$",val), collapse = ""),   "'  _newline
 `"	                         InterviewStatus=int_status,  "'  _newline
 `"				From=start_date,	 "'  _newline
 `"				To=end_date, 	 "'  _newline
@@ -509,7 +501,8 @@ quietly: file write rcode
 `"            } "'  _newline
 `"	        print("Data is currently being downloaded..")     "'  _newline
 `"	        ##THE DOWNLOAD REQUEST, WHICH IS SAVED IN DETAIL REQUEST   "'  _newline
-`"	        download_data <- GET(content\$Links\$Download, authenticate(user, password))     "'  _newline
+`"			download_link <- content\$Links\$Download
+`"	        download_data <- GET(download_link, authenticate(user, password))     "'  _newline
  `"			Sys.sleep(1)      "'  _newline
 `"	           "'  _newline
 `"	        #IF REDIRECT NECESSARY   "'  _newline
@@ -561,7 +554,7 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode 
-
+ex 123
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear

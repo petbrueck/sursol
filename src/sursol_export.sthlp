@@ -203,11 +203,9 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {synoptline}
 {pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd} 	install.packages("tidyverse", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd} 	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd} 	install.packages("dplyr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("date", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {synoptline}
 

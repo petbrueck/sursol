@@ -223,7 +223,7 @@ quietly: file open rcode using "`currdir'/export.R", write replace
 #d ;
 quietly: file write rcode  
 
-`"	packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")        "'  _newline
+`"	packages<- c("stringr","lubridate", "jsonlite","httr","date")        "'  _newline
 `"	for (newpack in packages) {    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}    "'  _newline
 `"	 if(newpack %in% rownames(installed.packages()) == FALSE) {     "'  _newline
@@ -233,7 +233,6 @@ quietly: file write rcode
 `"	suppressMessages(suppressWarnings(library(stringr)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(jsonlite)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(httr)))    "'  _newline
-`"	suppressMessages(suppressWarnings(library(dplyr)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(date)))   "'  _newline
 `"	suppressMessages(suppressWarnings(Sys.setlocale("LC_TIME", "English")))   "'  _newline
@@ -319,14 +318,14 @@ quietly: file write rcode
 `"	  qnrList <- fromJSON(content(data, as = "text"), flatten = TRUE)     "'  _newline
 `"	       "'  _newline
 `"        ##FIRST LIST OF ALL CURRENTLY AVAILABLE QUESTIONNAIRES  "'  _newline
-`"        qnrList_all <- as.data.frame(qnrList\$Questionnaires) %>% arrange(Title, Version)     "'  _newline  
+`"        qnrList_all <- as.data.frame(qnrList\$Questionnaires)     "'  _newline  
 `"        ##IF THERE ARE MORE THAN 40 QX ON THE SERVER, REPEAT THE QUERY  "'  _newline
 `"        if (qnrList\$TotalCount > 40) {   "'  _newline
 `"        for (i in 1:ceiling((qnrList\$TotalCount-40)/40)) {      "'  _newline
 `"          add_qx_query <- GET(query, authenticate(user, password),      "'  _newline
 `"                       query = list(limit = 40, offset = i+1))        "'  _newline
-`"          qnrList_all <- bind_rows(qnrList_all,     "'  _newline
-`"                                   as.data.frame(fromJSON(content(add_qx_query, as = "text"), flatten = TRUE)\$Questionnaires)) %>% arrange(Title, Version)   "'  _newline   
+`"          qnrList_all <- rbind(qnrList_all,     "'  _newline
+`"                                   as.data.frame(fromJSON(content(add_qx_query, as = "text"), flatten = TRUE)\$Questionnaires))   "'  _newline   
 `"                  }  "'  _newline
 `"        }  "'  _newline
 `"	} else if (status_code(data) == 401) {      "'  _newline
@@ -336,12 +335,12 @@ quietly: file write rcode
 `"	} else {     "'  _newline
 `"	  stop(paste0("Encountered issue with status code ", status_code(data)))     "'  _newline
 `"	}     "'  _newline
+`" qnrList_all <- qnrList_all[order(qnrList_all\$Title, qnrList_all\$Version),]   "'  _newline 
 `"	     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
 `"	  questionnaire_name_up <- str_to_upper(gsub("\\s", "", questionnaire_name))    "'  _newline
 `"	  qnrList_all\$Title <- str_to_upper(gsub("\\s", "", qnrList_all\$Title))     "'  _newline
-`"	     "'  _newline
 `"	if (questionnaire_name_up %in% qnrList_all\$Title) {     "'  _newline
 `"	  qxid<-(unique(qnrList_all\$QuestionnaireId[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
 `"	  qxvar<-(unique(qnrList_all\$Variable[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
@@ -381,15 +380,13 @@ quietly: file write rcode
 `"	 }  else {     "'  _newline
 `"	 versions_download <- versions     "'  _newline
 `"	 }     "'  _newline
-`"	    "'  _newline
+ `"      if (all(versions_download %in% versions_server)==FALSE) stop(paste("Version ",  paste(setdiff(versions_download,versions_server), collapse=","),   " of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))  "'  _newline  
 `"	    "'  _newline
 `"	##THE BIG LOOP   "'  _newline
 `"	i <- 1     "'  _newline
 `"	for (datatype in datasets) {     "'  _newline
 `"	  for (val in versions_download) {     "'  _newline
 `"	       "'  _newline
-`"	    if (val %in% versions_server ==FALSE) stop(paste0("Version ",val," of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))     "'  _newline
-
 `" ##CHECK TRANSLATION IF SPECIFIED "'  _newline
 `" if (nchar(translation)>0) { "'  _newline
 `"     documentquery <-  paste(api_URL, "questionnaires",questionnaire_identity,val,"document", sep="/")     "'  _newline
@@ -404,11 +401,6 @@ quietly: file write rcode
 `"     translation_id <- unique(qx_document\$Translations\$Id[qx_document\$Translations\$Name==translation]) "'  _newline
 `" } "'  _newline
 `" if (nchar(translation)==0) translation_id <- "" "'  _newline
-
-
-
-
-
 `"	    questionnaire_version<-paste(c(questionnaire_identity,"\$",val), collapse = "")     "'  _newline
 `"	       "'  _newline
 `"	    ##CREATE FILENAME & PATH   "'  _newline
@@ -579,7 +571,7 @@ quietly: file write rcode
 		qui timer list 1
 		if `r(t1)'<=3 {
 		dis as error "Whoopsa! That was surprisingly fast."
-		dis as error "Please check if the data was downloaded correctly." 
+		dis as error "Please check if the data was downloaded correctly or if R displayed Warnings & Error messages below." 
 		dis as error "If not, have a look at {help sursol_export##sursol_export_debugging:debugging information} in the help file."
 		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
 		}

@@ -7,7 +7,7 @@ program sursol_export
 
 syntax anything, SERver(string) USER(string) PASSword(string) [Rpath(string)]  [LASTVersion] ///
 [VERSIONS(numlist)] [FORMAT(string)] [STATA] [TABULAR] [SPSS] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)] ///
-[DIRectory(string)]  [dropbox(string)] [translation(string)]
+[DIRectory(string)]  [dropbox(string)] [translation(string)] [NOCHECK]
 
 
 **SAVE CURRENT WORKING DIRECTORY
@@ -109,9 +109,6 @@ noi dis as error "But let's try it nevertheless... "
 		noi dis as error "For more information see {help sursol_export##dataset:sursol export {it:dataset}}."
 		ex 198
 		}
-
-
-
 
 
 if length("`nozip'")==0 loc zip="yes"
@@ -216,7 +213,6 @@ ex 601
 //USE CURRENT DIRECTORY TO CREATE R FILE 
 qui capt rm "`currdir'/export.R"
 qui capt rm "`currdir'/.Rhistory" 
-
 
 
 quietly: file open rcode using "`currdir'/export.R", write replace 
@@ -366,7 +362,7 @@ quietly: file write rcode
 `"	} else {     "'  _newline
 `"	  end_code=paste("to=", end_date, sep = "")     "'  _newline
 `"	}     "'  _newline
-`"	     "'  _newline
+`" qnrList_all <- qnrList_all[order(qnrList_all\$Title, qnrList_all\$Version),]   "'  _newline 
 `"	 versions_server<-(unique(qnrList_all\$Version[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
 `"	if ("all" %in% str_to_lower(versions)) {     "'  _newline
 `"	versions_download<-versions_server       "'  _newline
@@ -376,12 +372,22 @@ quietly: file write rcode
 `"	 versions_download <- versions     "'  _newline
 `"	 }     "'  _newline
  `"      if (all(versions_download %in% versions_server)==FALSE) stop(paste("Version ",  paste(setdiff(versions_download,versions_server), collapse=","),   " of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))  "'  _newline  
-`"	    "'  _newline
+ `"	   ###GET LIST OF EXISTING EXPORT PROCESSES   "'  _newline
+ `"       if (nchar("`nocheck'")==0) {   "'  _newline
+ `"         df_export_processes <-     data.frame()   "'  _newline
+ `"         for (v in  versions_download ) {         "'  _newline
+ `"           url_check <- sprintf("%s/api/v2/export?questionnaireIdentity=%s$%s", server,questionnaire_identity, v)   "'  _newline
+ `"           request <-  GET(url_check, authenticate(user, password))     "'  _newline
+  `"          if (status_code(request) %in% c(401,403)) stop("Unauthorized access error when trying to get the list of existing export processes.  Check login credentials for API user")  "'  _newline 
+ `"            if (status_code(request) %in% c(404)) stop("Unknown error (404) when trying to get the list of existing export processes. Something weird is going on...")      "'  _newline
+ `"           df_export_processes <- rbind(df_export_processes,fromJSON(content(request, as = "text"), flatten = TRUE)  )   "'  _newline
+ `"         }  "'  _newline
+ `"       }  "'  _newline
 `"	##THE BIG LOOP   "'  _newline
 `"	i <- 1     "'  _newline
 `"	for (datatype in datasets) {     "'  _newline
 `"	  for (val in versions_download) {     "'  _newline
-`"	       "'  _newline
+`"	    if (datatype=="paradata")  dat <-"Para"  else dat<- toupper(datatype)     "'  _newline
 `" ##CHECK TRANSLATION IF SPECIFIED "'  _newline
 `" if (nchar(translation)>0) { "'  _newline
 `"     documentquery <-  paste(api_URL, "questionnaires",questionnaire_identity,val,"document", sep="/")     "'  _newline
@@ -394,20 +400,64 @@ quietly: file write rcode
 `"     translation_id <- unique(qx_document\$Translations\$Id[qx_document\$Translations\$Name==translation]) "'  _newline
 `" } "'  _newline
 `" if (nchar(translation)==0) translation_id <- "" "'  _newline
-`"	       "'  _newline
+`" #CHECK THE MOST RECENT CHANGE TO QUESTIONNAIRE & COMPARE TO EXPORT PROCESS "'  _newline
+`" if (nchar("`nocheck'")==0 & nrow(df_export_processes)>0) { "'  _newline
+`" writeLines(paste("\nTimestamp between most recent change to interview(s) and existing export processes is compared for:",dat, "data of",questionnaire_name, "VERSION", val)) "'  _newline
+`"   ##GET THE DATE & TIME OF LATEST CHANGE "'  _newline
+`"   check_update_url <- sprintf("%s/api/v1/questionnaires", server)      "'  _newline
+`"   check_update_query <- paste0(check_update_url, "/",questionnaire_identity,"/",val ,"/interviews")   "'  _newline
+`"   query_latestint <- GET(check_update_query, authenticate(user, password),query = list(limit = 5, offset = 1)) "'  _newline
+`"   if (status_code(query_latestint) %in% c(401,403)) stop("Unauthorized access error when trying to identify the latest change to interviews.  Check login credentials for API user")  "'  _newline
+`"   if (status_code(query_latestint) %in% c(404)) stop("Questionnaire was not found when trying to identify the latest change to interviews. Something weird is going on...")     "'  _newline 
+`"   df_newest_ints <- as.data.frame(fromJSON(content(query_latestint, as = "text"), flatten = TRUE)\$Interviews) "'  _newline
+ `"  if (nrow(df_newest_ints)==0) latest_interview <- "" else  latest_interview <- max(as.POSIXct(df_newest_ints\$LastEntryDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
+`"   ##NOW FILTER THE EXPORT PROCESSES FOR OUR SETTINGS "'  _newline
+`"   filtered_export_processes <- df_export_processes[ "'  _newline
+`"     df_export_processes\$QuestionnaireId==paste(c(questionnaire_identity,"$",val), collapse = "") "'  _newline
+`"     & str_to_lower(df_export_processes\$ExportType)==datatype "'  _newline
+`"     & is.na(df_export_processes\$Error)  "'  _newline
+`"     & df_export_processes\$ExportStatus=="Completed" "'  _newline
+`"     & df_export_processes\$InterviewStatus==int_status "'  _newline
+`"          ,   ] "'  _newline
+ `"  ##TIME COMPARE "'  _newline
+ `"  filtered_export_processes <- filtered_export_processes[  "'  _newline
+ `"    if (is.na(as.Date(latest_interview,optional=T))) !is.na(filtered_export_processes\$CompleteDate) else as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")>latest_interview  "'  _newline
+`"     ,] "'  _newline
+`"   #START DATE "'  _newline
+`"   filtered_export_processes <- filtered_export_processes[ "'  _newline
+`"     if (start_date=="") is.na(filtered_export_processes\$From) else as.Date(filtered_export_processes\$From)==as.Date(start_date) & !is.na(filtered_export_processes\$From) "'  _newline
+`"     ,] "'  _newline
+`"   ##END DATE "'  _newline
+`"   filtered_export_processes <- filtered_export_processes[ "'  _newline
+`"     if(end_date=="") is.na(filtered_export_processes\$To) else as.Date(filtered_export_processes\$To)==as.Date(end_date) & !is.na(filtered_export_processes\$To)  "'  _newline
+`"     ,] "'  _newline
+`"   ##ACCESS TOKEN "'  _newline
+`"   filtered_export_processes <- filtered_export_processes[ "'  _newline
+`"     if(access_token=="") is.na(filtered_export_processes\$AccessToken) else str_to_lower(filtered_export_processes\$AccessToken)==str_to_lower(access_token) & !is.na(filtered_export_processes\$AccessToken)  "'  _newline
+`"     ,] "'  _newline
+`"   ##STORAGE TYPE "'  _newline
+`"   filtered_export_processes <- filtered_export_processes[ "'  _newline
+`"     if(storage_type=="") is.na(filtered_export_processes\$StorageType) else str_to_lower(filtered_export_processes\$StorageType)==str_to_lower(storage_type) & !is.na(filtered_export_processes\$StorageType)   "'  _newline
+`"     ,] "'  _newline
+`"   ##TRANSLATION "'  _newline
+`"   filtered_export_processes <- filtered_export_processes[ "'  _newline
+`"     if(translation_id=="") is.na(filtered_export_processes\$TranslationId) else str_to_lower(filtered_export_processes\$TranslationId)==str_to_lower(translation_id) & !is.na(filtered_export_processes\$TranslationId)  "'  _newline
+`"     ,] "'  _newline
+`"   if (nrow(filtered_export_processes)>0){ "'  _newline
+`"   latest_export_file <- max(as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
+`"   if (is.na(as.Date(latest_interview,optional=T))) gen_new_file <- FALSE else gen_new_file <- ifelse(latest_export_file<latest_interview,TRUE,FALSE)  "'  _newline
+`"   if (gen_new_file==F) writeLines("No need to start new export process. Existing export job will be downloaded.")  "'  _newline
+`"   if (gen_new_file==F) download_link <- filtered_export_processes[as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")==latest_export_file,"Links.Download"] "'  _newline
+`"   } else gen_new_file=TRUE "'  _newline
+`"   } else gen_new_file=TRUE "'  _newline
 `"	    ##CREATE FILENAME & PATH   "'  _newline
 `"	    if (datatype %in% c("stata", "ddi","spss")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="")  else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")      "'  _newline
-`"	   "'  _newline
 `"	    Filename <-paste(c(qxvar,"_", val, dataname,"_", int_status, ifelse(nchar(translation)>0,paste0("_","`translation'"),""),  ".zip"), collapse = "")     "'  _newline
-`"	         "'  _newline
 `"	    fn<- paste(c(directory, "//", Filename), collapse = "")     "'  _newline
 `"	    if (file.exists(fn)) file.remove(fn)     "'  _newline
-`"	         "'  _newline
-`"	       "'  _newline
-`"	       "'  _newline
+ `"         if (gen_new_file==TRUE) { "'  _newline
 `"	    ##QUERIES TO DOWNLOAD   "'  _newline
 `"	    exportapi_url <- sprintf("%s/api/v2/export", server)     "'  _newline
-`"	       "'  _newline
 `"	    ##START    "'  _newline
 `"	    #CREATE THE BODY   "'  _newline
 `"	    body_request <- list(ExportType=datatype,    "'  _newline
@@ -425,12 +475,10 @@ quietly: file write rcode
 `"	    gen_data <- POST(exportapi_url, authenticate(user, password), body=body_request, encode = "json")     "'  _newline
 `"	       "'  _newline
 `"	    ##IF SUCCESSFULL GET JOB ID & PRINT TO USER   "'  _newline
-`"	    if (datatype=="paradata")  dat <-"Para"  else dat<- toupper(datatype)     "'  _newline
 `"	    if (status_code(gen_data) %in% c(200,201))  {       "'  _newline
 `"	           "'  _newline
-`"	    print(paste0("Requesting ",dat, " data for ",     "'  _newline
-`"	            questionnaire_name, " VERSION ", val,     "'  _newline
-`"	            " to be compiled on server."))     "'  _newline
+`"	    writeLines(paste0("Requesting new export process for ",dat, " data of ",     "'  _newline
+`"	            questionnaire_name, " VERSION ", val   ))     "'  _newline
 `"	       "'  _newline
 `"	    ##URL FOR ALL EXPORT PROCESSES AS IT CONTAINS THE JOB ID   "'  _newline
 `"	    exportjobid_url <- headers(gen_data)\$location   "'  _newline
@@ -452,14 +500,11 @@ quietly: file write rcode
 `"	                  " has been not successfull."))     "'  _newline
 `"	         "'  _newline
 `"	    }   "'  _newline
-`"	         "'  _newline
-`"	       "'  _newline
-`"	       "'  _newline
-`"	         "'  _newline
-`"	         "'  _newline
-`"	         "'  _newline
+`"		  }"'  _newline
 `"	    ##NOW WAIT TILL IT IS SUCCESFULL   "'  _newline
 `"	    repeat {     "'  _newline
+  `"          if (gen_new_file==TRUE) {  "'  _newline
+
 `"	         "'  _newline
 `"	      ##CHECK DETAILS OF EXPORT PROCESS    "'  _newline
 `"	      check_ready <- GET(exportjobid_url, authenticate(user, password))      "'  _newline
@@ -470,7 +515,7 @@ quietly: file write rcode
 `"	      #CHECK THE STATUS    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Created") {     "'  _newline
-`"	        print(paste0("Export files have been created/are queued"))     "'  _newline
+`"	        writeLines(paste0("Export files have been created/are queued"))     "'  _newline
 `"	        Sys.sleep(3)        "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
@@ -485,34 +530,36 @@ quietly: file write rcode
 `"	      }    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Running") {     "'  _newline
-`"	        print(paste0("Data is currently being generated. Progress: ",     "'  _newline
+`"	        writeLines(paste0("Data is currently being generated. Progress: ",     "'  _newline
 `"	                     content\$Progress, '%'))     "'  _newline
 `"	        Sys.sleep(2)     "'  _newline
 `"	      }    "'  _newline
-`"	       "'  _newline
+`"          if (content\$ExportStatus=="Completed") {   "'  _newline
+`"            gen_new_file <- FALSE         "'  _newline
+`"            download_link <- content\$Links\$Download    "'  _newline
+`"            if (nchar(dropbox_token)>0)  writeLines(paste0("Request successfull!")) "'  _newline
+`"          }   "'  _newline
+`"          }   "'  _newline
+`" "'  _newline
 `"	         "'  _newline
-`"	      if (content\$ExportStatus=="Completed")  {     "'  _newline
+`"	       if (gen_new_file==FALSE) {     "'  _newline
 `"            ##STOP THE LOOP IF STORAGE TYPE NOT DOWNLOAD  "'  _newline
 `"            if (nchar(dropbox_token)>0) { "'  _newline
-`"              print(paste0("Request successfull!")) "'  _newline
-`"              print(paste0("Data files are now being pushed to the Dropbox")) "'  _newline
+`"              writeLines(paste0("Data files are now being pushed to the Dropbox")) "'  _newline
 `"              Sys.sleep(1) "'  _newline
 `"             break "'  _newline
 `"            } "'  _newline
-`"	        print("Data is currently being downloaded..")     "'  _newline
+`"	        writeLines("Data is currently being downloaded..")     "'  _newline
 `"	        ##THE DOWNLOAD REQUEST, WHICH IS SAVED IN DETAIL REQUEST   "'  _newline
-`"			download_link <- content\$Links\$Download
 `"	        download_data <- GET(download_link, authenticate(user, password))     "'  _newline
  `"			Sys.sleep(1)      "'  _newline
 `"	           "'  _newline
 `"	        #IF REDIRECT NECESSARY   "'  _newline
-`"	        if (download_data\$url!=content\$Links\$Download) {   "'  _newline
+`"	        if (download_data\$url!=download_link) {   "'  _newline
 `"	        download_data <- GET(download_data\$url)    "'  _newline
 `"	        }   "'  _newline
 `"	           "'  _newline
-`"              if (status_code(download_data) %in% c(400,404)) {   "'  _newline
-`"                      stop("Downloading the data has failed. Try again or check the server.")      "'  _newline
-`"                    }  "'  _newline
+`"              if (status_code(download_data) %in% c(400,404))   stop("Downloading the data has failed. Try again or check the server.")      "'  _newline
 `"	        #START WRITING THE DATA IN BINARY MODE TO DIRECTORY   "'  _newline
 `"	        filecon <- file(file.path(directory, Filename), "wb")    "'  _newline
 `"	        writeBin(download_data\$content, filecon)      "'  _newline
@@ -538,7 +585,7 @@ quietly: file write rcode
 `"	        zip_name<- paste0(directory,"//",     "'  _newline
 `"	                          Filename)     "'  _newline
 `"	        unzip(zip_name,exdir = zip_path)     "'  _newline
-`"	        print(paste0("Data files successfully unzipped into folder: ", zip_path))     "'  _newline
+`"	        writeLines(paste0("Data files successfully unzipped into folder: ", zip_path))     "'  _newline
 `"	        }     "'  _newline
 `"	        break     "'  _newline
 `"	      }     "'  _newline

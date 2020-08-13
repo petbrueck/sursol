@@ -7,7 +7,7 @@ program sursol_export
 
 syntax anything, SERver(string) USER(string) PASSword(string) [Rpath(string)]  [LASTVersion] ///
 [VERSIONS(numlist)] [FORMAT(string)] [STATA] [TABULAR] [SPSS] [PARAdata] [BINary] [DDI] [NOZIP]  [STATus(string)] [STARTdate(string)] [ENDdate(string)] [ZIPDIR(string)] ///
-[DIRectory(string)]  [dropbox(string)] [translation(string)] [NOCHECK]
+[DIRectory(string)]  [dropbox(string)] [translation(string)] [NOCHECK] [NODOWNload]
 
 
 **SAVE CURRENT WORKING DIRECTORY
@@ -73,6 +73,14 @@ loc directory=subinstr("`directory'","`x'","/",.)
 loc zipdir=subinstr("`zipdir'","`x'","/",.)
 }
 
+}
+
+**NODOWNLOAD ONLY IF NOCHECK NOT SPECIFIED
+
+if length("`nodownload'")>0 & length("`nocheck'")>0 {
+noi dis as error _n "Attention. You specified both {help sursol_export##nodownload:nodownload} and {help sursol_export##nocheck:nocheck}.
+noi dis as error "These two options exclude each other. Please check."
+ex 601
 }
 
 
@@ -229,10 +237,6 @@ quietly: file write rcode
 `"	suppressMessages(suppressWarnings(library(stringr)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(jsonlite)))    "'  _newline
 `"	suppressMessages(suppressWarnings(library(httr)))    "'  _newline
-`"	#suppressMessages(suppressWarnings(Sys.setlocale("LC_TIME", "English")))   "'  _newline
-
-
-
 `" server <- "`server'" "' _newline
 `"user= "`user'"							 "' _newline
 `"password="`password'" "' _newline
@@ -257,18 +261,8 @@ quietly: file write rcode
 `"	       "'  _newline
 `"	}     "'  _newline
 `"	     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
 `"	for (x in c("user", "password", "server", "datasets", "directory", "questionnaire_name")) {     "'  _newline
-`"	  if (!is.character(get(x))) {     "'  _newline
-`"	    stop(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))     "'  _newline
-`"	         "'  _newline
-`"	  }     "'  _newline
-`"	       "'  _newline
+`"	  if (!is.character(get(x)))     stop(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))     "'  _newline
 `"	}     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
@@ -287,30 +281,20 @@ quietly: file write rcode
 `"	                                      "ReadyForInterview" , "SentToCapi", "Restarted" , "Completed", "RejectedBySupervisor" ,     "'  _newline
 `"	                              "ApprovedBySupervisor", "RejectedByHeadquarters" , "ApprovedByHeadquarters")) == FALSE) && interview_status!="") {     "'  _newline
 `"	  stop(paste("Interview status has been not correctly specified:", interview_status,". Please adjust! Attention: Case sensitive"))     "'  _newline
-`"	       "'  _newline
 `"	  }     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
-`"	if (nchar(directory)>0 & !dir.exists(directory) ) {     "'  _newline
-`"	  stop(paste0("Data folder does not exist in the expected location: ",directory))     "'  _newline
-`"	}     "'  _newline
-`"	if (!dir.exists(zip_directory) && zip_directory!="") {     "'  _newline
-`"	  stop(paste("ZIP folder does not exist in the expected location: ", directory))     "'  _newline
-`"	}     "'  _newline
+`"	if (nchar(directory)>0 & !dir.exists(directory) )  stop(paste0("Data folder does not exist in the expected location: ",directory))     "'  _newline
+`"	if (!dir.exists(zip_directory) && zip_directory!="")  stop(paste("ZIP folder does not exist in the expected location: ", directory))     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
 `"	     "'  _newline
 `"	api_URL <- sprintf("%s/api/v1", server)     "'  _newline
-`"	     "'  _newline
 `"	query <- paste0(api_URL, "/questionnaires")     "'  _newline
-`"	     "'  _newline
 `"	data <- GET(query, authenticate(user, password),     "'  _newline
 `"	            query = list(limit = 40, offset = 1))     "'  _newline
-`"	     "'  _newline
 `"	if (status_code(data) == 200) {     "'  _newline
-`"	       "'  _newline
 `"	  qnrList <- fromJSON(content(data, as = "text"), flatten = TRUE)     "'  _newline
-`"	       "'  _newline
 `"        ##FIRST LIST OF ALL CURRENTLY AVAILABLE QUESTIONNAIRES  "'  _newline
 `"        qnrList_all <- as.data.frame(qnrList\$Questionnaires)     "'  _newline  
 `"        ##IF THERE ARE MORE THAN 40 QX ON THE SERVER, REPEAT THE QUERY  "'  _newline
@@ -344,24 +328,10 @@ quietly: file write rcode
 `"	}     "'  _newline
 `"	     "'  _newline
 `"	questionnaire_identity <-gsub("-", "", qxid)     "'  _newline
+`"	if (interview_status=="") int_status="All"    else  int_status=interview_status    "'  _newline
+`"	if (start_date=="")  start_code=""   else	  start_code=paste("from=", start_date, "&",sep = "")     "'  _newline
+`"	if (end_date=="") end_code=""    else  end_code=paste("to=", end_date, sep = "")     "'  _newline
 `"	     "'  _newline
-`"	if (interview_status=="") {     "'  _newline
-`"	  int_status="All"     "'  _newline
-`"	}else{     "'  _newline
-`"	  int_status=interview_status   "'  _newline
-`"	}     "'  _newline
-`"	     "'  _newline
-`"	if (start_date=="") {     "'  _newline
-`"	  start_code=""     "'  _newline
-`"	} else {     "'  _newline
-`"	  start_code=paste("from=", start_date, "&",sep = "")     "'  _newline
-`"	}     "'  _newline
-`"	     "'  _newline
-`"	if (end_date=="")  {     "'  _newline
-`"	  end_code=""     "'  _newline
-`"	} else {     "'  _newline
-`"	  end_code=paste("to=", end_date, sep = "")     "'  _newline
-`"	}     "'  _newline
 `" qnrList_all <- qnrList_all[order(qnrList_all\$Title, qnrList_all\$Version),]   "'  _newline 
 `"	 versions_server<-(unique(qnrList_all\$Version[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
 `"	if ("all" %in% str_to_lower(versions)) {     "'  _newline
@@ -374,9 +344,10 @@ quietly: file write rcode
  `"      if (all(versions_download %in% versions_server)==FALSE) stop(paste("Version ",  paste(setdiff(versions_download,versions_server), collapse=","),   " of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))  "'  _newline  
  `"	   ###GET LIST OF EXISTING EXPORT PROCESSES   "'  _newline
  `"       if (nchar("`nocheck'")==0) {   "'  _newline
+  `"          writeLines("\nRetrieving the list of existing export processes that match your specifications....")"'  _newline
  `"         df_export_processes <-     data.frame()   "'  _newline
  `"         for (v in  versions_download ) {         "'  _newline
- `"           url_check <- sprintf("%s/api/v2/export?questionnaireIdentity=%s$%s", server,questionnaire_identity, v)   "'  _newline
+ `"           url_check <- sprintf("%s/api/v2/export?questionnaireIdentity=%s$%s&interviewStatus=%s&hasFile=true&exportStatus=Completed", server,questionnaire_identity, v,int_status)   "'  _newline
  `"           request <-  GET(url_check, authenticate(user, password))     "'  _newline
   `"          if (status_code(request) %in% c(401,403)) stop("Unauthorized access error when trying to get the list of existing export processes.  Check login credentials for API user")  "'  _newline 
  `"            if (status_code(request) %in% c(404)) stop("Unknown error (404) when trying to get the list of existing export processes. Something weird is going on...")      "'  _newline
@@ -402,7 +373,7 @@ quietly: file write rcode
 `" if (nchar(translation)==0) translation_id <- "" "'  _newline
 `" #CHECK THE MOST RECENT CHANGE TO QUESTIONNAIRE & COMPARE TO EXPORT PROCESS "'  _newline
 `" if (nchar("`nocheck'")==0 & nrow(df_export_processes)>0) { "'  _newline
-`" writeLines(paste("\nTimestamp between most recent change to interview(s) and existing export processes is compared for:",dat, "data of",questionnaire_name, "VERSION", val)) "'  _newline
+`" writeLines(paste("\nTimestamp between most recent change to interview(s) and existing export processes is compared for:\n",dat, "data of",questionnaire_name, "VERSION", val)) "'  _newline
 `"   ##GET THE DATE & TIME OF LATEST CHANGE "'  _newline
 `"   check_update_url <- sprintf("%s/api/v1/questionnaires", server)      "'  _newline
 `"   check_update_query <- paste0(check_update_url, "/",questionnaire_identity,"/",val ,"/interviews")   "'  _newline
@@ -410,7 +381,9 @@ quietly: file write rcode
 `"   if (status_code(query_latestint) %in% c(401,403)) stop("Unauthorized access error when trying to identify the latest change to interviews.  Check login credentials for API user")  "'  _newline
 `"   if (status_code(query_latestint) %in% c(404)) stop("Questionnaire was not found when trying to identify the latest change to interviews. Something weird is going on...")     "'  _newline 
 `"   df_newest_ints <- as.data.frame(fromJSON(content(query_latestint, as = "text"), flatten = TRUE)\$Interviews) "'  _newline
- `"  if (nrow(df_newest_ints)==0) latest_interview <- "" else  latest_interview <- max(as.POSIXct(df_newest_ints\$LastEntryDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
+`"   if (nrow(df_newest_ints)==0) latest_interview <- "" else  latest_interview <- max(as.POSIXct(df_newest_ints\$LastEntryDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
+`"	 if (nrow(df_newest_ints)==0 & nchar("`nodownload'")==0 ) writeLines("Attention. No interview found! Empty dataset will still be downloaded though... ") "'  _newline
+`"	 if (nrow(df_newest_ints)==0 & nchar("`nodownload'")>0 ) writeLines("Attention. No interview found!") "'  _newline
 `"   ##NOW FILTER THE EXPORT PROCESSES FOR OUR SETTINGS "'  _newline
 `"   filtered_export_processes <- df_export_processes[ "'  _newline
 `"     df_export_processes\$QuestionnaireId==paste(c(questionnaire_identity,"$",val), collapse = "") "'  _newline
@@ -446,10 +419,15 @@ quietly: file write rcode
 `"   if (nrow(filtered_export_processes)>0){ "'  _newline
 `"   latest_export_file <- max(as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
 `"   if (is.na(as.Date(latest_interview,optional=T))) gen_new_file <- FALSE else gen_new_file <- ifelse(latest_export_file<latest_interview,TRUE,FALSE)  "'  _newline
-`"   if (gen_new_file==F) writeLines("No need to start new export process. Existing export job will be downloaded.")  "'  _newline
+`"   if (gen_new_file==F & nchar("`nodownload'")==0 ) writeLines("No need to start new export process. Existing export job will be downloaded.")  "'  _newline
 `"   if (gen_new_file==F) download_link <- filtered_export_processes[as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")==latest_export_file,"Links.Download"] "'  _newline
 `"   } else gen_new_file=TRUE "'  _newline
 `"   } else gen_new_file=TRUE "'  _newline
+ `"  if (gen_new_file==FALSE & nchar("`nodownload'")>0 )  {  "'  _newline
+ `"    writeLines("No change since last export process. Export request will be skipped. No files will be downloaded.")   "'  _newline
+ `"    Sys.sleep(1.5)  "'  _newline
+`"   next  "'  _newline
+ `"  }  "'  _newline
 `"	    ##CREATE FILENAME & PATH   "'  _newline
 `"	    if (datatype %in% c("stata", "ddi","spss")) dataname <- paste("_",toupper(datasets[i]), collapse ="",sep="")  else dataname <- paste("_",str_to_title(datasets[i]), collapse ="",sep="")      "'  _newline
 `"	    Filename <-paste(c(qxvar,"_", val, dataname,"_", int_status, ifelse(nchar(translation)>0,paste0("_","`translation'"),""),  ".zip"), collapse = "")     "'  _newline
@@ -515,7 +493,7 @@ quietly: file write rcode
 `"	      #CHECK THE STATUS    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Created") {     "'  _newline
-`"	        writeLines(paste0("Export files have been created/are queued"))     "'  _newline
+`"	        writeLines(paste0("Export process has been created/is queued"))     "'  _newline
 `"	        Sys.sleep(3)        "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
@@ -525,13 +503,12 @@ quietly: file write rcode
 `"	             "'  _newline
 `"	      }     "'  _newline
 `"	           "'  _newline
-`"	      if (content\$ExportStatus == "Canceled") {     "'  _newline
-`"	        stop("The export process has been canceled by a user. Try again or check the server.")     "'  _newline
-`"	      }    "'  _newline
+`"	      if (content\$ExportStatus == "Canceled") stop("The export process has been canceled by a user. Try again or check the server.")    "'  _newline
 `"	         "'  _newline
 `"	      if (content\$ExportStatus == "Running") {     "'  _newline
-`"	        writeLines(paste0("Data is currently being generated. Progress: ",     "'  _newline
-`"	                     content\$Progress, '%'))     "'  _newline
+`"	            if (is.null(content\$ETA))writeLines(paste0("Data is currently being generated. Progress: ",  content\$Progress, '%'))     "'  _newline
+ `"             if (!is.null(content\$ETA)) writeLines(paste0("Data is currently being generated. Progress: ", content\$Progress, '%', " ETA:", content\$ETA))  "'  _newline
+
 `"	        Sys.sleep(2)     "'  _newline
 `"	      }    "'  _newline
 `"          if (content\$ExportStatus=="Completed") {   "'  _newline
@@ -601,7 +578,6 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode 
-ex 123
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear

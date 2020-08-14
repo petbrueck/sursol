@@ -47,6 +47,8 @@
 {synopt:{opt lastv:ersion}}exports only the last version{p_end}
 {synopt:{opt status(string)}}status of exported interviews{p_end}
 {synopt:{opt translation(string)}}language of export files if translation file was included for {it:questionnaire_name}{p_end}
+{synopt:{opt nocheck}}do not check if export process already exists for given specification{p_end}
+{synopt:{opt nodownload}}do not download export files if there has been no change to interviews since last export process{p_end}
 {synopt:{opt nozip}}exported data will not be unzipped{p_end}
 {synopt:{opt zipdir(string)}}path in which exported data will be unzipped to{p_end}
 {synopt:{opt start:date(string)}}starting date for time frame of exported interviews. 
@@ -171,6 +173,19 @@ If {opt translation(string)} is specified, the export is produced in the corresp
 Use the name of the translation as specified in the Questionnaire Designer. The command will return an error if the specified translation name is not 
 not to be found for a specific version of {it:questionnaire_name}. If the translation name changed between versions, you'd need to export the versions seperately.
 
+{marker nocheck}{...}
+{phang}
+{opt nocheck} by default, {opt sursol export} will request the timestamp of the most recent export processes that exist on the server which fit the requested specifications. Afterwards, 
+the command will compare this timestamp, if any exists, with the timestamp of the most recent change to an interview of {it:questionnaire_name}. If there has been no change,
+requesting a new export process is not necessary and the files from the most recent export process will be downloaded. This default behavior can help to save time to download interviews
+and to reduce workload for the server. However, retrieving the timestamp of the most recent export process can take some time. Use {opt nocheck} to skip this process and simply request a new export process.
+Can not be used together with {opt nodownload}.
+
+{marker nodownload}{...}
+{phang}
+{opt nodownload} as described at {opt nocheck}, {opt sursol export} will identify if there has been any change to any interview of {it:questionnaire_name} since the last export process. However, by default, {opt sursol export}
+would still download the file. Use {opt nodownload} to skip the download process itself. Useful if traffic needs to be reduced to a minimum. Can not be used together with {opt nocheck}.
+
 {phang}
 {opt nozip} if specified, the exported ZIP files will not be unzipped. 
 
@@ -203,10 +218,8 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {synoptline}
 {pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd} 	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd}	install.packages("date", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {synoptline}
 
 {pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol export} should run. {p_end}
@@ -242,7 +255,7 @@ Data shall be downloaded to the machine. {p_end}
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.06.
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.08.
 
 {title:Acknowledgments}
 

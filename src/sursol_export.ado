@@ -250,22 +250,17 @@ quietly: file write rcode
 `"unzip<-"`zip'" "' _newline
 `"zip_directory <- "`zipdir'"   "' _newline
 `"dropbox_token <- "`dropbox'"   "' _newline
- `"translation <-  str_to_upper(gsub("\\s", "",  "`translation'"))     "' _newline
-   `"   ##REPLACE TRAILING SLASH "' _newline
-   `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline
-`"	server_url<-server     "'  _newline
-`"	     "'  _newline
+`" translation <-  str_to_upper(gsub("\\s", "",  "`translation'"))     "' _newline
+ `"   ##REPLACE TRAILING SLASH "' _newline
+`"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline
+ `"	server_url<-server     "'  _newline
+ `" writeLines(paste("\nConnection to server will be tested for URL:", server_url,"\n"))   "'  _newline
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
-`"	if (class(serverCheck) == "try-error") {     "'  _newline
-`"	  stop(paste0("The following server does not exist. Check internet connection or the server name:", server_url))     "'  _newline
-`"	       "'  _newline
-`"	}     "'  _newline
+`"	if (class(serverCheck) == "try-error") stop(paste0("The following server does not exist. Check internet connection or the server name:", server_url))     "'  _newline
 `"	     "'  _newline
 `"	for (x in c("user", "password", "server", "datasets", "directory", "questionnaire_name")) {     "'  _newline
 `"	  if (!is.character(get(x)))     stop(paste("Check that the parameters in the data are the correct data type (e.g. String?). Look at:",x))     "'  _newline
 `"	}     "'  _newline
-`"	     "'  _newline
-`"	     "'  _newline
 `" ##STORAGE TYPE "'  _newline
 `" if (nchar(dropbox_token)>0) {  "'  _newline
 `" access_token <- dropbox_token  "'  _newline
@@ -419,7 +414,7 @@ quietly: file write rcode
 `"   if (nrow(filtered_export_processes)>0){ "'  _newline
 `"   latest_export_file <- max(as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")) "'  _newline
 `"   if (is.na(as.Date(latest_interview,optional=T))) gen_new_file <- FALSE else gen_new_file <- ifelse(latest_export_file<latest_interview,TRUE,FALSE)  "'  _newline
-`"   if (gen_new_file==F & nchar("`nodownload'")==0 ) writeLines("No need to start new export process. Existing export job will be downloaded.")  "'  _newline
+`"   if (gen_new_file==F & nchar("`nodownload'")==0 ) writeLines("No need to start new export process. Existing data archive will be downloaded.")  "'  _newline
 `"   if (gen_new_file==F) download_link <- filtered_export_processes[as.POSIXct(filtered_export_processes\$CompleteDate, format = "%Y-%m-%dT%H:%M:%OS", tz = "UCT")==latest_export_file,"Links.Download"] "'  _newline
 `"   } else gen_new_file=TRUE "'  _newline
 `"   } else gen_new_file=TRUE "'  _newline

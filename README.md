@@ -7,10 +7,7 @@ Type
 
 `net install sursol , from("https://raw.githubusercontent.com/petbrueck/sursol/master/src") replace`  
 
-in your Stata command window.
-
-Once installed, type
-`help sursol` to retrieve more information about the package.
+in your Stata command window. Once installed, type `help sursol` to retrieve more information about the package.
 
 ## **Overview**
 The list of sub-commands of **sursol** is work in progress and improved continuously. Some of those commands have not been used in many survey scenarios which increases the likelihood of bugs. Anyone is more than welcome to report any bug, issues or provide feature requests!

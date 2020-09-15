@@ -38,10 +38,11 @@ The list of sub-commands of **sursol** is work in progress and improved continuo
 
 
 
+
 ## Disclaimer
-The commands are not affiliated, associated, endorsed by or in any way officially connected with the [Data group of The World Bank](https://mysurvey.solutions/) that is developing the Survey Solutions software*
+The commands are not affiliated, associated, endorsed by or in any way officially connected with the [Data group of The World Bank](https://mysurvey.solutions/) that is developing the Survey Solutions software
 
-*No responsibility or liability for the correct functionality of the commands is taken!*
+No responsibility or liability for the correct functionality of the commands is taken!
 
-*Please report any bug, issues or provide feature requests!*
+Please report any bug, issues or provide feature requests!
 

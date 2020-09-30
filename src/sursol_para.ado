@@ -1,5 +1,5 @@
-*! version 19.07  July 2019
-*! Author: Peter Brueckmann, p.brueckmann@mailbox.org
+*! version 20.09  September 2020
+*! Author: Andreas Kutka, andreas.kutka@gmail.com & Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_para
 
@@ -97,27 +97,33 @@ qui{
       if `kb'>100000 noi dis as text "The file is `kb' KB large. That'll take a while..."
       else if `kb'>1000000 noi dis as text "The file is `kb' KB large. That'll take super long..."
 	}
+
+	// MAIN INSHEET OF PARADATA 
 	insheet using "`directory'//`folder'/paradata.tab", tab case names clear
 	
-
-
 	if  `c(N)'==0  {
-		noi di as error  "No data in paradata.tab file found for `folder' "
+		noi di as result  "No data in paradata.tab file found for `folder' "
 		local notworked `" `notworked'  "`folder'" " " "'
 		loc ++i		
 		continue 
 		}	
 
 
+	//REMOVE PASSIVE EVENTS
 	drop if inlist(event,"QuestionDeclaredValid", "VariableDisabled","VariableSet")
-	replace timestamp=subinstr(timestamp,"-","/",.)
-	replace timestamp=subinstr(timestamp,"T"," ",.)
+
+	//IDENTIFY VARIABLE OF TIMESTAMP. BEFORE SURVEY SOLUTIONS VERSION 20.09: timestamp. AFTER: timestamp_utc
+	capt confirm var timestamp_utc
+	loc timestamp_var = cond(!_rc, "timestamp_utc","timestamp")
+
+	//CREATE DURATION STATISTICS
+	 replace `timestamp_var'=subinstr(`timestamp_var',"-","/",.)
+	 replace `timestamp_var'=subinstr(`timestamp_var',"T"," ",.)
 
 	g variable=substr(parameters,1,strpos(parameters,"||")-1)
-
 	sort interview__id order
-	gen double time=clock(timestamp,"20YMDhms")
-	gen timestamp1  = timestamp[_n - 1]
+	gen double time=clock(`timestamp_var',"20YMDhms")
+	gen timestamp1  = `timestamp_var'[_n - 1]
 	gen double time1=clock(timestamp1,"20YMDhms")
 
 	gen rawdur = (time -time1) / 1000 if order!=1 ///
@@ -172,25 +178,47 @@ qui{
 	replace rawdur=. if rawdur>(`pausetime_sec')
 	bys interview__id: egen length_pause=total(rawdur)
 	
-
+	//GET RID OF HELP VARIABLES
 	drop time1 time timestamp1 help 
+
+	//ADJUST THE ROLE VARIABLE. STRING IN OLDER SURVEY SOLUTIONS VERSIONS 
+	capt confirm string v role 
+	if !_rc {
+	    loc rolecount=0 
+		foreach role_name in `"<UNKNOWN ROLE>"' `"Interviewer"' `"Supervisor"' `"Headquarter"' `"Administrator"' `"Api User"' {
+		   replace role="`rolecount'" if role== "`role_name'"
+		loc ++rolecount
+		}
+		rename role role_string
+		encode role_string, g(role)
+		order role, a(role_string)
+		drop role_string
+		label define role 0 `"<UNKNOWN ROLE>"'1 `"Interviewer"'2 `"Supervisor"'3 `"Headquarter"'4 `"Administrator"'5 `"Api User"', replace
+		label values role role
+		label variable role `"System role of the person who initiated the event"'
+	}
+
+		//SOME OLD FILES DID NOT HAVE VARIABLE "VARIABLE"
+		capt confirm str var variable
+		if _rc!=0 tostring variable, replace 
 
 
 		capt confirm file "`export'//paradata_all.tab"
 				if _rc!=0 {
 					capture sort interview__id order
-					export delimited using "`export'//paradata_all.tab", replace delimiter(tab)
+					export delimited using "`export'//paradata_all.tab", replace delimiter(tab) nolabel
+					tempfile masterversion
+					save `masterversion'
 				}
 				else {
 					tempfile finalversion
 					save `finalversion'
-					sleep 150
-					import delimited using "`export'//paradata_all.tab", clear
-					capt confirm str var variable
-					if _rc!=0 tostring variable, replace 
+					sleep 30
+					use `masterversion'
 					append using `finalversion'
 					capture sort interview__id order
-					export delimited using  "`export'//paradata_all.tab", replace delimiter(tab)
+					export delimited using  "`export'//paradata_all.tab", replace delimiter(tab) nolabel
+					save `masterversion', replace 
 				}
 	loc ++nsuccess
 	}	

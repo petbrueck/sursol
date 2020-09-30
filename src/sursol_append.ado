@@ -241,12 +241,11 @@ noi di as error "`fail'"
 
 
 //MERGING SPECIFIED VARIABLES
-
 capt confirm file "`export'/`master'.dta"
 if length("`copy'")>0 & !_rc {
 	no di as text _n "The following variables are merged to all datasets: `copy'"
 	local files: dir "`export'" file "*.dta", respectcase 
-	loc not "`master'.dta" "interview__comments.dta" "assignment__actions.dta" "interview__diagnostics.dta" "interview__actions.dta" "interview__errors.dta" "paradata_all.dta" "paradata_overview.dta"
+	loc not "f" "`master'.dta" "interview__comments.dta" "assignment__actions.dta" "interview__diagnostics.dta" "interview__actions.dta" "interview__errors.dta" "paradata_all.dta" "paradata_overview.dta"
 	local mergefiles: list files-not
 	use "`export'/`master'.dta", clear 
 	
@@ -278,10 +277,12 @@ if length("`copy'")>0 & !_rc {
 		}
 	}
 
+//MERGE INTERVIEW DIAGNOSTICS IF SPECIFIED
 capt confirm file "`export'/`master'.dta"
 if length("`noactions'")==0 & !_rc {
 		no di as text _n "Interview action statistics are merged to `master'.dta"
 		use "`export'/interview__actions.dta", clear
+	
 		if `c(N)'>0 {
 		levelsof action, loc(levels)
 		foreach lev of loc levels {
@@ -300,8 +301,6 @@ if length("`noactions'")==0 & !_rc {
 
 		g enum_strt=originator if action==12
 		label var enum_strt "enumerator: interview starting"
-		
-		
 		
 		sort interview__id action date time
 		by interview__id action: gen enum_fcmp=originator if _n==1 & action==3
@@ -391,7 +390,6 @@ if length("`noactions'")==0 & !_rc {
 		  } 
 
 
-
 tempfile actioncollaps
 save `actioncollaps'
 use "`export'/`master'.dta", clear
@@ -404,6 +402,10 @@ capt confirm file "`export'/interview__comments.dta"
 	if _rc==0 {
 		use "`export'/interview__comments.dta", clear
 		if `c(N)'>0 {
+			gen double tmestp=clock(date+" "+time,"MDYhms")
+			format tmestp %tc
+			save "`export'/interview__comments.dta", replace
+
 		gen n_cmt_int=1 if role==1
 		gen n_cmt_sup=1 if role==2
 		gen n_cmt_hq=1 if role==3
@@ -422,20 +424,18 @@ capt confirm file "`export'/interview__comments.dta"
 	}
 }
 
-capt confirm file "`export'/interview__comments.dta"
-if _rc==0 {
-use "`export'/interview__comments.dta", clear
-	gen double tmestp=clock(date+" "+time,"MDYhms")
-	format tmestp %tc
-save "`export'/interview__comments.dta", replace
-}
-
-
+//INTERVIEW DIAGNOSTICS
 capt confirm file "`export'/`master'.dta"
 if length("`nodiagnostics'")==0 & !_rc {
 noi di as text "Interview diagnostics are merged to `master'.dta"
+
+	//IDENTIFY VARIABLES IN DIAGNOSTICS. DIFFER BY SURVEY SOLUTIONS VERSION. 
+	use  "`export'/interview__diagnostics.dta", clear
+	qui ds
+	loc lastvar: word `c(k)' of `r(varlist)'
+
 use "`export'/`master'.dta", clear
-merge 1:1 interview__id using "`export'/interview__diagnostics.dta", nogen keepusing (interview__status responsible interviewers rejections__sup rejections__hq entities__errors questions__comments interview__duration)
+merge 1:1 interview__id using "`export'/interview__diagnostics.dta", nogen keepusing (interview__status-`lastvar')
 lab var interview__duration "Active time it took to complete the interview according to Survey Solutions"
 sleep 30
 save "`export'/`master'.dta", replace

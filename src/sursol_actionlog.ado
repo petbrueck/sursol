@@ -167,8 +167,6 @@ quietly: file write rcode
 `"user= "`user'"  "' _newline
 `"password="`password'" "' _newline
 `"directory <-  "`directory'"  "' _newline
-`"start_date="`startdate'" "' _newline
-`"end_date="`enddate'" "' _newline
 `"append<-"`append'" "' _newline
 `"process<-"`process'"   "' _newline      
 
@@ -339,7 +337,6 @@ quietly: file write rcode
 
 #d cr
 file close rcode 
-
 
 		//EXECUTE THE COMMAND
 		timer clear

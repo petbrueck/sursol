@@ -69,6 +69,7 @@ assumes that the dataset variable names and anatomy follows the Survey Solutions
 
 {pstd}Each file as listed in variable {it: roster} of {it: interview__comments.dta} is opened, the comments are placed next to each respective question and the file is saved and replaced. {p_end}
 
+{marker attention1}{...}
 {phang}
 {it: {opt ATTENTION 1:}}: It might be necessary to clean the {it:roster} variable within {it: interview__comments.dta} before {cmd:sursol getcomm} can be used.
 If there are multiple rosters within a questionnaire, e.g. {it:roster1} and {it:roster2}, which both source from the same question and comments are left at a question which is placed within {it:roster2}:  

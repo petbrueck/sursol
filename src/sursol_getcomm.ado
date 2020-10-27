@@ -102,7 +102,7 @@ capt confirm file "`dir'//`file'.dta"
 	if !_rc==0 {
 		if length("`directory'")==0  {
 		noi dis as error "`file'.dta not found in current directory (`dir')"
-		noi dis as error "Check current working directory or specify option {help sursol_getcomm##directory:directory(string)}"
+		noi dis as error "Check current working directory, specify option {help sursol_getcomm##directory:directory(string)} or see {help sursol_getcomm##attention1:Attention 1}."
 		ex 601
 		}
 		else if length("`directory'")>0  {

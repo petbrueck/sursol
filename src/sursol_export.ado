@@ -149,7 +149,7 @@ ex 601
 	local length : word count `folderstructure'
 
 	if `length'>1 {
-	noi dis as error _n "Attention, two versions of R have been found:"
+	noi dis as error _n "Attention, multiple versions of R have been found:"
 	loc i=1
 	foreach x of loc folderstructure {
 	noi dis as error "`x'" 

@@ -210,8 +210,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"}"' _newline ///
 `"}"'	_newline
  file close rcode 
-}
-}
+
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear
 		timer on 1
@@ -220,18 +219,19 @@ qui capt rm "`c(pwd)'/.Rhistory"
 		timer off 1	
 		qui timer list 1
 		if `r(t1)'<=3 {
-		dis as error "Whoopsa! That was surprisingly fast."
-		dis as error "Please check if the interviews were rejected correctly." 
-		dis as error "If not, have a look at {help sursol_reject##debugging:debugging information} in the help file."
+		noi dis as error "Whoopsa! That was surprisingly fast."
+		noi dis as error "Please check if the interviews were rejected correctly." 
+		noi dis as error "If not, have a look at {help sursol_reject##debugging:debugging information} in the help file."
 		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
 		}
 
 
 		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
-		di as result _n
-		di as result "{ul:Warnings & Error messages displayed by R:}"
-		type `error_message'
-
+		noi di as result _n
+		noi di as result "{ul:Warnings & Error messages displayed by R:}"
+		noi type `error_message'
+}
+}
 qui capt rm "`c(pwd)'/reject.R"
 qui capt rm "`c(pwd)'/.Rhistory" 
 

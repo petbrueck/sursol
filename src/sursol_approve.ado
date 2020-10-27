@@ -152,16 +152,13 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"user= "`user'"  "' _newline ///
 `"password="`password'" "' _newline ///
 `"interview__id <- c(`levels')"' _newline /// 
-`"packages<- c("stringr","lubridate", "jsonlite","httr","dplyr","date")	 "'  _newline ///
+`"packages<- c("stringr", "jsonlite","httr")	 "'  _newline ///
 `"for (newpack in packages) { "'  _newline ///
 `" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline ///
 `"} "'  _newline ///
 `"	suppressMessages(suppressWarnings(library(stringr)))    "'  _newline ///	
 `"	suppressMessages(suppressWarnings(library(jsonlite)))    "'  _newline ///	
 `"	suppressMessages(suppressWarnings(library(httr)))    "'  _newline ///	
-`"	suppressMessages(suppressWarnings(library(dplyr)))    "'  _newline ///	
-`"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline ///	
-`"	suppressMessages(suppressWarnings(library(date)))   "'  _newline ///	
 `"Sys.setlocale("LC_TIME", "English")"' _newline ///
  `"   ##REPLACE TRAILING SLASH "' _newline ///
  `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline ///
@@ -196,6 +193,9 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"for (val in interview__id){"' _newline ///
 `"approve_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline ///
 `"approve <- PATCH(approve_query, authenticate(user, password))"' _newline ///
+`" if (status_code(approve) == 401) {     "' _newline ///
+`"   stop("Incorrect username or password. Check login credentials for API user")   "' _newline ///
+`" 	}  "' _newline ///
   `"if (status_code(approve)==404) {  "' _newline ///
   `"print(paste("Target interview", val," was not found")) "' _newline ///  
  `"  count404= count404+1 "' _newline ///

@@ -156,16 +156,13 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"password="`password'" "' _newline ///
 `"interview__id <- c(`levels')"' _newline /// 
 `"Sys.setlocale("LC_TIME", "English")"' _newline ///
-`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")	 "'  _newline ///
+`"packages<- c("stringr", "jsonlite","httr")	 "'  _newline ///
 `"for (newpack in packages) { "'  _newline ///
 `" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline ///
 `"} "'  _newline ///
 `"library(stringr) "'  _newline			  ///
 `"library(jsonlite) "'  _newline  ///
 `"library(httr) "'  _newline  ///
-`"library(dplyr) "'  _newline  ///
-`"library(lubridate) "'  _newline		  ///								                
-`"library(date)"'  _newline				  ///	
  `"   ##REPLACE TRAILING SLASH "' _newline ///
  `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline ///
  `"server_url<-sprintf("%s", server)  "'    _newline																				  ///										
@@ -192,6 +189,9 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"for (val in interview__id){"' _newline ///
 `"reject_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline ///
 `"reject <- PATCH(reject_query, authenticate(user, password))"' _newline ///
+`" if (status_code(reject) == 401) {     "' _newline ///
+`"   stop("Incorrect username or password. Check login credentials for API user")   "' _newline ///
+`" 	}  "' _newline ///
   `"if (status_code(reject)==404) {  "' _newline ///
   `"message(paste("Target interview", val," was not found")) "' _newline ///  
  `"  count404= count404+1 "' _newline ///

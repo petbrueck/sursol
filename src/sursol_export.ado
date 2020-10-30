@@ -16,6 +16,9 @@ local currdir `c(pwd)'
 
 //CHECK OPTIONS CORRECTLY SPECIFIED 
 ************************************************************************************************
+**REMOVE ACCENTS/UMLAUT FROM QUESTIONNAIRE NAME
+loc clean_qx_name =ustrlower( ustrregexra( ustrnormalize( "`1'", "nfd" ) , "\p{Mark}", "" )  )
+
 **VERSIONS
 if length("`versions'")>0 & length("`lastversion'")>0 {
 noi dis as error _n "Attention. You specified both {help sursol_export##versions:versions(numlist)} and {help sursol_export##lastversion:lastversion}.
@@ -266,7 +269,7 @@ quietly: file write rcode
 `" server <- "`server'" "' _newline
 `"user= "`user'"							 "' _newline
 `"password="`password'" "' _newline
-`"questionnaire_name="`1'" "' _newline
+`"questionnaire_name="`clean_qx_name'" "' _newline
 `"versions<- unique(str_sort(c(`newversions'), numeric=TRUE)) "' _newline
 `"directory <-  "`directory'"  "' _newline
 `"datasets <- c(`datasets')   "' _newline
@@ -336,10 +339,11 @@ quietly: file write rcode
 `"	}     "'  _newline
 `"	     "'  _newline
 `"	  questionnaire_name_up <- str_to_upper(gsub("\\s", "", questionnaire_name))    "'  _newline
-`"	  qnrList_all\$Title <- str_to_upper(gsub("\\s", "", qnrList_all\$Title))     "'  _newline
+`"	  qnrList_all\$Title <- str_to_upper(gsub("\\s", "",stringi::stri_trans_general(qnrList_all\$Title, "Latin-ASCII")))     "'  _newline
 `"	if (questionnaire_name_up %in% qnrList_all\$Title) {     "'  _newline
-`"	  qxid<-(unique(qnrList_all\$QuestionnaireId[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
-`"	  qxvar<-(unique(qnrList_all\$Variable[qnrList_all\$Title == questionnaire_name_up]))     "'  _newline
+ `"       df_of_interest <- qnrList_all[which(qnrList_all\$Title == questionnaire_name_up & qnrList_all\$LastEntryDate==max(qnrList_all\$LastEntryDate)),]  "'  _newline
+  `"      qxid<-(unique(df_of_interest\$QuestionnaireId))      "'  _newline
+  `"      qxvar<-(unique(df_of_interest\$Variable))      "'  _newline
 `"	} else if (questionnaire_name_up == "") {     "'  _newline
 `"	  stop("Please provide the name of the questionnaire.")     "'  _newline
 `"	       "'  _newline

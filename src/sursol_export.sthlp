@@ -54,7 +54,7 @@
 {synopt:{opt start:date(string)}}starting date for time frame of exported interviews. 
 Must be in {it: YYYY-MM-DD} date format{p_end}
 {synopt:{opt end:date(string)}}end date for time frame of exported interviews. Must be in {it: YYYY-MM-DD} date format{p_end}
-{synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
+{synopt:{opt r:path(string)}}path of R application{p_end}
 {synoptline}
 
 
@@ -205,8 +205,9 @@ Please note, data is exported for interview with changes up to date specified in
 
 {marker sursol_export_rpath}{...}
 {phang}
-{opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol export} assumes that the executable  
-can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
+{opt rpath(string)} specifies the path to the R application through which the data export request to the server is transmitted. {opt sursol export} assumes that the executable can 
+be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\" if Windows is OS. For Linux/Mac users, it looks at "usr/bin/R". It returns errors if it is 
+not possible to detect any executable in the default or specified folder.
 
 {marker sursol_export_debugging}{...}
 {title:Debugging}
@@ -255,7 +256,7 @@ Data shall be downloaded to the machine. {p_end}
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.08.
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.10.
 
 {title:Acknowledgments}
 

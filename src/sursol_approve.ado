@@ -1,4 +1,4 @@
-*! version 20.05.1  May 2020
+*! version 20.10.1  October 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 program sursol_approve
@@ -34,99 +34,118 @@ ex 198
 }
 loc idvar "`id'"
 }
+
+
+********************************************************************************	
+***IDENTIFY R PATH
+********************************************************************************
+
+//IF NOT SPECIFIED, LOOK FOR IT
+********************************************************************************
 if length("`rpath'")==0 {
-if strpos(lower("`c(os)'"),"window")==0 {
-noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex 198
-}
 
-if length("`comment'")==0 loc comment "Approved%20by%20Supervisor%20through%20API%20User:%20`user'"
-else if length("`comment'")>0 loc comment=subinstr("`comment'"," ","%20",.)
-if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
-if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
+//IF WINDOWS, LOOK AT DEFAULT FOLDER
+********************************************************************************
+if "`c(os)'" == "Windows" {
+	**STILL VERY MESSY. SIMPLIFY AT SOME POINT WITH RECURSIVE FOLDER 
+	if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
+	if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
 
-mata : st_numscalar("OK", direxists("C:/Program Files/R"))
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex 198
-}
-
-
-
-
-	local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
-	local folderstructure : list sort folderstructure
-	local length : word count `folderstructure'
-
-	if `length'>1 {
-	noi dis as error _n "Attention, two versions of R have been found:"
-	loc i=1
-	foreach x of loc folderstructure {
-	noi dis as error "`x'" 
-	if `length'==`i' {
-	noi dis as result _n "Version `x' of R will be used to approve the interviews."
-	loc version="`x'"
-	} 
-	loc ++i
-	} 
-} 	
-
-else if `length'==1 {
-	foreach x of loc folderstructure {
-	loc version="`x'"
+	mata : st_numscalar("OK", direxists("C:/Program Files/R"))
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
 	}
-}
+		local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
+		local folderstructure : list sort folderstructure
+		local length : word count `folderstructure'
+
+		if `length'>1 {
+		noi dis as error _n "Attention, multiple versions of R have been found:"
+		loc i=1
+		foreach x of loc folderstructure {
+		noi dis as error "`x'" 
+		if `length'==`i' {
+		noi dis as result _n "Version `x' of R will be used to export the data"
+		loc version="`x'"
+		} 
+		loc ++i
+		} 
+	} 	
+
+	else if `length'==1 {
+		foreach x of loc folderstructure {
+		loc version="`x'"
+		}
+	}
 
 
-capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
-if _rc==3000 {
-noi dis as error _n "The command has problems identifying your R version."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex
+	capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
+	if _rc==3000 {
+	noi dis as error _n "The command has problems identifying your R version."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
+	if _rc {
+	no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+	loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
 }
 
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex
+//IF LINUX/MAC, TRY "usr/bin/R"
+********************************************************************************
+else {
+capture confirm file "/usr/bin/R"
+	if _rc != 0 {
+		noi dis as error _n "Attention.  No R application found in  'usr/bin/R'."
+		noi dis as error  "Please specify the path of your R application  using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 198
+	}
+	else loc rpath= "/usr/bin/R"
 }
-
-mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex
-}
-
-capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
-if _rc {
-no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex
-}
-loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
 
 } 
 
-
+//IF SPECIFIED,OR IF FOUND BY CODE ABOVE, CLEAN IT AND CONFIRM IT EXISTS
+********************************************************************************
 if length("`rpath'")>0 {
-if strpos(lower(strreverse("`rpath'")),"r")==1 {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
-}
 
-if strpos(lower(strreverse("`rpath'")),"exe.r") {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
-}
+	if strpos(lower(strreverse("`rpath'")),"r")==1 {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
+	}
 
+	if strpos(lower(strreverse("`rpath'")),"exe.r") {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
+	}
 
-capt confirm file "`rpath'/R.exe"
-if _rc {
-no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
-noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_approve##sursol_approve_rpath:rpath(string)}"
-ex
-}
+	//LAST CONFIRMATION IF IT EXISTS
+	********************************************************************************
+	if "`c(os)'" == "Windows"  capt confirm file "`rpath'/R.exe"
+	else if "`c(os)'" != "Windows" capt confirm file "`rpath'/R"
+	if _rc {
+		no dis as error _n "Attention. No R application in folder '`rpath'' was found."
+		noi dis as error  "Please correctly specify the path of your R app using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 601
+	}
+
 }
 
 preserve
@@ -191,7 +210,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"count406=0"' _newline ///
 `"count404=0"' _newline ///
 `"for (val in interview__id){"' _newline ///
-`"approve_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline ///
+`"approve_query<- URLencode(paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")) "' _newline ///
 `"approve <- PATCH(approve_query, authenticate(user, password))"' _newline ///
 `" if (status_code(approve) == 401) {     "' _newline ///
 `"   stop("Incorrect username or password. Check login credentials for API user")   "' _newline ///

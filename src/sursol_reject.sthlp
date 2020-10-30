@@ -32,7 +32,7 @@
 {synoptline}
 {synopt:{opt comm:ent(string)}}text to be attached to rejection{p_end}
 {synopt:{opt id:(var)}}variable that contains the globally unique identifier of each interview according to Survey Solutions format{p_end}
-{synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
+{synopt:{opt r:path(string)}}path of R application{p_end}
 {synoptline}
 
 
@@ -82,8 +82,9 @@ If interview__id has been renamed {opt id:(var)} can be used to indicate the new
 
 {marker sursol_reject_rpath}{...}
 {phang}
-{opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol reject} assumes that the executable  
-can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
+{opt rpath(string)} specifies the path to the R application through which the data export request to the server is transmitted. {opt sursol reject} assumes that the executable can 
+be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\" if Windows is OS. For Linux/Mac users, it looks at "usr/bin/R". It returns errors if it is 
+not possible to detect any executable in the default or specified folder.
 
 {marker debugging}{...}
 {title:Debugging}
@@ -95,11 +96,8 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {synoptline}
 {pstd}	install.packages("stringr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd} 	install.packages("lubridate", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("jsonlite", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {pstd}	install.packages("httr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd} 	install.packages("dplyr", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
-{pstd}	install.packages("date", repos = 'https://cloud.r-project.org/', dep = TRUE){p_end}
 {synoptline}
 
 {pstd}Make sure that you have administrator rights. Afterwards, {cmd:sursol reject} should run. {p_end}
@@ -124,4 +122,4 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol reject} was last updated using Survey Solutions 20.05
+{pstd}{cmd:sursol reject} was last updated using Survey Solutions 20.10

@@ -36,7 +36,7 @@ for all interviewer users created on a Survey Solutions Server. R software is re
 {synoptset 21 tabbed}{...}
 {synopthdr:sursol userreport options }
 {synoptline}
-{synopt:{opt r:path(string)}}path of R.exe. If OS non-Windows, this option is required{p_end}
+{synopt:{opt r:path(string)}}path of R application{p_end}
 {synopt:{opt archived}}download only report for archived interviewers.{p_end}
 {synoptline}
 
@@ -101,8 +101,9 @@ A typical server URL for servers hosted by the World Bank: {it: https://projectX
 
 {marker sursol_userreport_rpath}{...}
 {phang}
-{opt rpath(string)} specifies the path to the R.exe through which the data export request to the server is transmitted. Required if non-windows OS. By default, and if windows as OS is used, {opt sursol userreport} assumes that the executable  
-can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors if it is not possible to detect any executable in the default or specified folder.
+{opt rpath(string)} specifies the path to the R application through which the data export request to the server is transmitted. {opt sursol userreport} assumes that the executable can 
+be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\" if Windows is OS. For Linux/Mac users, it looks at "usr/bin/R". It returns errors if it is 
+not possible to detect any executable in the default or specified folder.
 
 {phang}
 {opt archived} by default, {cmd:sursol userreport} exports the interviewer report only for active interviewers with archive status 'Active'. If {opt archived}  is specified, only the archived interviewers will be downloaded
@@ -141,4 +142,4 @@ can be found in "C:\Program Files\R\R-X.X.X\bin\xBITVERSION\". It returns errors
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol userreport} was last updated using Survey Solutions 20.05
+{pstd}{cmd:sursol userreport} was last updated using Survey Solutions 20.10

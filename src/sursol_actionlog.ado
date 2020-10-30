@@ -1,4 +1,4 @@
-*! version 20.05.2  May 2020
+*! version 20.10.1 October 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_actionlog
@@ -38,97 +38,116 @@ noi dis as error "The command will not work if the URL is not specified correctl
 }
 
 
-//RPATH? 
+********************************************************************************	
+***IDENTIFY R PATH
+********************************************************************************
+
+//IF NOT SPECIFIED, LOOK FOR IT
+********************************************************************************
 if length("`rpath'")==0 {
-if strpos(lower("`c(os)'"),"window")==0 {
-noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
-ex 198
-}
 
-//CHECK RPATH FOR WINDOWS USERS
-if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
-if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
+//IF WINDOWS, LOOK AT DEFAULT FOLDER
+********************************************************************************
+if "`c(os)'" == "Windows" {
+	**STILL VERY MESSY. SIMPLIFY AT SOME POINT WITH RECURSIVE FOLDER 
+	if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
+	if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
 
-//R FOLDER IN PROGRAM FILES? 
-mata : st_numscalar("OK", direxists("C:/Program Files/R"))
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
-ex 601
-}
-	//R FOLDER IN PROGRAM FILES/R? 
-	local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
-	local folderstructure : list sort folderstructure
-	local length : word count `folderstructure'
+	mata : st_numscalar("OK", direxists("C:/Program Files/R"))
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+		local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
+		local folderstructure : list sort folderstructure
+		local length : word count `folderstructure'
 
-	if `length'>1 {
-	noi dis as error _n "Attention, two versions of R have been found:"
-	loc i=1
-	foreach x of loc folderstructure {
-		noi dis as result "`x'" 
+		if `length'>1 {
+		noi dis as error _n "Attention, multiple versions of R have been found:"
+		loc i=1
+		foreach x of loc folderstructure {
+		noi dis as error "`x'" 
 		if `length'==`i' {
-		noi dis as result _n "Version `x' of R will be used to download the action logs"
+		noi dis as result _n "Version `x' of R will be used to export the data"
 		loc version="`x'"
 		} 
 		loc ++i
 		} 
-	} 		
+	} 	
 
 	else if `length'==1 {
-	foreach x of loc folderstructure {
-	loc version="`x'"
-	}
+		foreach x of loc folderstructure {
+		loc version="`x'"
+		}
 	}
 
 
 	capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
 	if _rc==3000 {
 	noi dis as error _n "The command has problems identifying your R version."
-	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 	ex 601
 	}
 
 	if scalar(OK)==0 {
 	noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
-	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 	ex 601
 	}
-	
+
 	mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
 	if scalar(OK)==0 {
 	noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
-	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 	ex 601
 	}
 
 	capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
 	if _rc {
 	no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
-	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
 	ex 601
 	}
-	//FINAL CLEAN RPATH
 	loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
-	} 
-
-//IF RPATH WAS SPECIFIED
-if length("`rpath'")>0 & strpos(lower("`c(os)'"),"window")>0 {
-if strpos(lower(strreverse("`rpath'")),"r")==1 {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
 }
 
-if strpos(lower(strreverse("`rpath'")),"exe.r") {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
-}
-
-
-capt confirm file "`rpath'/R.exe"
-if _rc {
-	no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
-	noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_actionlog##sursol_actionlog_rpath:rpath(string)}"
-	ex 601
+//IF LINUX/MAC, TRY "usr/bin/R"
+********************************************************************************
+else {
+capture confirm file "/usr/bin/R"
+	if _rc != 0 {
+		noi dis as error _n "Attention.  No R application found in  'usr/bin/R'."
+		noi dis as error  "Please specify the path of your R application  using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 198
 	}
+	else loc rpath= "/usr/bin/R"
+}
+
+} 
+
+//IF SPECIFIED,OR IF FOUND BY CODE ABOVE, CLEAN IT AND CONFIRM IT EXISTS
+********************************************************************************
+if length("`rpath'")>0 {
+
+	if strpos(lower(strreverse("`rpath'")),"r")==1 {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
+	}
+
+	if strpos(lower(strreverse("`rpath'")),"exe.r") {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
+	}
+
+	//LAST CONFIRMATION IF IT EXISTS
+	********************************************************************************
+	if "`c(os)'" == "Windows"  capt confirm file "`rpath'/R.exe"
+	else if "`c(os)'" != "Windows" capt confirm file "`rpath'/R"
+	if _rc {
+		no dis as error _n "Attention. No R application in folder '`rpath'' was found."
+		noi dis as error  "Please correctly specify the path of your R app using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 601
+	}
+
 }
 
 
@@ -341,7 +360,7 @@ file close rcode
 		//EXECUTE THE COMMAND
 		timer clear
 		timer on 1
-                shell "`rpath'/R" --vanilla <"`directory'/action_log.R" 2>`error_message' 
+        shell "`rpath'/R" --vanilla <"`directory'/action_log.R" 2>`error_message' 
 		timer off 1	
 		qui timer list 1
 		if `r(t1)'<=2 {

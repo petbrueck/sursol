@@ -1,4 +1,4 @@
-*! version 20.05 May 2020
+*! version 20.10.1  October 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 
@@ -8,8 +8,6 @@ syntax anything [if],  SERver(string) USER(string) PASSword(string) COMMent(stri
 
 
 qui {
-
-tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 
 
 **GIVE WARNING IF PROTOCOL OF URL NOT GIVEN 
@@ -36,12 +34,6 @@ noi dis as error "Attention. Variable `id' specified in option id(varlist) is no
 ex 198
 }
 }
-if length("`rpath'")==0 {
-if strpos(lower("`c(os)'"),"window")==0 {
-noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_varcomm##sursol_varcomm_postHQ_rpath:rpath(string)}"
-ex
-}
 
 //CHECK IF ROSTER VARIABLES SPECIFIED.
 forvalues row=4(-1)2 {
@@ -60,101 +52,118 @@ else if length("`roster`row''")>0 {
 loc comment=subinstr("`comment'"," ","%20",.)
 
 
-//IDENTIFY RPATH
+********************************************************************************	
+***IDENTIFY R PATH
+********************************************************************************
+
+//IF NOT SPECIFIED, LOOK FOR IT
+********************************************************************************
 if length("`rpath'")==0 {
-if strpos(lower("`c(os)'"),"window")==0 {
-noi dis as error _n "Attention.  You are not using Windows as an operating system."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 198
-}
 
+//IF WINDOWS, LOOK AT DEFAULT FOLDER
+********************************************************************************
+if "`c(os)'" == "Windows" {
+	**STILL VERY MESSY. SIMPLIFY AT SOME POINT WITH RECURSIVE FOLDER 
+	if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
+	if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
 
-if strpos("`c(machine_type)'","64")>0 loc bit="x64" 
-if strpos("`c(machine_type)'","32")>0 loc bit="x32" 
-
-mata : st_numscalar("OK", direxists("C:/Program Files/R"))
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
-}
-
-
-
-
-	local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
-	local folderstructure : list sort folderstructure
-	local length : word count `folderstructure'
-
-	if `length'>1 {
-	noi dis as error _n "Attention, two versions of R have been found:"
-	loc i=1
-	foreach x of loc folderstructure {
-	noi dis as error "`x'" 
-	if `length'==`i' {
-	noi dis as result _n "Version `x' of R will be used to comment on the interviews"
-	loc version="`x'"
-	} 
-	loc ++i
-	} 
-} 	
-
-else if `length'==1 {
-	foreach x of loc folderstructure {
-	loc version="`x'"
+	mata : st_numscalar("OK", direxists("C:/Program Files/R"))
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No R folder in ""C:/Program Files/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
 	}
-}
+		local folderstructure: dir "C:/Program Files/R" dirs "*", respectcase 
+		local folderstructure : list sort folderstructure
+		local length : word count `folderstructure'
+
+		if `length'>1 {
+		noi dis as error _n "Attention, multiple versions of R have been found:"
+		loc i=1
+		foreach x of loc folderstructure {
+		noi dis as error "`x'" 
+		if `length'==`i' {
+		noi dis as result _n "Version `x' of R will be used to export the data"
+		loc version="`x'"
+		} 
+		loc ++i
+		} 
+	} 	
+
+	else if `length'==1 {
+		foreach x of loc folderstructure {
+		loc version="`x'"
+		}
+	}
 
 
-capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
-if _rc==3000 {
-noi dis as error _n "The command has problems identifying your R version."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
+	capt mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin/"))
+	if _rc==3000 {
+	noi dis as error _n "The command has problems identifying your R version."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
+	if scalar(OK)==0 {
+	noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+
+	capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
+	if _rc {
+	no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
+	noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+	ex 601
+	}
+	loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
 }
 
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No bin folder in ""C:/Program Files/R//`version'/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
+//IF LINUX/MAC, TRY "usr/bin/R"
+********************************************************************************
+else {
+capture confirm file "/usr/bin/R"
+	if _rc != 0 {
+		noi dis as error _n "Attention.  No R application found in  'usr/bin/R'."
+		noi dis as error  "Please specify the path of your R application  using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 198
+	}
+	else loc rpath= "/usr/bin/R"
 }
-
-mata : st_numscalar("OK", direxists("C:/Program Files/R//`version'/bin//`bit'/"))
-if scalar(OK)==0 {
-noi dis as error _n "Attention. No `bit' folder in ""C:/Program Files/R//`version'/bin"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
-}
-
-capt confirm file "C:/Program Files/R//`version'/bin//`bit'/R.exe"
-if _rc {
-no dis as error _n "Attention. No R.exe in ""C:/Program Files/R//`version'/bin//`bit'/"" was found."
-noi dis as error  "Please specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
-}
-loc rpath="C:/Program Files/R//`version'/bin//`bit'/"
 
 } 
 
+//IF SPECIFIED,OR IF FOUND BY CODE ABOVE, CLEAN IT AND CONFIRM IT EXISTS
+********************************************************************************
+if length("`rpath'")>0 {
 
-if length("`rpath'")>0 & strpos(lower("`c(os)'"),"window")>0 {
-if strpos(lower(strreverse("`rpath'")),"r")==1 {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
+	if strpos(lower(strreverse("`rpath'")),"r")==1 {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"R","",1))
+	}
+
+	if strpos(lower(strreverse("`rpath'")),"exe.r") {
+		loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
+	}
+
+	//LAST CONFIRMATION IF IT EXISTS
+	********************************************************************************
+	if "`c(os)'" == "Windows"  capt confirm file "`rpath'/R.exe"
+	else if "`c(os)'" != "Windows" capt confirm file "`rpath'/R"
+	if _rc {
+		no dis as error _n "Attention. No R application in folder '`rpath'' was found."
+		noi dis as error  "Please correctly specify the path of your R app using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
+		ex 601
+	}
+
 }
 
-if strpos(lower(strreverse("`rpath'")),"exe.r") {
-loc rpath=strreverse(subinstr(strreverse("`rpath'"),"exe.R","",1))
-}
-
-
-capt confirm file "`rpath'/R.exe"
-if _rc {
-no dis as error _n "Attention. No R.exe in ""`rpath'"" was found."
-noi dis as error  "Please correctly specify the path of your R.exe using the option {help sursol_export##sursol_export_rpath:rpath(string)}"
-ex 601
-}
-}
-//END OF IDENTIFYING RPATH
 
 if length(`"`if'"')>0 {
 preserve
@@ -179,6 +188,7 @@ qui capt rm "`c(pwd)'/varcomm.R"
 qui capt rm "`c(pwd)'/.Rhistory" 
 
 
+
  quietly: file open rcode using  "`c(pwd)'/varcomm.R", write replace 		
  
  #d ;
@@ -192,13 +202,8 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"roster_vec2 <- "`roster2'"   "'  _newline
 `"roster_vec3 <- "`roster3'"   "'  _newline
 `"roster_vec4 <- "`roster4'"   "'  _newline
-
-
-
-`"Sys.setlocale("LC_TIME", "English")"' _newline 
-
 `" ##PACKAGES																																		 "' _newline
-`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")    "' _newline
+`"packages<- c("stringr", "jsonlite","httr")    "' _newline
 `"for (newpack in packages) {  "' _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)}  "' _newline
 `"  if(newpack %in% rownames(installed.packages()) == FALSE) {   "' _newline
@@ -208,16 +213,11 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"suppressMessages(suppressWarnings(library(stringr)))  "' _newline
 `"suppressMessages(suppressWarnings(library(jsonlite)))  "' _newline
 `"suppressMessages(suppressWarnings(library(httr)))  "' _newline
-`"suppressMessages(suppressWarnings(library(dplyr)))  "' _newline
-`"suppressMessages(suppressWarnings(library(lubridate)))  "' _newline
-`"suppressMessages(suppressWarnings(library(date)))			 "' _newline
 
 																																		
  `"   ##REPLACE TRAILING SLASH "' _newline 
  `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline 
-
  `"server_url<-sprintf("%s", server)  "'    _newline																				  										
-                `"  "'    _newline  
 `"	serverCheck <- try(http_error(server_url), silent = TRUE)     "'  _newline
 `"	if (class(serverCheck) == "try-error") {     "'  _newline
 `"	  stop(paste0("The following server does not exist. Check internet connection or the server name:", server_url))     "'  _newline
@@ -247,7 +247,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"count406=0"' _newline 
 `"count404=0"' _newline 
 `"for (val in `id'){"' _newline 
-`"comment_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline 
+`"comment_query<-URLencode(paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")) "' _newline 
 `"comment_post <- POST(comment_query, authenticate(user, password))"' _newline 
   `"if (status_code(comment_post)==404) {  "' _newline 
   `"print(paste("Target interview", val," was not found")) "' _newline   
@@ -269,26 +269,27 @@ qui capt rm "`c(pwd)'/.Rhistory"
                 
  #d cr
  file close rcode 
-}
-}
 
+
+
+tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 timer clear
 timer on 1
 shell "`rpath'/R" --vanilla <"`c(pwd)'/varcomm.R" 2>`error_message' 
 timer off 1	
 		qui timer list 1
 		if `r(t1)'<=2 {
-		dis as error "Whoopsa! That was surprisingly fast."
-		dis as error "Please check if the variables have been commented on." 
-		dis as error "If not, have a look at {help sursol_varcomm##debugging:debugging information} in the help file."
-		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
+		noi dis as error "Whoopsa! That was surprisingly fast."
+		noi dis as error "Please check if the variables have been commented on." 
+		noi dis as error "If not, have a look at {help sursol_varcomm##debugging:debugging information} in the help file."
+		noi dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
 		}
 
 //DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
-		di as result _n
-		di as  result "{ul:Warnings & Error messages displayed by R:}"
-		type `error_message'
-
+		noi di as result _n
+		noi di as  result "{ul:Warnings & Error messages displayed by R:}"
+		noi type `error_message'
+}
 
 qui capt rm "`c(pwd)'/varcomm.R"
 qui capt rm "`c(pwd)'/.Rhistory" 

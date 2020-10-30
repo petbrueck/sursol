@@ -1,4 +1,4 @@
-*! version 20.05 May 2020
+*! version 20.10.1  October 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 program sursol_unapproveHQ
@@ -150,17 +150,13 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"user= "`user'"  "' _newline ///
 `"password="`password'" "' _newline ///
 `"interview__id <- c(`levels')"' _newline /// 
-`"Sys.setlocale("LC_TIME", "English")"' _newline ///
-`"packages<- c("tidyverse", "stringr","lubridate", "jsonlite","httr","dplyr","date")	 "'  _newline ///
+`"packages<- c("stringr", "jsonlite","httr")	 "'  _newline ///
 `"for (newpack in packages) { "'  _newline ///
 `" if(newpack %in% rownames(installed.packages()) == FALSE) {install.packages(newpack, repos = 'https://cloud.r-project.org/', dep = TRUE)} "'  _newline ///
 `"} "'  _newline ///
 `"	suppressMessages(suppressWarnings(library(stringr)))    "'  _newline ///
 `"	suppressMessages(suppressWarnings(library(jsonlite)))    "'  _newline ///
 `"	suppressMessages(suppressWarnings(library(httr)))    "'  _newline ///
-`"	suppressMessages(suppressWarnings(library(dplyr)))    "'  _newline ///
-`"	suppressMessages(suppressWarnings(library(lubridate)))    "'  _newline ///
-`"	suppressMessages(suppressWarnings(library(date)))   "'  _newline ///
  `"   ##REPLACE TRAILING SLASH "' _newline ///
  `"   if   (str_sub(server,-1,-1) %in% c("/","\"") ) server <-   str_sub(server, end=-2) "' _newline ///
  `"server_url<-sprintf("%s", server)  "'    _newline		///										
@@ -185,8 +181,11 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"count406=0"' _newline ///
 `"count404=0"' _newline ///
 `"for (val in interview__id){"' _newline ///
-`"unapprove_query<-paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")"' _newline ///
+`"unapprove_query<- URLencode(paste(c(server_url,"/api/v1/interviews/",val,command), collapse = "")) "' _newline ///
 `"unapprove <- PATCH(unapprove_query, authenticate(user, password))"' _newline ///
+`" if (status_code(unapprove) == 401) {     "' _newline ///
+`"   stop("Incorrect username or password. Check login credentials for API user")   "' _newline ///
+`" 	}  "' _newline ///
   `"if (status_code(unapprove)==404) {  "' _newline ///
   `"print(paste("Target interview", val," was not found")) "' _newline ///  
  `"  count404= count404+1 "' _newline ///
@@ -205,8 +204,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
 `"}"' _newline ///
 `"}"'	_newline
  file close rcode 
-}
-}
+
 
 		//EXECUTE THE COMMAND
 
@@ -218,18 +216,19 @@ qui capt rm "`c(pwd)'/.Rhistory"
 		timer off 1	
 		qui timer list 1
 		if `r(t1)'<=3 {
-		dis as error "Whoopsa! That was surprisingly fast."
-		dis as error "Please check if the interviews were unapproved correctly." 
-		dis as error "If not, have a look at {help sursol_unapproveHQ##debugging:debugging information} in the help file."
-		dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
+		noi dis as error "Whoopsa! That was surprisingly fast."
+		noi dis as error "Please check if the interviews were unapproved correctly." 
+		noi dis as error "If not, have a look at {help sursol_unapproveHQ##debugging:debugging information} in the help file."
+		noi dis as error "You might need to install some R packages manually since Stata has no administrator rights to install them."
 		}
 
 		//DISPLAY ANY ERRORS PRODUCED IN THE R SCRIPT
-		di as result _n
-		di as  result "{ul:Warnings & Error messages displayed by R:}"
-		type `error_message'
+		noi di as result _n
+		noi di as  result "{ul:Warnings & Error messages displayed by R:}"
+		noi type `error_message'
 		
-
+}
+}
 qui capt rm "`c(pwd)'/unapprove.R"
 qui capt rm "`c(pwd)'/.Rhistory" 
 

@@ -341,9 +341,9 @@ quietly: file write rcode
 `"	  questionnaire_name_up <- str_to_upper(gsub("\\s", "", questionnaire_name))    "'  _newline
 `"	  qnrList_all\$Title <- str_to_upper(gsub("\\s", "",stringi::stri_trans_general(qnrList_all\$Title, "Latin-ASCII")))     "'  _newline
 `"	if (questionnaire_name_up %in% qnrList_all\$Title) {     "'  _newline
- `"       df_of_interest <- qnrList_all[which(qnrList_all\$Title == questionnaire_name_up & qnrList_all\$LastEntryDate==max(qnrList_all\$LastEntryDate)),]  "'  _newline
-  `"      qxid<-(unique(df_of_interest\$QuestionnaireId))      "'  _newline
-  `"      qxvar<-(unique(df_of_interest\$Variable))      "'  _newline
+ `"      df_of_interest <- qnrList_all[which(qnrList_all\$Title == questionnaire_name_up ),]   "'  _newline
+ `"     qxid<-(unique(df_of_interest\$QuestionnaireId))        "'  _newline
+ `"     qxvar<-(unique(df_of_interest[which(df_of_interest\$LastEntryDate==max(df_of_interest\$LastEntryDate)),]\$Variable))       "'  _newline
 `"	} else if (questionnaire_name_up == "") {     "'  _newline
 `"	  stop("Please provide the name of the questionnaire.")     "'  _newline
 `"	       "'  _newline

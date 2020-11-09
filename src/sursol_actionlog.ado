@@ -242,7 +242,7 @@ quietly: file write rcode
 `"           interviewer_details_query <-paste0(api_URL, "/interviewers/",int_id)       "' _newline
 `"           get_interviewer_detail <- GET(interviewer_details_query, authenticate(user, password))       "' _newline
 `"                 "' _newline
-`"           if (status_code(get_interviewer) != 200)  {      "' _newline
+`"           if (status_code(get_interviewer_detail) != 200)  {      "' _newline
 `"             stop( paste0("Attention. Request to receive detailes of interviewer was not successfull. Status code: ",status_code(get_interviewer_detail), " for interviewer: ",       "' _newline
 `"                          (unique(list_all_interviewers_sups\$UserName[list_all_interviewers_sups\$UserId == int_id])) ) )      "' _newline
 `"           }      "' _newline
@@ -261,8 +261,8 @@ quietly: file write rcode
 `"           action_log_query <- paste0(api_URL, "/interviewers/",int_id,"/actions-log?start=",int_creatdate,"&end=",Sys.Date())        "' _newline
 `"           download_actionlog <- GET(action_log_query, authenticate(user, password))        "' _newline
 `"                 "' _newline
-`"           if (status_code(get_interviewer) != 200)  {      "' _newline
-`"             stop( paste0("Attention. Request to download action log was not successfull. Status code: ",status_code(get_interviewer_detail), " for interviewer: ",       "' _newline
+`"           if (status_code(download_actionlog) != 200)  {      "' _newline
+`"             stop( paste0("Attention. Request to download action log was not successfull. Status code: ",status_code(download_actionlog), " for interviewer: ",       "' _newline
 `"                          (unique(list_all_interviewers_sups\$UserName[list_all_interviewers_sups\$UserId == int_id])) ) )      "' _newline
 `"           }      "' _newline
 `"                 "' _newline

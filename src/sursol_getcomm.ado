@@ -198,9 +198,15 @@ save `masterroster'
 
 			lab var `currvar'_comm "Comment(s) left at question: `currvar'"
 
-			tempfile `currvar'_file
-			save ``currvar'_file'
-	
+			//DOUBLE CHECK IF VARIABLE NAME NOT TOO LONG. LAZY CHECK.
+			if  length(	"`currvar'f")>=32 {
+				noi dis as error _n "Name of variable '`currvar'' is too long to process."
+				noi dis as error "Can you rename it before running the command both in interview__comments and '`file'.dta'?"
+				ex 198
+			}
+			tempfile `currvar'f
+			save ``currvar'f'
+
 			//MERGE TO THE ROSTER FILE
 			use "`dir'//`file'.dta" , clear 
 			//GET THE ORDERING RIGHT
@@ -217,7 +223,7 @@ save `masterroster'
 			continue
 			}
 
-			merge 1:1 `rosterids' using ``currvar'_file', nogen keep (1 3) keepusing (`currvar'_comm) replace update
+			merge 1:1 `rosterids' using ``currvar'f', nogen keep (1 3) keepusing (`currvar'_comm) replace update
 			order `currvar'_comm , a(`lastvar')
 			sleep 30
 

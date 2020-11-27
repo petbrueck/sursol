@@ -88,7 +88,7 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 
 	
 noi dis _n ""
-	if length("`nodiagnostics'")==0 | length("`noaction'")==0 | length("`copy'")>0 {
+	if length("`nodiagnostics'")==0 | length("`noactions'")==0 | length("`copy'")>0 {
 	foreach folder of loc sortstructure  {
 		
 		capt confirm file "`directory'/`folder'/`master'.dta"
@@ -343,7 +343,6 @@ if length("`noactions'")==0 & !_rc {
 		replace date=date + " " + time
 		gen double dateTime=Clock(date,"YMD hms")
 		format dateTime %tC 
-		sort interview__id dateTime	
 		
 		* interviewing times
 		sort interview__id role dateTime 

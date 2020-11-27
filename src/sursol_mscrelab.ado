@@ -1,4 +1,4 @@
-*! version 20.04  April 2020
+*! version 20.11  November 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
 capture program drop sursol_mscrelab
@@ -100,7 +100,16 @@ if "`catvariable'"=="" loc catvariable "Variable"
 
 	//IMPORT EXCEL
 	import excel "`using'", sheet("`sheet'") firstrow allstring clear
-	
+	//CHECK IF VARIABLE TYPE EXISTS
+	capt confirm var Type
+	if !_rc==0 {
+		noi dis as error "Variable {it:Type} does not exist in specified translation file."
+		noi dis as error "It is needed to identify option titles. Use the translation template from Survey Solutions Designer."
+		ex 198
+	}
+
+	//SINCE IT EXISTS, DROP VALIDATION MESSAGES 
+	drop if Type=="ValidationMessage"
 	//CHECK IF SPECIFIED VARIABLE EXISTS
 	capt confirm var `anything' 
 	if !_rc==0 {

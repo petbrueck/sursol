@@ -266,6 +266,8 @@ noi display as result _n "Interview status history comments will be merged to th
 					if "`cleanstatus '"=="RejectedBySupervisor" loc newvar "reject_sup_comm"
 					if "`cleanstatus '"=="UnapprovedByHeadquarter" loc newvar "unapprove_hq_comm"
 					if "`cleanstatus '"=="Completed" loc newvar "completed_comm"
+					if "`cleanstatus'"=="Restarted" loc newvar "restarted_comm"
+
 					g `newvar'=""
 
 

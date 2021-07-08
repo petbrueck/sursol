@@ -368,9 +368,9 @@ quietly: file write rcode
 `"	 }     "'  _newline
  `"      if (all(versions_download %in% versions_server)==FALSE) stop(paste("Version ",  paste(setdiff(versions_download,versions_server), collapse=","),   " of ",questionnaire_name," was not found on the server.", " Check your versions specified in versions(numlist)"))  "'  _newline  
  `"	   ###GET LIST OF EXISTING EXPORT PROCESSES   "'  _newline
+`"         df_export_processes <-     data.frame()   "'  _newline
  `"       if (nchar("`nocheck'")==0) {   "'  _newline
   `"          writeLines("\nRetrieving the list of existing export processes that match your specifications....")"'  _newline
- `"         df_export_processes <-     data.frame()   "'  _newline
  `"         for (v in  versions_download ) {         "'  _newline
  `"           url_check <- sprintf("%s/api/v2/export?questionnaireIdentity=%s$%s&interviewStatus=%s&hasFile=true&exportStatus=Completed", server,questionnaire_identity, v,int_status)   "'  _newline
  `"           request <-  GET(url_check, authenticate(user, password))     "'  _newline
@@ -603,7 +603,7 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode 
-
+				ex 198
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear

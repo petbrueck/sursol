@@ -4,7 +4,8 @@
 
 program sursol_reject
 
-syntax if,  SERver(string) USER(string) PASSword(string) [Rpath(string)]  [COMMent(string)] [ID(varlist str min=1 max =1)]
+syntax if,  SERver(string) USER(string) PASSword(string) [Rpath(string)] ///
+ [COMMent(string)] [ID(varlist str min=1 max =1)] [newresponsible(string)]
 
 
 qui {
@@ -36,6 +37,13 @@ ex 198
 loc idvar "`id'"
 }
 
+
+//CHECK IF NEW RESPONSIBLE IS ADDED, THAT ID IS 36 
+if length("`newresponsible'")>0 & length("`newresponsible'")!=36 {
+	noi dis as error _n "You specified newresponsible(string) but the ID is not 36 character long."
+	noi dis as error "Please check"
+	ex 198
+} 
 
 ********************************************************************************	
 ***IDENTIFY R PATH
@@ -200,7 +208,7 @@ qui capt rm "`c(pwd)'/.Rhistory"
                 `"    stop(paste("The following parameter is not specified in the program:", x))  "'    _newline ///
                 `"  }  "'    _newline ///
                 `"}  "'    _newline ///
-`"command <- "/reject?comment=`comment'""' _newline ///
+`"command <- "/reject?comment=`comment'&responsibleId=`newresponsible'" "' _newline ///
 `"counter=0"' _newline ///
 `"count406=0"' _newline ///
 `"count404=0"' _newline ///

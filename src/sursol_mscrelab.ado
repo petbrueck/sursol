@@ -57,17 +57,17 @@ if "`catvariable'"=="" loc catvariable "Variable"
 	
 	//IF THERE IS ANY VARIABLE WITH "__" 
 	if length("`r(varlist)'")>0 {
-		
 			//GO THROUGH ALL THE VARS AND CHECK IF WE NEED TO WORK WITH IT 
 			foreach var of var `r(varlist)' {
 				
 				//CHECK IF THE VARIABLE LABEL IS LONGER THAN 80. IF NOT WE DON'T NEED TO WORK ON IT
 				loc `var'lbl:  variable label  `var'
+				loc `var'lbl = subinstr(`"``var'lbl'"', char(34), "", .)
+
 				if length("``var'lbl'")<80 {
 						loc varlist_msc: list varlist_msc - var
 						continue
 							}
-				
 				//CHECK IF IT IS JUST 1 & 0. IF NOT MOST LIKELY NOT A MSC
 				sum `var', meanonly
 					//IF NO OBSERVATION: 
@@ -158,7 +158,7 @@ if "`catvariable'"=="" loc catvariable "Variable"
 				su obsn if export_var == "`var'", meanonly 
 				local `var'vlbl = Originaltext[r(min)] 
 				//CLEAN IT UP A BIT 
-				local `var'vlbl= ustrfix(ustrtrim("``var'vlbl'" ))
+				local `var'vlbl= ustrfix(ustrtrim("``var'vlbl'"  ))
 				}
 				
 restore
@@ -170,13 +170,13 @@ restore
 				foreach var of loc varlist_msc {
 					
 					//CLEAN UP THE OLD VARIABLE LABEL A BIT
-					local `var'lbl=subinstr(ustrfix(ustrtrim("``var'lbl''")),"  "," ",.)
+					local `var'lbl=subinstr(ustrfix(ustrtrim(`"``var'lbl''"')),"  "," ",.)
 					
 					//IF THE OPTION LABEL IS SHORTER THEN 80 THEN FINAL LABEL:  THEN JUST PLACE THE OPTION LABEL 
 					
-					if length("``var'vlbl'")<80 loc `var'nlb=substr("``var'lbl''",1,81-length("``var'vlbl'")-2) + ":``var'vlbl'"
+					if length("``var'vlbl'" )<80 loc `var'nlb=substr(`"``var'lbl''"',1,81-length("``var'vlbl'" )-2) + ":``var'vlbl'"
 					//ELSE WE JUST TAKE THE OPTION LABEL
-					else if length("``var'vlbl'")>=80 loc `var'nlb="``var'vlbl'"
+					else if length("``var'vlbl'" )>=80 loc `var'nlb="``var'vlbl'" 
 					lab var `var' "``var'nlb'"
 
 			

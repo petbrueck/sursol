@@ -134,6 +134,9 @@ noi dis _n ""
 	use "`directory'/`folder'/`file'", clear
 	loc filepure=subinstr("`file'",".dta","",.)
 
+	//STORE THE QXNAME IN SHORT VERSION TO AVOID LENGTH>=32 
+	loc filepure=substr("`filepure'",1,25)
+
 	if  `c(N)'==0 & length("`noskip'")==0 {
 	noi di as result "`file' from Version `version' contains no observation, will be skipped"
 	continue
@@ -166,7 +169,7 @@ noi dis _n ""
 					
 					qui ds, has(type string)
 					local masterstr `r(varlist)'
-					local tostringvars: list masterstr & unum`filepure' 
+					local tostringvars: list masterstr & unum`filepure'
 					if length(`"`tostringvars'"')>0{
 					preserve
 						use "`export'//`file'", clear
@@ -282,7 +285,7 @@ capt confirm file "`export'/`master'.dta"
 if length("`noactions'")==0 & !_rc {
 		no di as text _n "Interview action statistics are merged to `master'.dta"
 		use "`export'/interview__actions.dta", clear
-	
+
 		if `c(N)'>0 {
 		levelsof action, loc(levels)
 		foreach lev of loc levels {
@@ -294,7 +297,7 @@ if length("`noactions'")==0 & !_rc {
 		if `lev'==7 loc lbl_short "rejeSUP"
 		if `lev'==8 loc lbl_short "rejeHQ"
 
-		bys interview__id: egen n_`lbl_short'=total(action==`lev')
+		bys interview__id: egen byte n_`lbl_short'=total(action==`lev')
 		lab var n_`lbl_short' "Number of times  interview: `lbl'"
 		}
 	
@@ -303,7 +306,7 @@ if length("`noactions'")==0 & !_rc {
 		label var enum_strt "enumerator: interview starting"
 		
 		sort interview__id action date time
-		by interview__id action: gen enum_fcmp=originator if _n==1 & action==3
+		by interview__id action: gen  enum_fcmp=originator if _n==1 & action==3
 		gsort interview__id - enum_fcmp
 		by interview__id: replace enum_fcmp = enum_fcmp[_n-1] if enum_fcmp=="" & _n !=1
 		label var enum_fcmp "enumerator: first interview completion"
@@ -315,7 +318,7 @@ if length("`noactions'")==0 & !_rc {
 		label var enum_lacmp "enumerator: last interview completion"
 		
 		sort interview__id date time
-		by interview__id: gen sprvsr=responsible__name if action==0
+		by interview__id: gen  sprvsr=responsible__name if action==0
 		gsort interview__id - sprvsr
 		by interview__id: replace sprvsr = sprvsr[_n-1] if _n !=1
 		label var sprvsr "supervisor: responsible at first assignment"	
@@ -335,7 +338,7 @@ if length("`noactions'")==0 & !_rc {
 		}
 		
 		gen ap=(inlist(action,5,6))
-		by interview__id:egen approved=total(ap)
+		by interview__id:egen byte approved=total(ap)
 		drop ap
 		label var approved "# of times interview approved"
 
@@ -405,9 +408,9 @@ capt confirm file "`export'/interview__comments.dta"
 			format tmestp %tc
 			save "`export'/interview__comments.dta", replace
 
-		gen n_cmt_int=1 if role==1
-		gen n_cmt_sup=1 if role==2
-		gen n_cmt_hq=1 if role==3
+		gen byte n_cmt_int=1 if role==1
+		gen byte n_cmt_sup=1 if role==2
+		gen byte n_cmt_hq=1 if role==3
 		collapse (sum) n_cmt*, by(interview__id)
 		label var n_cmt_int "number of comments set by interviewer"
 		label var  n_cmt_sup "number of comments set by supervisor"

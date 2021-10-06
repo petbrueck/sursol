@@ -603,7 +603,6 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode 
-
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear

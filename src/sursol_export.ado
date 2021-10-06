@@ -413,7 +413,7 @@ quietly: file write rcode
 `"   filtered_export_processes <- df_export_processes[ "'  _newline
 `"     df_export_processes\$QuestionnaireId==paste(c(questionnaire_identity,"$",val), collapse = "") "'  _newline
 `"     & str_to_lower(df_export_processes\$ExportType)==datatype "'  _newline
-`"     & is.na(df_export_processes\$Error)  "'  _newline
+`"     &  (is.na(df_export_processes\$Error) | df_export_processes\$Error=="") "'  _newline
 `"     & df_export_processes\$ExportStatus=="Completed" "'  _newline
 `"     & df_export_processes\$InterviewStatus==int_status "'  _newline
 `"          ,   ] "'  _newline
@@ -603,7 +603,7 @@ quietly: file write rcode
                 #d cr
                 
                 file close rcode 
-				ex 198
+
 		//EXECUTE THE COMMAND
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear

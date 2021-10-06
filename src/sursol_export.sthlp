@@ -256,7 +256,7 @@ Data shall be downloaded to the machine. {p_end}
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol export} was last updated using Survey Solutions 20.10.
+{pstd}{cmd:sursol export} was last updated using Survey Solutions 21.06.
 
 {title:Acknowledgments}
 

@@ -296,6 +296,8 @@ if length("`noactions'")==0 & !_rc {
 		if `lev'==6 loc lbl_short "apprHQ"
 		if `lev'==7 loc lbl_short "rejeSUP"
 		if `lev'==8 loc lbl_short "rejeHQ"
+		if `lev'==19 loc lbl_short "swCAWI"
+		if `lev'==20 loc lbl_short "swCAPI"
 
 		bys interview__id: egen byte n_`lbl_short'=total(action==`lev')
 		lab var n_`lbl_short' "Number of times  interview: `lbl'"

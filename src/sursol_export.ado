@@ -247,12 +247,12 @@ if length("`rpath'")>0 {
 
 
 
-//USE CURRENT DIRECTORY TO CREATE R FILE 
-qui capt rm "`currdir'/export.R"
 qui capt rm "`currdir'/.Rhistory" 
-
-
-quietly: file open rcode using "`currdir'/export.R", write replace 
+//USE TEMPFILE TO CREATE R FILE 
+qui capt rm "`currdir'/.Rhistory" 
+tempfile exportR
+//START WRITING CODE
+quietly: file open rcode using `exportR', write replace 
 #d ;
 quietly: file write rcode  
 
@@ -607,7 +607,7 @@ quietly: file write rcode
 		tempfile error_message //ERROR MESSAGES FROM R WILL BE STORED HERE
 		timer clear
 		timer on 1
-                shell "`rpath'/R" --vanilla <"`currdir'/export.R" 2>`error_message' 
+                shell "`rpath'/R" --vanilla <"`exportR'" 2>`error_message' 
 		timer off 1	
 		qui timer list 1
 		if `r(t1)'<=3 {
@@ -622,7 +622,6 @@ quietly: file write rcode
 		di as  result "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
 		
-                qui capt rm "`currdir'/export.R"
                 qui capt rm "`currdir'/.Rhistory" 
                 qui  cd "`currdir'"
                 

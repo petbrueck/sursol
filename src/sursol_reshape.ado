@@ -22,6 +22,8 @@ loc newvarlist ""
 foreach var of var `anything' {
 //GET THE VARIABLE LABEL WHICH WILL BE USED LATER AGAIN
 loc varlbl`var': var label `var'
+//CLEAN UP QUOTES 
+local  varlbl`var'=subinstr("`varlbl`var''", `"""',  "", .)
 local newvarlist  `"`newvarlist' "`var'" "'
 }
 

@@ -207,16 +207,6 @@ if length("`server'")>0 & !_rc {
 }
 
 
-else if length("`server'")==0 & !_rc {
-	use "`export'/`master'.dta", clear 
-	gen intlink =""
-	label var intlink "link to access interview file on server"
-	gen inthist =""
-	label var inthist "link to access interview history on server"
-	format intlink inthist %-5s
-	save  "`export'/`master'.dta", replace 
-}
-
 
 
 local worked: list sortstructure- notworked

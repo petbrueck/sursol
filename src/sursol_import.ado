@@ -8,15 +8,19 @@ syntax anything,  DIRectory(string) [EXport(string)]  [version(string)]
 
 local currdir `c(pwd)'
 loc currversion=c(version)
-
 loc notworked "" 
 qui {
 
-if  length("`version'")>0 & `currversion'<`version' {
+if  length("`version'")>0{
+if  `currversion'<`version' {
 noi dis as error "You are using Stata `currversion'. One can not save datasets for a more recent Stata version. "
 noi dis as error "If you have a more recent Stata version installed, check if you have specified {help version: version} in your syntax."
 ex 0
+} 
 }
+
+
+
 
 mata : st_numscalar("OK", direxists("`directory'"))
 if scalar(OK)==0 {
@@ -43,7 +47,6 @@ if length("`export'")==0 loc export="`directory'"
 local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
 local folderstructure : list sort folderstructure
 local length : word count `folderstructure'
-		
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
 	noi di as error "Check folder name specified or directory!" 
@@ -53,6 +56,7 @@ local length : word count `folderstructure'
 	
 	foreach folder of loc folderstructure {
 	capt mkdir "`export'/`folder'/" 
+	*CHECK IF FILES EXIST. IF SO ERASE THEM (?REALLY)
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure  	
 		foreach file of loc filestructure {
@@ -65,7 +69,7 @@ local length : word count `folderstructure'
 	foreach folder of loc folderstructure {
 	cd "`directory'/`folder'"
 	loc ssversion= subinstr("`folder'", "`1'_","",.) 
-	
+
 	loc filecount=0
 	local filestructure: dir "`directory'/`folder'" file "*.do", respectcase 
 	local ignoreme "paradata.do"
@@ -77,14 +81,18 @@ local length : word count `folderstructure'
 	loc ++i
 	continue
 	}
-	noi di as text _n "`ssversion' found. Tabular data will be imported..."
+	noi di as text _n "Version `ssversion' of `1' found. Tabular data will be imported..."
 
 	foreach file of loc filestructure {
 	include "`directory'/`folder'/`file'"
+
 	loc filepure=subinstr("`file'",".do","",.)
-	if length("`version'")==0  save "`export'/`folder'/filepure'", replace
+	*SAVE 
+
+	if length("`version'")==0  save "`export'/`folder'/`filepure'", replace
+
 	else if length("`version'")>0 {
-		if (`currversion'>13 & `version'>13) save "`export'/`folder'/filepure'", replace
+		if (`currversion'>13 & `version'>13) save "`export'/`folder'/`filepure'", replace
 		if `currversion'==`version' save "`export'/`folder'/`filepure'", replace
 		if (`currversion'>13 & inrange(`version',11,13)) saveold "`export'/`folder'/`filepure'", replace  version(`version')
 		if (`currversion'<13 & inrange(`version',7,12)) saveold "`export'/`folder'/`filepure'", replace 
@@ -95,7 +103,7 @@ local length : word count `folderstructure'
 	clear
 	loc ++filecount
 	}
-	noi display as text "`filecount' files from `ssversion' imported"
+	noi display as text "`filecount' files from Version `ssversion' imported"
 	loc ++i
 	}
 	

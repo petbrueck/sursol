@@ -52,7 +52,10 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
 
-
+	//IDENTIFY IF WE ARE WORKING WITH STATA, TABULAR OR SPSS EXPORT FILES 
+	if ustrregexm(lower(`"`folderstructure'"'),"stata") loc datatype="STATA"
+	if ustrregexm(lower(`"`folderstructure'"'),"tabular") loc datatype="Tabular"
+	if ustrregexm(lower(`"`folderstructure'"'),"spss") loc datatype="SPSS"
 
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
@@ -63,6 +66,8 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 
 	//SORT NUMERICALLY ASCENDING
 	loc vnumtructure=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
+	// DIRTY WORKAROUND, REMOVE TABULAR/(STATA_AÖÖ. ONE COULD SIMPLY TAKE THE FIRST DIGIT - TEMP SOL FOR NOW. COULD GIVE ISSUES IF EXPORT FILES HAVE OTHER CASES OF LETTERS
+	loc vnumtructure=subinstr(`"`vnumtructure'"',"_`datatype'_All","",.)
 	capt numlist `"`vnumtructure'"', integer sort
 	if !_rc==0 {
 	noi di as error _n "Attention, it seems that you specified the wrong {help sursol_append:{it:folder_uniqueid}}" 
@@ -70,10 +75,11 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	noi di as error "Make sure to only specify the name of the folders and no version numbers or underscore signs." 
 	ex 601
 	}
+	//BUILD A NEW LOCAL BASED ON SORTING ORDER
 	loc sortstructure ""
 	if "`sortdesc'"=="" {
 	foreach version in  `r(numlist)' {
-		loc sortstructure `"`sortstructure' "`1'_`version'" "'		
+		loc sortstructure `"`sortstructure' "`1'_`version'_`datatype'_All" "'		
 	}
 	}
 	//DESCENDING ORDER
@@ -82,18 +88,18 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	loc sortstructure ""
 	forvalue folder=`length_nums'(-1)1 {
 	loc ver: word `folder' of `r(numlist)'
-	loc sortstructure `"`sortstructure' "`1'_`ver'" "'		
+	loc sortstructure `"`sortstructure' "`1'_`ver'_`datatype'_All" "'		
 	}
 	}
 
-	
+
 noi dis _n ""
 	if length("`nodiagnostics'")==0 | length("`noactions'")==0 | length("`copy'")>0 {
 	foreach folder of loc sortstructure  {
 		
 		capt confirm file "`directory'/`folder'/`master'.dta"
 			if _rc!=0 {
-			
+
 				if length("`qxvar'")==0 {
 				noi dis as error "No Questionnaire Level file found named `master'.dta. Specify option {help sursol_append##sursol_append_qxvar:qxvar(string)}"
 				}

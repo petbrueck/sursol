@@ -59,7 +59,13 @@ if "`catvariable'"=="" loc catvariable "Variable"
 	if length("`r(varlist)'")>0 {
 			//GO THROUGH ALL THE VARS AND CHECK IF WE NEED TO WORK WITH IT 
 			foreach var of var `r(varlist)' {
-				
+
+				*NEW SINCE 23.06: LIST QUESTIONS WITH c AT THE END. DON'T GO THROUGH 
+				if ustrregexm("`var'","__\d+c$")==1 {
+					loc varlist_msc: list varlist_msc - var
+					continue
+				}
+
 				//CHECK IF THE VARIABLE LABEL IS LONGER THAN 80. IF NOT WE DON'T NEED TO WORK ON IT
 				loc `var'lbl:  variable label  `var'
 				loc `var'lbl = subinstr(`"``var'lbl'"', char(34), "", .)

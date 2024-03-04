@@ -152,6 +152,7 @@ noi dis _n ""
 	loc i=0
 	foreach folder of loc sortstructure {
 	loc version= subinstr("`folder'", "`1'_","",.) 
+	loc version=strtrim(substr("`version'",1,strpos("`version'","_")-1))
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure 
 	if length(`"`filestructure'"')==0 {

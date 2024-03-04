@@ -51,11 +51,17 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
-
 	//IDENTIFY IF WE ARE WORKING WITH STATA, TABULAR OR SPSS EXPORT FILES 
 	if ustrregexm(lower(`"`folderstructure'"'),"stata") loc datatype="STATA"
 	if ustrregexm(lower(`"`folderstructure'"'),"tabular") loc datatype="Tabular"
 	if ustrregexm(lower(`"`folderstructure'"'),"spss") loc datatype="SPSS"
+
+	//KEEP ONLY STATA TABULAR OR SPSS FOLDERs
+	loc newfolderstr ""
+	foreach folder of loc folderstructure {
+		if ustrregexm(lower(`"`folder'"'),"stata|tabular|spss") loc newfolderstr `"`newfolderstr' `folder'"'
+	}
+
 
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
@@ -63,11 +69,32 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	ex 601
 	}
 
+	// IDENTIFY VERSIONS - SORT NUMERICALLY ASCENDING
+	loc vnumtructure=subinstr(subinstr(`"`newfolderstr'"',"`1'_","",.), char(34),  "", .)
 
-	//SORT NUMERICALLY ASCENDING
-	loc vnumtructure=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
-	// DIRTY WORKAROUND, REMOVE TABULAR/(STATA_AÖÖ. ONE COULD SIMPLY TAKE THE FIRST DIGIT - TEMP SOL FOR NOW. COULD GIVE ISSUES IF EXPORT FILES HAVE OTHER CASES OF LETTERS
-	loc vnumtructure=subinstr(`"`vnumtructure'"',"_`datatype'_All","",.)
+	// REMOVE TABULAR/(STATA_ALL ETC. 
+	loc vnumtructure=ustrregexra(`"`vnumtructure'"',"_`datatype'_\D+"," ")
+
+	if length("`datatype'")==0 {
+		noi dis as error "Can not identify the data file format suffix."
+		noi dis as error "Must be any of STATA, Tabular or SPSS"
+		noi dis as error "Such as `1'_XX_STATA"
+		ex 198 
+	}
+
+	//IDENTIFY INTERVIEW STATUS/SUFFIX BY VERSION
+
+foreach version of loc vnumtructure {
+	foreach fol of loc newfolderstr {
+		if strpos("`fol'","`1'_`version'_`datatype'") > 0 {
+		loc v`version'_intstatus= subinstr("`fol'","`1'_`version'_`datatype'_","",.)
+		}
+	}
+}
+
+
+
+
 	capt numlist `"`vnumtructure'"', integer sort
 	if !_rc==0 {
 	noi di as error _n "Attention, it seems that you specified the wrong {help sursol_append:{it:folder_uniqueid}}" 
@@ -79,7 +106,7 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	loc sortstructure ""
 	if "`sortdesc'"=="" {
 	foreach version in  `r(numlist)' {
-		loc sortstructure `"`sortstructure' "`1'_`version'_`datatype'_All" "'		
+		loc sortstructure `"`sortstructure' "`1'_`version'_`datatype'_`v`version'_intstatus'" "'		
 	}
 	}
 	//DESCENDING ORDER
@@ -88,10 +115,9 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	loc sortstructure ""
 	forvalue folder=`length_nums'(-1)1 {
 	loc ver: word `folder' of `r(numlist)'
-	loc sortstructure `"`sortstructure' "`1'_`ver'_`datatype'_All" "'		
+	loc sortstructure `"`sortstructure' "`1'_`ver'_`datatype'_`v`ver'_intstatus'" "'		
 	}
 	}
-
 
 noi dis _n ""
 	if length("`nodiagnostics'")==0 | length("`noactions'")==0 | length("`copy'")>0 {

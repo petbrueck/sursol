@@ -132,5 +132,5 @@ If {opt sortdesc} is specified, Version 4 would be the master file. This has imp
 
 {pstd}No responsibility or liability for the correct functionality of the do-file taken!
 
-{pstd}{cmd:sursol append} was last updated using Survey Solutions 20.06
+{pstd}{cmd:sursol append} was last updated using Survey Solutions 23.09
 

@@ -1,7 +1,7 @@
 *! version 20.10.1 October 2020
 *! Author: Peter Brueckmann, p.brueckmann@mailbox.org
 
-
+*TODO: Parse dollar sign in loca
 capture program drop sursol_userreport
 
 program sursol_userreport 
@@ -213,7 +213,7 @@ quietly: file write rcode
 `"}      "'  _newline
 `" "'  _newline
 `"##URL "'  _newline
-`"api_URL <- sprintf("%s/UsersApi/AllInterviewers?draw=2&order[0][column]=1&order[0][dir]=asc&order[0][name]=UserName&start=0&length=20&search[value]=&search[regex]=false&supervisorName=&archived=%s&facet=None&exportType=tab", "'  _newline
+`"api_URL <- sprintf("%s/UsersApi/AllInterviewers?draw=2&order[0][column]=0&order[0][dir]=asc&order[0][name]=UserName&start=0&length=20&search[value]=&search[regex]=false&supervisorName=&archived=%s&facet=None&exportType=tab", "'  _newline
 `"                   server,archived_status)   "'  _newline
 `"##SEND THE REQUEST "'  _newline
 `"print("Requesting the Interviewer Report. This can take some seconds.") "'  _newline
@@ -266,7 +266,7 @@ quietly: file write rcode
                 shell "`rpath'/R" --vanilla <"`currdir'/getreport.R" 2>`error_message' 
 		timer off 1	
 		qui timer list 1
-		if `r(t1)'<=3 {
+		if `r(t1)'<=2 {
 		dis as error "Whoopsa! That was surprisingly fast."
 		dis as error "Please check if the interviewers report was downloaded correctly." 
 		dis as error "If not, have a look at {help sursol_userreport##debugging:debugging information} in the help file."
@@ -277,7 +277,6 @@ quietly: file write rcode
 		di as result _n
 		di as result "{ul:Warnings & Error messages displayed by R:}"
 		type `error_message'
-		
                 qui capt rm "`currdir'/getreport.R"
                 qui capt rm "`currdir'/.Rhistory" 
                 qui  cd "`currdir'"

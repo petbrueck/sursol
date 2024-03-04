@@ -383,7 +383,8 @@ quietly: file write rcode
 `"	i <- 1     "'  _newline
 `"	for (datatype in datasets) {     "'  _newline
 `"	  for (val in versions_download) {     "'  _newline
-`"	    if (datatype=="paradata")  dat <-"Para"  else dat<- toupper(datatype)     "'  _newline
+`"	    if (datatype=="paradata")  dat <-"Paradata"  else dat<- toupper(datatype)     "'  _newline
+`"	    if (datatype=="tabular")  dat <-"Tabular"   "'  _newline
 `" ##CHECK TRANSLATION IF SPECIFIED "'  _newline
 `" if (nchar(translation)>0) { "'  _newline
 `"     documentquery <-  paste(api_URL, "questionnaires",questionnaire_identity,val,"document", sep="/")     "'  _newline
@@ -571,14 +572,14 @@ quietly: file write rcode
 `"	        if ("yes" %in% str_to_lower(unzip)) {     "'  _newline
 `"	        if (zip_directory=="") {     "'  _newline
 `"	         zip_path<- paste0(directory,"//",     "'  _newline
-`"	                              qxvar,"_",val)       "'  _newline
-`"	          if (datatype=="binary") zip_path<- paste0(directory, qxvar, "_",  val,"//Binary")       "'  _newline
-`"	          if (datatype=="ddi") zip_path<- paste0(directory, qxvar, "_",  val,"//DDI")       "'  _newline
+`"	                              qxvar,"_",val,"_",dat,"_",int_status)       "'  _newline
+`"	          if (datatype=="binary") zip_path<- paste0(directory,"//", qxvar, "_",  val,"_Binary_",int_status)       "'  _newline
+`"	          if (datatype=="ddi") zip_path<- paste0(directory, "//",qxvar, "_",  val,"_DDI_",int_status)       "'  _newline
 `"	        } else  {     "'  _newline
 `"	        zip_path<- paste0(zip_directory,"//",     "'  _newline
-`"	                           qxvar,"_",val)       "'  _newline
-`"	      if (datatype=="binary") zip_path<- paste0(zip_directory,"//", qxvar, "_",  val,"//Binary")     "'  _newline
-`"	      if (datatype=="ddi") zip_path<- paste0(zip_directory,"/", qxvar, "_",  val,"//DDI")     "'  _newline
+`"	                           qxvar,"_",val,"_",dat,"_",int_status)       "'  _newline
+`"	      if (datatype=="binary") zip_path<- paste0(zip_directory,"//", qxvar, "_",  val,"_Binary_",int_status)     "'  _newline
+`"	      if (datatype=="ddi") zip_path<- paste0(zip_directory,"/", qxvar, "_",   val,"_DDI_",int_status)     "'  _newline
 `"	        }     "'  _newline
 `"	      if (datatype=="binary") {     "'  _newline
 `"	         unlink(zip_path, recursive = TRUE)     "'  _newline

@@ -7,7 +7,6 @@ program sursol_append
 syntax anything,  DIRectory(string) [QXVAR(string)] [EXport(string)]  [COpy(string)] [NOACtions] [NODIAGnostics] [SERver(string)] [NOSkip] [sortdesc]
 
 local currdir `c(pwd)'
-
 loc qxname=lower("`1'")
 loc notworked "" 
 
@@ -51,50 +50,32 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	local folderstructure: dir "`directory'" dirs "`1'*", respectcase 
 	local folderstructure : list sort folderstructure
 	local length : word count `folderstructure'
-	//IDENTIFY IF WE ARE WORKING WITH STATA, TABULAR OR SPSS EXPORT FILES 
-	if ustrregexm(lower(`"`folderstructure'"'),"stata") loc datatype="STATA"
-	if ustrregexm(lower(`"`folderstructure'"'),"tabular") loc datatype="Tabular"
-	if ustrregexm(lower(`"`folderstructure'"'),"spss") loc datatype="SPSS"
 
-	//KEEP ONLY STATA TABULAR OR SPSS FOLDERs
-	loc newfolderstr ""
-	foreach folder of loc folderstructure {
-		if ustrregexm(lower(`"`folder'"'),"stata|tabular|spss") loc newfolderstr `"`newfolderstr' `folder'"'
+	if  regexm(`"`folderstructure'"',"STATA")==1 & regexm(`"`folderstructure'"',"Tabular")==1  {
+	noi di as error _n "Attention, both STATA and Tabular Export files identified in `directory' for files `master'" 
+	noi di as error  "This can not be handled. Please remove and use only one export type file.'" 
+	ex 198
 	}
 
+	// IDENTIFY NOW IF STATA OR TABULAR 
+	if  regexm(`"`folderstructure'"',"STATA")==1 loc export_type="STATA"
+	if  regexm(`"`folderstructure'"',"Tabular")==1 loc export_type="Tabular"
 
+	
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
 	noi di as error "Check questionnaire name specified or directory!" 
 	ex 601
 	}
 
-	// IDENTIFY VERSIONS - SORT NUMERICALLY ASCENDING
-	loc vnumtructure=subinstr(subinstr(`"`newfolderstr'"',"`1'_","",.), char(34),  "", .)
 
-	// REMOVE TABULAR/(STATA_ALL ETC. 
-	loc vnumtructure=ustrregexra(`"`vnumtructure'"',"_`datatype'_\D+"," ")
+	//SORT NUMERICALLY ASCENDING
+	loc vnumtructure=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
+	//IN CASE TABULAR DATA IS USED
+	loc vnumtructure=subinstr(`"`vnumtructure'"',"_Tabular_All","",.)
+	loc vnumtructure=subinstr(`"`vnumtructure'"',"_STATA_All","",.)
 
-	if length("`datatype'")==0 {
-		noi dis as error "Can not identify the data file format suffix."
-		noi dis as error "Must be any of STATA, Tabular or SPSS"
-		noi dis as error "Such as `1'_XX_STATA"
-		ex 198 
-	}
-
-	//IDENTIFY INTERVIEW STATUS/SUFFIX BY VERSION
-
-foreach version of loc vnumtructure {
-	foreach fol of loc newfolderstr {
-		if strpos("`fol'","`1'_`version'_`datatype'") > 0 {
-		loc v`version'_intstatus= subinstr("`fol'","`1'_`version'_`datatype'_","",.)
-		}
-	}
-}
-
-
-
-
+	noi display "`vnumtructure'"
 	capt numlist `"`vnumtructure'"', integer sort
 	if !_rc==0 {
 	noi di as error _n "Attention, it seems that you specified the wrong {help sursol_append:{it:folder_uniqueid}}" 
@@ -102,27 +83,31 @@ foreach version of loc vnumtructure {
 	noi di as error "Make sure to only specify the name of the folders and no version numbers or underscore signs." 
 	ex 601
 	}
-	//BUILD A NEW LOCAL BASED ON SORTING ORDER
 	loc sortstructure ""
 	if "`sortdesc'"=="" {
 	foreach version in  `r(numlist)' {
-		loc sortstructure `"`sortstructure' "`1'_`version'_`datatype'_`v`version'_intstatus'" "'		
+		loc sortstructure `"`sortstructure' "`1'_`version'_`export_type'_All" "'		
 	}
 	}
+
+	
+
+
 	//DESCENDING ORDER
 	if "`sortdesc'"!="" {
 	loc length_nums: word count `r(numlist)'
 	loc sortstructure ""
 	forvalue folder=`length_nums'(-1)1 {
 	loc ver: word `folder' of `r(numlist)'
-	loc sortstructure `"`sortstructure' "`1'_`ver'_`datatype'_`v`ver'_intstatus'" "'		
+	loc sortstructure `"`sortstructure' "`1'_`ver'_`export_type'_All" "'		
 	}
 	}
+
 
 noi dis _n ""
 	if length("`nodiagnostics'")==0 | length("`noactions'")==0 | length("`copy'")>0 {
 	foreach folder of loc sortstructure  {
-		
+
 		capt confirm file "`directory'/`folder'/`master'.dta"
 			if _rc!=0 {
 
@@ -152,7 +137,6 @@ noi dis _n ""
 	loc i=0
 	foreach folder of loc sortstructure {
 	loc version= subinstr("`folder'", "`1'_","",.) 
-	loc version=strtrim(substr("`version'",1,strpos("`version'","_")-1))
 	local filestructure: dir "`directory'/`folder'" file "*.dta", respectcase 
 	local filestructure : list sort filestructure 
 	if length(`"`filestructure'"')==0 {
@@ -176,7 +160,9 @@ noi dis _n ""
 	}
 
 	if regexm("`file'","`master'.dta")==1 {
-	gen version="`version'"
+
+	local data_version = substr("`version'",1,strpos("`version'","_")-1)
+	gen version="`data_version'"
 	label var version "Version of Survey Solutions questionnaire"
 	order version
 	local file="`master'.dta" 

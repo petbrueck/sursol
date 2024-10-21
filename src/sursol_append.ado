@@ -70,12 +70,17 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 
 
 	//SORT NUMERICALLY ASCENDING
-	loc vnumtructure=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
-	//IN CASE TABULAR DATA IS USED
-	loc vnumtructure=subinstr(`"`vnumtructure'"',"_Tabular_All","",.)
-	loc vnumtructure=subinstr(`"`vnumtructure'"',"_STATA_All","",.)
+	loc init_vnum=subinstr(subinstr(`"`folderstructure'"',"`1'_","",.), char(34),  "", .)
 
-	noi display "`vnumtructure'"
+	*NEED TO GET THE ACTUAL VERSIONS - PAINFUL WITH STATA
+	loc vnumtructure=""
+	foreach object of loc init_vnum {
+	*HOPING IT IS JUST BY "_" OR WHITESPACE
+		if ustrregexm("`object'","^\d+_")==1 	loc object=substr("`object'",1,strpos("`object'","_")-1)
+		if ustrregexm("`object'","^\d+ ")==1 	loc object=substr("`object'",1,strpos("`object'"," ")-1)
+		loc vnumtructure "`vnumtructure' `object'"
+	}
+
 	capt numlist `"`vnumtructure'"', integer sort
 	if !_rc==0 {
 	noi di as error _n "Attention, it seems that you specified the wrong {help sursol_append:{it:folder_uniqueid}}" 
@@ -86,12 +91,14 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	loc sortstructure ""
 	if "`sortdesc'"=="" {
 	foreach version in  `r(numlist)' {
-		loc sortstructure `"`sortstructure' "`1'_`version'_`export_type'_All" "'		
+		*For each version have to find again the folder 
+		foreach object of loc folderstructure {
+			if  ustrregexm("`object'","`version'")==1  loc takeobj= "`object'"
+			else if ustrregexm("`object'","`version'")==0 continue
+		}
+		loc sortstructure `"`sortstructure' `takeobj' "'		
 	}
 	}
-
-	
-
 
 	//DESCENDING ORDER
 	if "`sortdesc'"!="" {
@@ -99,9 +106,15 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	loc sortstructure ""
 	forvalue folder=`length_nums'(-1)1 {
 	loc ver: word `folder' of `r(numlist)'
-	loc sortstructure `"`sortstructure' "`1'_`ver'_`export_type'_All" "'		
+		*For each version have to find again the folder 
+		foreach object of loc folderstructure {
+			if  ustrregexm("`object'","`ver'")==1  loc takeobj= "`object'"
+			else if ustrregexm("`object'","`ver'")==0 continue
+		}
+		loc sortstructure `"`sortstructure' `takeobj' "'		
 	}
 	}
+
 
 
 noi dis _n ""
@@ -112,7 +125,8 @@ noi dis _n ""
 			if _rc!=0 {
 
 				if length("`qxvar'")==0 {
-				noi dis as error "No Questionnaire Level file found named `master'.dta. Specify option {help sursol_append##sursol_append_qxvar:qxvar(string)}"
+				noi dis as error "No Questionnaire Level file found named `master'.dta in `folder'"
+				noi dis as error  "Specify option {help sursol_append##sursol_append_qxvar:qxvar(string)}"
 				}
 				else if length("`qxvar'")>0 {
 				noi dis as error "No Questionnaire Level file found named `master'.dta in folder `folder'."
@@ -160,8 +174,10 @@ noi dis _n ""
 	}
 
 	if regexm("`file'","`master'.dta")==1 {
-
-	local data_version = substr("`version'",1,strpos("`version'","_")-1)
+	loc data_version = "`version'"
+	if ustrregexm("`version'","^\d+_")==1 	loc data_version=substr("`data_version'",1,strpos("`version'","_")-1)
+	if ustrregexm("`data_version'","^\d+ ")==1 	loc data_version=substr("`data_version'",1,strpos("`data_version'"," ")-1)
+	*local data_version = substr("`data_version'",1,strpos("`version'","_")-1)
 	gen version="`data_version'"
 	label var version "Version of Survey Solutions questionnaire"
 	order version

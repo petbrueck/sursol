@@ -57,11 +57,24 @@ else if length("`qxvar'")>0 loc master="`qxvar'"
 	ex 198
 	}
 
+	//Remove SPSS & Para & Binary Folders - Small workaround/cleanup in case user store all files in one folder
+	* Create an empty local to store the cleaned up items
+	local newfolderstructure ""
+	* Loop over each item in folderstructure
+	foreach f of local folderstructure {
+		* Convert to lower case and check if "paradata" is NOT present
+		if !regexm(lower("`f'"), "_paradata_|_spss_|_binary_") {
+			local newfolderstructure "`newfolderstructure' `f'"
+		}
+	}
+
+	* Replace folderstructure with the filtered list
+	local folderstructure "`newfolderstructure'"
+	
 	// IDENTIFY NOW IF STATA OR TABULAR 
 	if  regexm(`"`folderstructure'"',"STATA")==1 loc export_type="STATA"
 	if  regexm(`"`folderstructure'"',"Tabular")==1 loc export_type="Tabular"
 
-	
 	if `length'==0 {
 	noi di as error _n "Attention, no folder found named:  ""`1'"" 
 	noi di as error "Check questionnaire name specified or directory!" 
